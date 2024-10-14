@@ -25,10 +25,10 @@ This page is written in Chinese, please use the translation if you do not unders
 
 ``` fvv
 {
-  ValueName1 = "114514" <字符串>;
-  ValueName2 = true     <布尔值>;
-  ValueName3 = 114514   <整数>  ;
-  ValueName4 = 114.514  <浮点数>;
+  ValueName1 = "114514\"" <字符串与转义\>>;
+  ValueName2 = true       <布尔值>;
+  ValueName3 = 114514     <整数>  ;
+  ValueName4 = 114.514    <浮点数>;
 
   ValueName5 = ["1", "1", "4", "5", "1", "4"] <字符串组>;
   ValueName6 = [1, 1, 4, 5, 1, 4, ] <整数组(这个“,”是故意多打的)>;
@@ -37,7 +37,7 @@ This page is written in Chinese, please use the translation if you do not unders
     SubGroupName = {
         a = ValueName3 <支持赋值操作(这个是跨组赋值)>;
     } <子组>;
-    c = a <这个是跨组赋值>;
+    c = SubGroupName.a <这个是跨组赋值>;
   } <组>;
 
   GroupName.SubGroupName.b = a                        <还支持用“.”连接组名(这个是同组赋值)>;
@@ -91,10 +91,10 @@ using namespace literals;
 
 const string fvv_txt = R"(
     {
-        ValueName1 = "114514" <字符串>;
-        ValueName2 = true     <布尔值>;
-        ValueName3 = 114514   <整数>  ;
-        ValueName4 = 114.514  <浮点数>;
+        ValueName1 = "114514\"" <字符串与转义\>>;
+        ValueName2 = true       <布尔值>;
+        ValueName3 = 114514     <整数>  ;
+        ValueName4 = 114.514    <浮点数>;
 
         ValueName5 = ["1", "1", "4", "5", "1", "4"] <字符串组>;
         ValueName6 = [1, 1, 4, 5, 1, 4, ] <整数组(这个“,”是故意多打的)>;
@@ -103,7 +103,7 @@ const string fvv_txt = R"(
             SubGroupName = {
                 a = ValueName3 <支持赋值操作(这个是跨组赋值)>;
             } <子组>;
-            c = a <这个是跨组赋值>;
+            c = SubGroupName.a <这个是跨组赋值>;
         } <组>;
 
         GroupName.SubGroupName.b = a                        <还支持用“.”连接组名(这个是同组赋值)>;
@@ -158,17 +158,17 @@ FVV API: 1
       a = 114514 <支持赋值操作(这个是跨组赋值)>;
       b = 114514 <这个是同组赋值，只不过用“.”表示了完整名称>;
     } <子组>;
-    c =  <这个是跨组赋值>;
+    c = 114514 <这个是跨组赋值>;
   } <组>;
-  ValueName1 = "114514" <字符串>;
-  ValueName2 =  <布尔值>;
+  ValueName1 = "114514\"" <字符串与转义\>>;
+  ValueName2 = true <布尔值>;
   ValueName3 = 114514 <整数>;
   ValueName4 = 114.514000 <浮点数>;
   ValueName5 = ["1", "1", "4", "5", "1", "4"] <字符串组>;
   ValueName6 = [1, 1, 4, 5, 1, 4] <整数组(这个“,”是故意多打的)>;
   一一四五一四 = 114514;
 }
-{()()(((())))((((()))))()(((())))=114514;114514=114514;GroupName={SubGroupName={114514=;a=114514;b=114514;};c=;};ValueName1="114514";ValueName2=;ValueName3=114514;ValueName4=114.514000;ValueName5=["1","1","4","5","1","4"];ValueName6=[1,1,4,5,1,4];一一四五一四=114514;}
+{()()(((())))((((()))))()(((())))=114514;114514=114514;GroupName={SubGroupName={114514=;a=114514;b=114514;};c=114514;};ValueName1="114514\"";ValueName2=true;ValueName3=114514;ValueName4=114.514000;ValueName5=["1","1","4","5","1","4"];ValueName6=[1,1,4,5,1,4];一一四五一四=114514;}
 值 GroupName.SubGroupName.a (描述): 支持赋值操作(这个是跨组赋值)
 值 GroupName.SubGroupName.a (描述): 114514
 ```
