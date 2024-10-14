@@ -6,6 +6,7 @@
 #define __FVV__
 
 #include <algorithm>
+#include <cstdint>
 #include <functional>
 #include <map>
 #include <optional>
@@ -38,11 +39,11 @@ public:
   static INLINE constexpr const bool defaultBool = false;
   static INLINE constexpr const int defaultInt = 0;
   static INLINE constexpr const double defaultDouble = 0.0;
-  static INLINE constexpr const std::string defaultString = "";
-  static INLINE constexpr const std::vector<bool> defaultVectorBool = {};
-  static INLINE constexpr const std::vector<int> defaultVectorInt = {};
-  static INLINE constexpr const std::vector<double> defaultVectorDouble = {};
-  static INLINE constexpr const std::vector<std::string> defaultVectorString = {};
+  static INLINE const std::string defaultString = "";
+  static INLINE const std::vector<bool> defaultVectorBool = {};
+  static INLINE const std::vector<int> defaultVectorInt = {};
+  static INLINE const std::vector<double> defaultVectorDouble = {};
+  static INLINE const std::vector<std::string> defaultVectorString = {};
   struct FVVV
   {
     using FVVVT = std::variant<std::monostate, bool, int, double, std::string, std::vector<bool>, std::vector<int>, std::vector<double>, std::vector<std::string>>;
@@ -118,20 +119,19 @@ public:
     INLINE void setDesc(const std::string_view &newDesc)
     {
       desc = newDesc;
+      _shrink(&desc);
     }
     INLINE std::string print(const std::string_view &type = "common") const
     {
       std::string result;
-      if (type == std::string_view("min"))
-        result += std::string("{");
-      else
-        result += std::string("{\n");
+      result += std::string("{");
+      if (type != std::string_view("min"))
+        result += std::string("\n");
       std::function<void(const std::string &, const FVVV *, int)> printFunc;
       printFunc = [&](const std::string &path, const FVVV *node, int indentLevel)
       {
-        bool hasChildren = !node->children.empty();
         std::string indent(indentLevel * 2, ' ');
-        if (hasChildren && !path.empty())
+        if (!node->children.empty() && !path.empty())
         {
           if (type == std::string_view("min"))
             result += path + std::string("={");
@@ -145,7 +145,33 @@ public:
           else
             result += indent + path + std::string(" = ");
           if (node->isType<std::string>())
-            result += std::string("\"") + node->as<std::string>().value() + std::string("\"");
+          {
+            result += std::string("\"");
+            std::string index_char, tmpStr = node->as<std::string>().value();
+            for (size_t i = 0; i < tmpStr.size();)
+            {
+              unsigned char c = tmpStr[i];
+              size_t char_size = 0;
+              if ((c & 0x80) == 0)
+                char_size = 1;
+              else if ((c & 0xE0) == 0xC0)
+                char_size = 2;
+              else if ((c & 0xF0) == 0xE0)
+                char_size = 3;
+              else if ((c & 0xF8) == 0xF0)
+                char_size = 4;
+              else
+                char_size = 1;
+              index_char = tmpStr.substr(i, char_size);
+              if (index_char == std::string("\""))
+                result += std::string("\\");
+              result += index_char;
+              i += char_size;
+            }
+            result += std::string("\"");
+          }
+          else if (node->isType<bool>())
+            result += node->as<bool>().value() ? std::string("true") : std::string("false");
           else if (node->isType<int>())
             result += std::to_string(node->as<int>().value());
           else if (node->isType<double>())
@@ -155,10 +181,48 @@ public:
             result += std::string("[");
             const std::vector<std::string> tmp = node->as<std::vector<std::string>>().value();
             for (const std::string &value : tmp)
-              if (type == std::string_view("min"))
-                result += std::string("\"") + value + std::string("\",");
-              else
-                result += std::string("\"") + value + std::string("\", ");
+            {
+              result += std::string("\"");
+              std::string index_char;
+              for (size_t i = 0; i < value.size();)
+              {
+                unsigned char c = value[i];
+                size_t char_size = 0;
+                if ((c & 0x80) == 0)
+                  char_size = 1;
+                else if ((c & 0xE0) == 0xC0)
+                  char_size = 2;
+                else if ((c & 0xF0) == 0xE0)
+                  char_size = 3;
+                else if ((c & 0xF8) == 0xF0)
+                  char_size = 4;
+                else
+                  char_size = 1;
+                index_char = value.substr(i, char_size);
+                if (index_char == std::string("\""))
+                  result += std::string("\\");
+                result += index_char;
+                i += char_size;
+              }
+              result += std::string("\",");
+              if (type != std::string_view("min"))
+                result += std::string(" ");
+            }
+            if (type != std::string_view("min"))
+              result.pop_back();
+            result.pop_back();
+            result += std::string("]");
+          }
+          else if (node->isType<std::vector<bool>>())
+          {
+            result += std::string("[");
+            const std::vector<bool> tmp = node->as<std::vector<bool>>().value();
+            for (const int &value : tmp)
+            {
+              result += value ? std::string("true") : std::string("false") + std::string(",");
+              if (type != std::string_view("min"))
+                result += std::string(" ");
+            }
             if (type != std::string_view("min"))
               result.pop_back();
             result.pop_back();
@@ -169,10 +233,11 @@ public:
             result += std::string("[");
             const std::vector<int> tmp = node->as<std::vector<int>>().value();
             for (const int &value : tmp)
-              if (type == std::string_view("min"))
-                result += std::to_string(value) + std::string(",");
-              else
-                result += std::to_string(value) + std::string(", ");
+            {
+              result += std::to_string(value) + std::string(",");
+              if (type != std::string_view("min"))
+                result += std::string(" ");
+            }
             if (type != std::string_view("min"))
               result.pop_back();
             result.pop_back();
@@ -183,50 +248,96 @@ public:
             result += std::string("[");
             const std::vector<double> tmp = node->as<std::vector<double>>().value();
             for (const double &value : tmp)
-              if (type == std::string_view("min"))
-                result += std::to_string(value) + std::string(",");
-              else
-                result += std::to_string(value) + std::string(", ");
+            {
+              result += std::to_string(value) + std::string(",");
+              if (type != std::string_view("min"))
+                result += std::string(" ");
+            }
             if (type != std::string_view("min"))
               result.pop_back();
             result.pop_back();
             result += std::string("]");
           }
           if (!node->getDesc().empty() && type != std::string_view("min"))
-            result += std::string(" <") + node->getDesc() + std::string(">");
-          if (type == std::string_view("min"))
-            result += std::string(";");
-          else
-            result += std::string(";\n");
+          {
+            result += std::string(" <");
+            std::string index_char, tmpStr = node->getDesc();
+            for (size_t i = 0; i < tmpStr.size();)
+            {
+              unsigned char c = tmpStr[i];
+              size_t char_size = 0;
+              if ((c & 0x80) == 0)
+                char_size = 1;
+              else if ((c & 0xE0) == 0xC0)
+                char_size = 2;
+              else if ((c & 0xF0) == 0xE0)
+                char_size = 3;
+              else if ((c & 0xF8) == 0xF0)
+                char_size = 4;
+              else
+                char_size = 1;
+              index_char = tmpStr.substr(i, char_size);
+              if (index_char == std::string(">"))
+                result += std::string("\\");
+              result += index_char;
+              i += char_size;
+            }
+            result += std::string(">");
+          }
+          result += std::string(";");
+          if (type != std::string_view("min"))
+            result += std::string("\n");
         }
         else
-        {
           for (const auto &[key, child] : node->children)
             printFunc(key, &child, indentLevel + 1);
-        }
-        if (hasChildren && !path.empty())
+        if (!node->children.empty() && !path.empty())
         {
           if (type == std::string_view("min"))
             result += std::string("}");
           else
             result += indent + std::string("}");
           if (!node->getDesc().empty() && type != std::string_view("min"))
-            result += std::string(" <") + node->getDesc() + std::string(">");
-          if (type == std::string_view("min"))
-            result += std::string(";");
-          else
-            result += std::string(";\n");
+          {
+            result += std::string(" <");
+            std::string index_char, tmpStr = node->getDesc();
+            for (size_t i = 0; i < tmpStr.size();)
+            {
+              unsigned char c = tmpStr[i];
+              size_t char_size = 0;
+              if ((c & 0x80) == 0)
+                char_size = 1;
+              else if ((c & 0xE0) == 0xC0)
+                char_size = 2;
+              else if ((c & 0xF0) == 0xE0)
+                char_size = 3;
+              else if ((c & 0xF8) == 0xF0)
+                char_size = 4;
+              else
+                char_size = 1;
+              index_char = tmpStr.substr(i, char_size);
+              if (index_char == std::string(">"))
+                result += std::string("\\");
+              result += index_char;
+              i += char_size;
+            }
+            result += std::string(">");
+          }
+          result += std::string(";");
+          if (type != std::string_view("min"))
+            result += std::string("\n");
         }
       };
       printFunc(std::string(""), this, 0);
       result += std::string("}");
+      _shrink(&result);
       return result;
     }
   };
   class Parser
   {
   public:
-    static INLINE void ReadString(std::string txt, FVVV &cfg)
+    static INLINE void ReadString(std::string txt, FVVV &targetFvv)
     {
       if (txt.size() >= 3 &&
           static_cast<unsigned char>(txt[0]) == _bom[0] &&
@@ -278,163 +389,151 @@ public:
           char_size = 1;
         index_char = txt.substr(i, char_size);
         i += char_size;
-        FVVV *index_key = &cfg;
+        FVVV *index_key = &targetFvv;
         isRealChar = i >= char_size + 1 ? (txt[i - char_size - 1] != '\\' ? true : false) : true;
-        if (!inDesc && !inStr && (index_char == std::string(" ") || index_char == std::string("\t") || index_char == std::string("\r") || index_char == std::string("\n")))
-          continue;
-        if (!inDesc && index_char == std::string("<"))
+        if (inDesc)
         {
-          inDesc = true;
-          continue;
-        }
-        if (inDesc && (index_char != std::string(">") || !isRealChar))
-        {
-          if (index_char == std::string(">") && !isRealChar)
-            index_desc.pop_back();
-          if (inValue || inGroup > 0)
-            index_desc += index_char;
-          continue;
-        }
-        if (inDesc && index_char == std::string(">") && isRealChar)
-        {
-          desc = index_desc;
-          index_desc.clear();
-          index_desc.shrink_to_fit();
-          inDesc = false;
-          continue;
-        }
-        if (!inValue && index_char == std::string("="))
-        {
-          valueNames = _split(valueName, '.');
-          valueName.clear();
-          valueName.shrink_to_fit();
-          inValue = true;
-          continue;
-        }
-        if (inValue && !inStr && index_char == std::string("{"))
-        {
-          groupNames.insert(groupNames.end(), valueNames.begin(), valueNames.end());
-          lastGroupNames.push_back(valueNames);
-          valueNames.clear();
-          valueNames.shrink_to_fit();
-          inGroup++;
-          inValue = false;
-          continue;
-        }
-        if (inValue && !inStr && index_char == std::string("["))
-        {
-          isList = true;
-          continue;
-        }
-        if (inValue && !inStr && index_char == std::string("\""))
-        {
-          inStr = true;
-          isStr = true;
-          continue;
-        }
-        if (inValue && inStr && index_char == std::string("\"") && isRealChar)
-        {
-          inStr = false;
-          continue;
-        }
-        else if (inValue && inStr && index_char == std::string("\"") && !isRealChar)
-          value.pop_back();
-        if (inValue && !inStr && (index_char == std::string(",") || index_char == std::string("]")))
-        {
-          if (index_char == std::string("]"))
+          if (index_char != std::string(">") || !isRealChar)
           {
-            size_t j = 1;
-            while (txt[i - char_size - j] == ' ' || txt[i - char_size - j] == '\t' || txt[i - char_size - j] == '\r' || txt[i - char_size - j] == '\n')
-              j++;
-            if (txt[i - char_size - j] == ',')
-              continue;
-          }
-          values.push_back(value);
-          value.clear();
-          value.shrink_to_fit();
-          continue;
-        }
-        if (!inValue && !inStr && index_char == std::string(";") && inGroup > 0)
-        {
-          if (!desc.empty())
-            for (size_t i = 0; i < groupNames.size(); ++i)
+            if (index_char == std::string(">") && !isRealChar)
             {
-              if (i == groupNames.size() - 1)
-              {
-                (*index_key)[groupNames[i]].setDesc(desc);
-                desc.clear();
-                desc.shrink_to_fit();
-                break;
-              }
-              index_key = &(*index_key)[groupNames[i]];
+              index_desc.pop_back();
+              _shrink(&index_desc);
             }
-          for (const auto &_ : lastGroupNames.back())
-            groupNames.pop_back();
-          lastGroupNames.pop_back();
-          inGroup--;
-          continue;
-        }
-        if (inValue && !inStr && index_char == std::string(";"))
-        {
-          for (size_t i = 0; i < groupNames.size(); ++i)
-            index_key = &(*index_key)[groupNames[i]];
-          for (size_t i = 0; i < valueNames.size(); ++i)
+            if (inValue || inGroup > 0)
+              index_desc += index_char;
+            continue;
+          }
+          else if (index_char == std::string(">") && isRealChar)
           {
-            const std::string &key = valueNames[i];
-            if (i == valueNames.size() - 1)
+            desc = index_desc;
+            _clearAndShrink(&index_desc);
+            _shrink(&desc);
+            inDesc = false;
+            continue;
+          }
+        }
+        else
+        {
+          if (!inStr && (index_char == std::string(" ") || index_char == std::string("\t") || index_char == std::string("\r") || index_char == std::string("\n")))
+            continue;
+          else if (index_char == std::string("<"))
+          {
+            inDesc = true;
+            continue;
+          }
+        }
+        if (inValue)
+        {
+          if (inStr)
+          {
+            if (index_char == std::string("\""))
             {
-              if (isList)
+              if (isRealChar)
               {
-                if (isStr)
-                  (*index_key)[key] = FVVV(values);
-                else
-                {
-                  std::string tmpStr = values.back();
-                  if (tmpStr == std::string("true") || tmpStr == std::string("false"))
-                  {
-                    std::vector<bool> tmp;
-                    tmp.reserve(values.size());
-                    std::transform(values.begin(), values.end(), std::back_inserter(tmp), [](const std::string_view &str)
-                                   { return str == std::string_view("true"); });
-                    (*index_key)[key] = FVVV(tmp);
-                  }
-                  else if (std::all_of(tmpStr.begin(), tmpStr.end(), ::isdigit))
-                  {
-                    std::vector<int> tmp;
-                    tmp.reserve(values.size());
-                    std::transform(values.begin(), values.end(), std::back_inserter(tmp), [](const std::string_view &str)
-                                   { return std::stoi(str.data()); });
-                    (*index_key)[key] = FVVV(tmp);
-                  }
-                  else
-                  {
-                    tmpStr.erase(std::remove(tmpStr.begin(), tmpStr.end(), '.'), tmpStr.end());
-                    if (std::all_of(tmpStr.begin(), tmpStr.end(), ::isdigit))
-                    {
-                      std::vector<double> tmp;
-                      tmp.reserve(values.size());
-                      std::transform(values.begin(), values.end(), std::back_inserter(tmp), [](const std::string_view &str)
-                                     { return std::stod(str.data()); });
-                      (*index_key)[key] = FVVV(tmp);
-                    }
-                  }
-                }
+                inStr = false;
+                continue;
               }
               else
               {
-                if (isStr)
-                  (*index_key)[key] = FVVV(value);
-                else
+                value.pop_back();
+                _shrink(&value);
+                value += index_char;
+                continue;
+              }
+            }
+            else
+            {
+              value += index_char;
+              continue;
+            }
+          }
+          else
+          {
+            if (index_char == std::string("\""))
+            {
+              inStr = isStr = true;
+              continue;
+            }
+            else if (index_char == std::string("["))
+            {
+              isList = true;
+              continue;
+            }
+            else if (index_char == std::string(",") || index_char == std::string("]"))
+            {
+              if (index_char == std::string("]"))
+              {
+                size_t j = 1;
+                while (txt[i - char_size - j] == ' ' || txt[i - char_size - j] == '\t' || txt[i - char_size - j] == '\r' || txt[i - char_size - j] == '\n')
+                  j++;
+                if (txt[i - char_size - j] == ',')
+                  continue;
+              }
+              values.push_back(value);
+              _clearAndShrink(&value);
+              continue;
+            }
+            else if (index_char == std::string("{"))
+            {
+              groupNames.insert(groupNames.end(), valueNames.begin(), valueNames.end());
+              lastGroupNames.push_back(valueNames);
+              _clearAndShrink(&valueNames);
+              inGroup++;
+              inValue = false;
+              continue;
+            }
+            else if (index_char == std::string(";"))
+            {
+              for (size_t i = 0; i < groupNames.size(); ++i)
+                index_key = &(*index_key)[groupNames[i]];
+              for (size_t i = 0; i < valueNames.size(); ++i)
+              {
+                const std::string &key = valueNames[i];
+                if (i == valueNames.size() - 1)
                 {
-                  if (value == std::string("true") || value == std::string("false"))
-                    (*index_key)[key] = FVVV(value == std::string("true"));
-                  else if (std::all_of(value.begin(), value.end(), ::isdigit))
-                    (*index_key)[key] = FVVV(std::stoi(value));
+                  if (isList)
+                  {
+                    if (isStr)
+                      (*index_key)[key] = FVVV(values);
+                    else
+                    {
+                      std::string tmpStr = values.front();
+                      if (tmpStr == std::string("true") || tmpStr == std::string("false"))
+                      {
+                        std::vector<bool> tmp;
+                        tmp.reserve(values.size());
+                        std::transform(values.begin(), values.end(), std::back_inserter(tmp), [](const std::string_view &str)
+                                       { return str == std::string_view("true"); });
+                        (*index_key)[key] = FVVV(tmp);
+                      }
+                      else if (_isInt(tmpStr))
+                      {
+                        std::vector<int> tmp;
+                        for (const std::string &str : values)
+                          if (_isInt(str))
+                            tmp.push_back(std::stoi(str));
+                        (*index_key)[key] = FVVV(tmp);
+                      }
+                      else if (_isDouble(tmpStr))
+                      {
+                        std::vector<double> tmp;
+                        for (const std::string &str : values)
+                          if (_isDouble(str))
+                            tmp.push_back(std::stod(str));
+                        (*index_key)[key] = FVVV(tmp);
+                      }
+                    }
+                  }
                   else
                   {
-                    std::string tmpStr = value;
-                    tmpStr.erase(std::remove(tmpStr.begin(), tmpStr.end(), '.'), tmpStr.end());
-                    if (std::all_of(tmpStr.begin(), tmpStr.end(), ::isdigit))
+                    if (isStr)
+                      (*index_key)[key] = FVVV(value);
+                    else if (value == std::string("true") || value == std::string("false"))
+                      (*index_key)[key] = FVVV(value == std::string("true"));
+                    else if (_isInt(value))
+                      (*index_key)[key] = FVVV(std::stoi(value));
+                    else if (_isDouble(value))
                       (*index_key)[key] = FVVV(std::stod(value));
                     else
                     {
@@ -450,7 +549,7 @@ public:
                         (*index_key)[key] = (*tmpValue);
                       else
                       {
-                        tmpValue = &cfg;
+                        tmpValue = &targetFvv;
                         for (size_t i = 0; i < tmpName.size(); ++i)
                         {
                           if (tmpValue->children.find(tmpName[i]) == tmpValue->children.end())
@@ -462,37 +561,58 @@ public:
                       }
                     }
                   }
+                  (*index_key)[key].setDesc(desc);
+                  _clearAndShrink(&desc, &value, &values, &valueNames);
+                  isList = isStr = inValue = false;
+                  continue;
                 }
+                else
+                  index_key = &(*index_key)[key];
               }
-              (*index_key)[key].setDesc(desc);
-              desc.clear();
-              desc.shrink_to_fit();
-              value.clear();
-              value.shrink_to_fit();
-              values.clear();
-              values.shrink_to_fit();
-              valueNames.clear();
-              valueNames.shrink_to_fit();
-              isList = false;
-              isStr = false;
-              inValue = false;
-              continue;
             }
             else
-              index_key = &(*index_key)[key];
+            {
+              value += index_char;
+              continue;
+            }
           }
         }
-        if (!inValue && !inStr && index_char == std::string("}") && inGroup == 0)
-          break;
-        if (inValue)
+        else
         {
-          value += index_char;
-          continue;
-        }
-        else if (!inValue && index_char != std::string("}") && index_char != std::string(";"))
-        {
-          valueName += index_char;
-          continue;
+          if (index_char == std::string("="))
+          {
+            valueNames = _split(valueName, '.');
+            _clearAndShrink(&valueName);
+            inValue = true;
+            continue;
+          }
+          else if (index_char == std::string(";") && inGroup > 0)
+          {
+            if (!desc.empty())
+              for (size_t i = 0; i < groupNames.size(); ++i)
+              {
+                if (i == groupNames.size() - 1)
+                {
+                  (*index_key)[groupNames[i]].setDesc(desc);
+                  _clearAndShrink(&desc);
+                  break;
+                }
+                index_key = &(*index_key)[groupNames[i]];
+              }
+            for (const auto &_ : lastGroupNames.back())
+              groupNames.pop_back();
+            lastGroupNames.pop_back();
+            _shrink(&groupNames, &lastGroupNames);
+            inGroup--;
+            continue;
+          }
+          else if (index_char == std::string("}") && inGroup == 0)
+            break;
+          else if (index_char != std::string("}") && index_char != std::string(";"))
+          {
+            valueName += index_char;
+            continue;
+          }
         }
       }
     }
@@ -509,6 +629,77 @@ public:
       return result;
     }
   };
+  static INLINE bool _isInt(const std::string &str)
+  {
+    if (str.empty())
+      return false;
+    size_t start = 0;
+    if (str[0] == '-' || str[0] == '+')
+    {
+      if (str.size() == 1)
+        return false;
+      start = 1;
+    }
+    return std::all_of(str.begin() + start, str.end(), ::isdigit);
+  }
+  static INLINE bool _isDouble(const std::string &str)
+  {
+    if (str.empty())
+      return false;
+    size_t start = 0;
+    bool hasDecimal = false;
+    bool hasDigit = false;
+    if (str[0] == '-' || str[0] == '+')
+    {
+      if (str.size() == 1)
+        return false;
+      start = 1;
+    }
+    for (size_t i = start; i < str.size(); ++i)
+    {
+      char c = str[i];
+      if (std::isdigit(c))
+        hasDigit = true;
+      else if (c == '.')
+      {
+        if (hasDecimal)
+          return false;
+        hasDecimal = true;
+      }
+      else
+        return false;
+    }
+    return hasDigit;
+  }
+  template <typename T>
+  static INLINE void _clearAndShrink(T *container)
+  {
+    if (container)
+    {
+      container->clear();
+      container->shrink_to_fit();
+    }
+  }
+  template <typename T, typename... Args>
+  static INLINE void _clearAndShrink(T *container, Args... args)
+  {
+    _clearAndShrink(container);
+    _clearAndShrink(args...);
+  }
+
+private:
+  template <typename T>
+  static INLINE void _shrink(T *container)
+  {
+    if (container)
+      container->shrink_to_fit();
+  }
+  template <typename T, typename... Args>
+  static INLINE void _shrink(T *container, Args... args)
+  {
+    _shrink(container);
+    _shrink(args...);
+  }
 };
 
 #endif
