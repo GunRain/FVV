@@ -8,8 +8,14 @@ This page is written in Chinese, please use the translation if you do not unders
 
 不会支持的语言: `Python`、`Java`、`Rust`等
 
+TODO:
 
-已知问题: 解析器无法存留赋值定义，举例:
+ - 支持数学运算(需要显式定义)
+ - 支持值组内的赋值(需要显式定义)
+ - 支持将组赋值给值
+
+
+已知问题: ~~解析器无法存留赋值定义，举例:~~
 
 ``` fvv
 {
@@ -18,7 +24,9 @@ This page is written in Chinese, please use the translation if you do not unders
 }
 ```
 
-解析器解析后只能解析出`b`等于`1`，不能在`a`被修改的情况下让`b`的值跟随变动，`b`的值仍为`1`
+~~解析器解析后只能解析出`b`等于`1`，不能在`a`被修改的情况下让`b`的值跟随变动，`b`的值仍为`1`~~
+
+此问题已修复
 
 
 名字显而易见，是个~~废物~~清新的文本格式，那么有多清新呢，请看示例:
@@ -154,11 +162,10 @@ FVV API: 1
   114514 = 114514;
   GroupName = {
     SubGroupName = {
-      114514 = ;
-      a = 114514 <支持赋值操作(这个是跨组赋值)>;
-      b = 114514 <这个是同组赋值，只不过用“.”表示了完整名称>;
+      a = ValueName3 <支持赋值操作(这个是跨组赋值)>;
+      b = GroupName.SubGroupName.a <这个是同组赋值，只不过用“.”表示了完整名称>;
     } <子组>;
-    c = 114514 <这个是跨组赋值>;
+    c = SubGroupName.a <这个是跨组赋值>;
   } <组>;
   ValueName1 = "114514\"" <字符串与转义\>>;
   ValueName2 = true <布尔值>;
@@ -168,14 +175,16 @@ FVV API: 1
   ValueName6 = [1, 1, 4, 5, 1, 4] <整数组(这个“,”是故意多打的)>;
   一一四五一四 = 114514;
 }
-{()()(((())))((((()))))()(((())))=114514;114514=114514;GroupName={SubGroupName={114514=;a=114514;b=114514;};c=114514;};ValueName1="114514\"";ValueName2=true;ValueName3=114514;ValueName4=114.514000;ValueName5=["1","1","4","5","1","4"];ValueName6=[1,1,4,5,1,4];一一四五一四=114514;}
+{()()(((())))((((()))))()(((())))=114514;114514=114514;GroupName={SubGroupName={a=ValueName3;b=GroupName.SubGroupName.a;};c=SubGroupName.a;};ValueName1="114514\"";ValueName2=true;ValueName3=114514;ValueName4=114.514000;ValueName5=["1","1","4","5","1","4"];ValueName6=[1,1,4,5,1,4];一一四五一四=114514;}
 值 GroupName.SubGroupName.a (描述): 支持赋值操作(这个是跨组赋值)
 值 GroupName.SubGroupName.a (描述): 114514
 ```
 
-有人可能会有疑问，为什么会有`114514 = ;`呢？
+~~有人可能会有疑问，为什么会有`114514 = ;`呢？~~
 
-这是因为代码里进行了`if (fvv["GroupName"s]["SubGroupName"s]["114514"s].isEmpty())`的判断操作，导致创建了`GroupName.SubGroupName.114514`这样一个空值
+~~这是因为代码里进行了`if (fvv["GroupName"s]["SubGroupName"s]["114514"s].isEmpty())`的判断操作，导致创建了`GroupName.SubGroupName.114514`这样一个空值~~
+
+此问题被认为是个bug，已修复
 
 
 接下来就详细解释一下代码吧:
@@ -188,9 +197,17 @@ FVV API: 1
 下面是FVVV struct的用法:
  - `asBool()`、`asInt()`、`asDouble()`、`asString()`、`asBools()`、`asInts()`、`asDoubles()`、`asStrings()`: 分别会返回`bool`、`int`、`double`、`std::string`、`std::vector<bool>`、`std::vector<int>`、`std::vector<double>`、`std::vector<std::string>`类型的值，如果值不存在，会分别返回`false`、`0`、`0.0`、`""`、`{}`、`{}`、`{}`、`{}`
  - `as<typename>()`: 会返回一个`std::optional`类型的值
- - `getDesc()`: 会返回值的描述(`std::string`)，如果不存在，会返回空的字符串
+ - `hasDesc()`: 用于判断值是否有描述，会返回一个`bool`类型的值
+ - `getDesc()`: 会返回值的描述(`std::string`)，如果没有，会返回空的字符串
  - `setDesc(str)`: 需要传入一个`std::string`类型的值，用于设置值的描述，没有返回值
- - `isEmpty()`: 用于判断值是否存在，会返回一个`bool`类型的值
+ - `delDesc()`: 会删除值的描述，没有返回值
+ - `isLink()`: 用于判断值是否是链接，会返回一个`bool`类型的值
+ - `getLink()`: 会返回值的链接(`FVV::FVVV`)，如果没有，会返回`nullptr`
+ - `getLinkName()`: 会返回值的链接名称(`std::string`)，如果没有，会返回空的字符串(返回的链接名称取决于解析时原始文本的定义，如果是相对链接，则仍是相对链接，如果是绝对链接，则仍是绝对链接)
+ - `setLink(fvvv)`: 需要传入一个`FVV::FVVV`类型的值，用于设置值的链接，没有返回值
+ - `setLinkName(str)`: 需要传入一个`std::string`类型的值，用于设置值的链接名称，没有返回值
+ - `delLink()`: 会删除值的链接(包括链接名称)，没有返回值
+ - `isEmpty()`、`isNotEmpty()`: 用于判断值是否存在，会返回一个`bool`类型的值
  - `isType<typename>()`: 用于判断值是否为指定类型，会返回一个`bool`类型的值(如果值不存在，会返回`false`)
  - `print()`或`print("min")`: 会把当前struct内所有值输出为FVV格式文本，传入“min”时会去除掉所有值的描述(只是在输出时去除，不会影响struct内的值)，并去除所有空格和换行
 
