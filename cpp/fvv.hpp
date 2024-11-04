@@ -40,16 +40,18 @@ public:
   static INLINE constexpr const int defaultInt = 0;
   static INLINE constexpr const double defaultDouble = 0.0;
   static INLINE const std::string defaultString = "";
-  static INLINE const std::vector<bool> defaultVectorBool = {};
-  static INLINE const std::vector<int> defaultVectorInt = {};
-  static INLINE const std::vector<double> defaultVectorDouble = {};
-  static INLINE const std::vector<std::string> defaultVectorString = {};
+  static INLINE const std::vector<bool> defaultBools = {};
+  static INLINE const std::vector<int> defaultInts = {};
+  static INLINE const std::vector<double> defaultDoubles = {};
+  static INLINE const std::vector<std::string> defaultStrings = {};
   struct FVVV
   {
     using FVVVT = std::variant<std::monostate, bool, int, double, std::string, std::vector<bool>, std::vector<int>, std::vector<double>, std::vector<std::string>>;
     FVVVT value;
-    std::map<std::string, FVVV> children;
-    std::string desc;
+    std::map<std::string, FVVV> children = {};
+    std::string desc = "";
+    FVVV *link = nullptr;
+    std::string linkName = "";
     INLINE FVVV(void) = default;
     INLINE FVVV(bool v) : value(v) {}
     INLINE FVVV(int v) : value(v) {}
@@ -65,52 +67,76 @@ public:
     }
     INLINE bool asBool(void) const
     {
-      return isType<bool>() ? std::get<bool>(value) : defaultBool;
+      using resultType = bool;
+      std::optional<resultType> result = link == nullptr ? as<resultType>() : link->as<resultType>();
+      return result.value_or(defaultBool);
     }
     INLINE int asInt(void) const
     {
-      return isType<int>() ? std::get<int>(value) : defaultInt;
+      using resultType = int;
+      std::optional<resultType> result = link == nullptr ? as<resultType>() : link->as<resultType>();
+      return result.value_or(defaultInt);
     }
     INLINE double asDouble(void) const
     {
-      return isType<double>() ? std::get<double>(value) : defaultDouble;
+      using resultType = double;
+      std::optional<resultType> result = link == nullptr ? as<resultType>() : link->as<resultType>();
+      return result.value_or(defaultDouble);
     }
     INLINE const std::string &asString(void) const
     {
-      return isType<std::string>() ? std::get<std::string>(value) : defaultString;
+      using resultType = std::string;
+      std::optional<resultType> result = link == nullptr ? as<resultType>() : link->as<resultType>();
+      return result.value_or(defaultString);
     }
     INLINE const std::vector<bool> &asBools(void) const
     {
-      return isType<bool>() ? std::get<std::vector<bool>>(value) : defaultVectorBool;
+      using resultType = std::vector<bool>;
+      std::optional<resultType> result = link == nullptr ? as<resultType>() : link->as<resultType>();
+      return result.value_or(defaultBools);
     }
     INLINE const std::vector<int> &asInts(void) const
     {
-      return isType<std::vector<int>>() ? std::get<std::vector<int>>(value) : defaultVectorInt;
+      using resultType = std::vector<int>;
+      std::optional<resultType> result = link == nullptr ? as<resultType>() : link->as<resultType>();
+      return result.value_or(defaultInts);
     }
     INLINE const std::vector<double> &asDoubles(void) const
     {
-      return isType<std::vector<double>>() ? std::get<std::vector<double>>(value) : defaultVectorDouble;
+      using resultType = std::vector<double>;
+      std::optional<resultType> result = link == nullptr ? as<resultType>() : link->as<resultType>();
+      return result.value_or(defaultDoubles);
     }
     INLINE const std::vector<std::string> &asStrings(void) const
     {
-      return isType<std::vector<std::string>>() ? std::get<std::vector<std::string>>(value) : defaultVectorString;
+      using resultType = std::vector<std::string>;
+      std::optional<resultType> result = link == nullptr ? as<resultType>() : link->as<resultType>();
+      return result.value_or(defaultStrings);
     }
     INLINE bool isEmpty(void) const
     {
-      return std::holds_alternative<std::monostate>(value);
+      return !isLink() && std::holds_alternative<std::monostate>(value);
+    }
+    INLINE bool isNotEmpty(void) const
+    {
+      return isLink() || !std::holds_alternative<std::monostate>(value);
     }
     template <typename T>
     INLINE bool isType(void) const
     {
-      return !isEmpty() && std::holds_alternative<T>(value);
+      return isNotEmpty() && isLink() ? std::holds_alternative<T>(link->value) : std::holds_alternative<T>(value);
     }
     template <typename T>
     INLINE std::optional<T> as(void) const
     {
-      if (isType<T>())
-        return std::get<T>(value);
+      if (isLink() ? link->isType<T>() : isType<T>())
+        return isLink() ? std::get<T>(link->value) : std::get<T>(value);
       else
         return std::nullopt;
+    }
+    INLINE bool hasDesc(void) const
+    {
+      return !desc.empty();
     }
     INLINE const std::string &getDesc(void) const
     {
@@ -120,6 +146,36 @@ public:
     {
       desc = newDesc;
       _shrink(&desc);
+    }
+    INLINE void delDesc(void)
+    {
+      _clearAndShrink(&desc);
+    }
+    INLINE bool isLink(void) const
+    {
+      return link != nullptr;
+    }
+    INLINE FVVV &getLink(void) const
+    {
+      return *link;
+    }
+    INLINE const std::string &getLinkName(void) const
+    {
+      return linkName;
+    }
+    INLINE void setLink(FVVV *newLink)
+    {
+      link = newLink;
+    }
+    INLINE void setLinkName(const std::string_view &newlinkName)
+    {
+      linkName = newlinkName;
+      _shrink(&linkName);
+    }
+    INLINE void delLink(void)
+    {
+      link = nullptr;
+      _clearAndShrink(&linkName);
     }
     INLINE std::string print(const std::string_view &type = "common") const
     {
@@ -138,13 +194,17 @@ public:
           else
             result += indent + path + std::string(" = {\n");
         }
-        if (node->children.empty())
+        if (node->children.empty() && node->isNotEmpty())
         {
           if (type == std::string_view("min"))
             result += path + std::string("=");
           else
             result += indent + path + std::string(" = ");
-          if (node->isType<std::string>())
+          if (node->isLink())
+          {
+            result += node->getLinkName();
+          }
+          else if (node->isType<std::string>())
           {
             result += std::string("\"");
             std::string index_char, tmpStr = node->as<std::string>().value();
@@ -545,8 +605,8 @@ public:
                           continue;
                         tmpValue = &(*tmpValue)[tmpName[i]];
                       }
-                      if (!(*tmpValue).isEmpty())
-                        (*index_key)[key] = (*tmpValue);
+                      if ((*tmpValue).isNotEmpty())
+                        (*index_key)[key].setLink(tmpValue);
                       else
                       {
                         tmpValue = &targetFvv;
@@ -556,9 +616,10 @@ public:
                             continue;
                           tmpValue = &(*tmpValue)[tmpName[i]];
                         }
-                        if (!(*tmpValue).isEmpty())
-                          (*index_key)[key] = (*tmpValue);
+                        if ((*tmpValue).isNotEmpty())
+                          (*index_key)[key].setLink(tmpValue);
                       }
+                      (*index_key)[key].setLinkName(value);
                     }
                   }
                   (*index_key)[key].setDesc(desc);
@@ -671,6 +732,20 @@ public:
     }
     return hasDigit;
   }
+
+private:
+  template <typename T>
+  static INLINE void _shrink(T *container)
+  {
+    if (container)
+      container->shrink_to_fit();
+  }
+  template <typename T, typename... Args>
+  static INLINE void _shrink(T *container, Args... args)
+  {
+    _shrink(container);
+    _shrink(args...);
+  }
   template <typename T>
   static INLINE void _clearAndShrink(T *container)
   {
@@ -685,20 +760,6 @@ public:
   {
     _clearAndShrink(container);
     _clearAndShrink(args...);
-  }
-
-private:
-  template <typename T>
-  static INLINE void _shrink(T *container)
-  {
-    if (container)
-      container->shrink_to_fit();
-  }
-  template <typename T, typename... Args>
-  static INLINE void _shrink(T *container, Args... args)
-  {
-    _shrink(container);
-    _shrink(args...);
   }
 };
 
