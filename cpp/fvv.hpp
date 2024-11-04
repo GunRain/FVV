@@ -68,49 +68,49 @@ public:
     INLINE bool asBool(void) const
     {
       using resultType = bool;
-      std::optional<resultType> result = link == nullptr ? as<resultType>() : link->as<resultType>();
+      std::optional<resultType> result = isLink() ? link->as<resultType>() : as<resultType>();
       return result.value_or(defaultBool);
     }
     INLINE int asInt(void) const
     {
       using resultType = int;
-      std::optional<resultType> result = link == nullptr ? as<resultType>() : link->as<resultType>();
+      std::optional<resultType> result = isLink() ? link->as<resultType>() : as<resultType>();
       return result.value_or(defaultInt);
     }
     INLINE double asDouble(void) const
     {
       using resultType = double;
-      std::optional<resultType> result = link == nullptr ? as<resultType>() : link->as<resultType>();
+      std::optional<resultType> result = isLink() ? link->as<resultType>() : as<resultType>();
       return result.value_or(defaultDouble);
     }
     INLINE const std::string &asString(void) const
     {
       using resultType = std::string;
-      std::optional<resultType> result = link == nullptr ? as<resultType>() : link->as<resultType>();
+      std::optional<resultType> result = isLink() ? link->as<resultType>() : as<resultType>();
       return result.value_or(defaultString);
     }
     INLINE const std::vector<bool> &asBools(void) const
     {
       using resultType = std::vector<bool>;
-      std::optional<resultType> result = link == nullptr ? as<resultType>() : link->as<resultType>();
+      std::optional<resultType> result = isLink() ? link->as<resultType>() : as<resultType>();
       return result.value_or(defaultBools);
     }
     INLINE const std::vector<int> &asInts(void) const
     {
       using resultType = std::vector<int>;
-      std::optional<resultType> result = link == nullptr ? as<resultType>() : link->as<resultType>();
+      std::optional<resultType> result = isLink() ? link->as<resultType>() : as<resultType>();
       return result.value_or(defaultInts);
     }
     INLINE const std::vector<double> &asDoubles(void) const
     {
       using resultType = std::vector<double>;
-      std::optional<resultType> result = link == nullptr ? as<resultType>() : link->as<resultType>();
+      std::optional<resultType> result = isLink() ? link->as<resultType>() : as<resultType>();
       return result.value_or(defaultDoubles);
     }
     INLINE const std::vector<std::string> &asStrings(void) const
     {
       using resultType = std::vector<std::string>;
-      std::optional<resultType> result = link == nullptr ? as<resultType>() : link->as<resultType>();
+      std::optional<resultType> result = isLink() ? link->as<resultType>() : as<resultType>();
       return result.value_or(defaultStrings);
     }
     INLINE bool isEmpty(void) const
