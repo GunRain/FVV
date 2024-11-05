@@ -35,33 +35,38 @@ class FVV
 #define NOINLINE __attribute__((noinline))
 #endif
 
+  using str = std::string;
+  using strv = std::string_view;
+  template <typename T>
+  using vec = std::vector<T>;
+
 public:
   static INLINE constexpr const bool defaultBool = false;
   static INLINE constexpr const int defaultInt = 0;
   static INLINE constexpr const double defaultDouble = 0.0;
-  static INLINE const std::string defaultString = "";
-  static INLINE const std::vector<bool> defaultBools = {};
-  static INLINE const std::vector<int> defaultInts = {};
-  static INLINE const std::vector<double> defaultDoubles = {};
-  static INLINE const std::vector<std::string> defaultStrings = {};
+  static INLINE const str defaultString = "";
+  static INLINE const vec<bool> defaultBools = {};
+  static INLINE const vec<int> defaultInts = {};
+  static INLINE const vec<double> defaultDoubles = {};
+  static INLINE const vec<str> defaultStrings = {};
   struct FVVV
   {
-    using FVVVT = std::variant<std::monostate, bool, int, double, std::string, std::vector<bool>, std::vector<int>, std::vector<double>, std::vector<std::string>>;
+    using FVVVT = std::variant<std::monostate, bool, int, double, str, vec<bool>, vec<int>, vec<double>, vec<str>>;
     FVVVT value;
-    std::map<std::string, FVVV> children = {};
-    std::string desc = "";
+    std::map<str, FVVV> children = {};
+    str desc = "";
     FVVV *link = nullptr;
-    std::string linkName = "";
+    str linkName = "";
     INLINE FVVV(void) = default;
     INLINE FVVV(bool v) : value(v) {}
     INLINE FVVV(int v) : value(v) {}
     INLINE FVVV(double v) : value(v) {}
-    INLINE FVVV(const std::string_view &v) : value(v.data()) {}
-    INLINE FVVV(const std::vector<bool> &v) : value(v) {}
-    INLINE FVVV(const std::vector<int> &v) : value(v) {}
-    INLINE FVVV(const std::vector<double> &v) : value(v) {}
-    INLINE FVVV(const std::vector<std::string> &v) : value(v) {}
-    INLINE FVVV &operator[](const std::string_view &key)
+    INLINE FVVV(const strv &v) : value(v.data()) {}
+    INLINE FVVV(const vec<bool> &v) : value(v) {}
+    INLINE FVVV(const vec<int> &v) : value(v) {}
+    INLINE FVVV(const vec<double> &v) : value(v) {}
+    INLINE FVVV(const vec<str> &v) : value(v) {}
+    INLINE FVVV &operator[](const strv &key)
     {
       return children[key.data()];
     }
@@ -83,33 +88,33 @@ public:
       std::optional<resultType> result = isLink() ? link->as<resultType>() : as<resultType>();
       return result.value_or(defaultDouble);
     }
-    INLINE const std::string &asString(void) const
+    INLINE const str &asString(void) const
     {
-      using resultType = std::string;
+      using resultType = str;
       std::optional<resultType> result = isLink() ? link->as<resultType>() : as<resultType>();
       return result.value_or(defaultString);
     }
-    INLINE const std::vector<bool> &asBools(void) const
+    INLINE const vec<bool> &asBools(void) const
     {
-      using resultType = std::vector<bool>;
+      using resultType = vec<bool>;
       std::optional<resultType> result = isLink() ? link->as<resultType>() : as<resultType>();
       return result.value_or(defaultBools);
     }
-    INLINE const std::vector<int> &asInts(void) const
+    INLINE const vec<int> &asInts(void) const
     {
-      using resultType = std::vector<int>;
+      using resultType = vec<int>;
       std::optional<resultType> result = isLink() ? link->as<resultType>() : as<resultType>();
       return result.value_or(defaultInts);
     }
-    INLINE const std::vector<double> &asDoubles(void) const
+    INLINE const vec<double> &asDoubles(void) const
     {
-      using resultType = std::vector<double>;
+      using resultType = vec<double>;
       std::optional<resultType> result = isLink() ? link->as<resultType>() : as<resultType>();
       return result.value_or(defaultDoubles);
     }
-    INLINE const std::vector<std::string> &asStrings(void) const
+    INLINE const vec<str> &asStrings(void) const
     {
-      using resultType = std::vector<std::string>;
+      using resultType = vec<str>;
       std::optional<resultType> result = isLink() ? link->as<resultType>() : as<resultType>();
       return result.value_or(defaultStrings);
     }
@@ -138,11 +143,11 @@ public:
     {
       return !desc.empty();
     }
-    INLINE const std::string &getDesc(void) const
+    INLINE const str &getDesc(void) const
     {
       return desc;
     }
-    INLINE void setDesc(const std::string_view &newDesc)
+    INLINE void setDesc(const strv &newDesc)
     {
       desc = newDesc;
       _shrink(&desc);
@@ -159,7 +164,7 @@ public:
     {
       return *link;
     }
-    INLINE const std::string &getLinkName(void) const
+    INLINE const str &getLinkName(void) const
     {
       return linkName;
     }
@@ -167,7 +172,7 @@ public:
     {
       link = newLink;
     }
-    INLINE void setLinkName(const std::string_view &newlinkName)
+    INLINE void setLinkName(const strv &newlinkName)
     {
       linkName = newlinkName;
       _shrink(&linkName);
@@ -183,37 +188,37 @@ public:
       link = nullptr;
       _clearAndShrink(&linkName);
     }
-    INLINE std::string print(const std::string_view &type = "common") const
+    INLINE str print(const strv &type = "common") const
     {
-      std::string result;
-      result += std::string("{");
-      if (type != std::string_view("min"))
-        result += std::string("\n");
-      std::function<void(const std::string &, const FVVV *, int)> printFunc;
-      printFunc = [&](const std::string &path, const FVVV *node, int indentLevel)
+      str result;
+      result += str("{");
+      if (type != strv("min"))
+        result += str("\n");
+      std::function<void(const str &, const FVVV *, int)> printFunc;
+      printFunc = [&](const str &path, const FVVV *node, int indentLevel)
       {
-        std::string indent(indentLevel * 2, ' ');
+        str indent(indentLevel * 2, ' ');
         if (!node->children.empty() && !path.empty())
         {
-          if (type == std::string_view("min"))
-            result += path + std::string("={");
+          if (type == strv("min"))
+            result += path + str("={");
           else
-            result += indent + path + std::string(" = {\n");
+            result += indent + path + str(" = {\n");
         }
         if (node->children.empty() && node->isNotEmpty())
         {
-          if (type == std::string_view("min"))
-            result += path + std::string("=");
+          if (type == strv("min"))
+            result += path + str("=");
           else
-            result += indent + path + std::string(" = ");
+            result += indent + path + str(" = ");
           if (node->isLink())
           {
             result += node->getLinkName();
           }
-          else if (node->isType<std::string>())
+          else if (node->isType<str>())
           {
-            result += std::string("\"");
-            std::string index_char, tmpStr = node->as<std::string>().value();
+            result += str("\"");
+            str index_char, tmpStr = node->as<str>().value();
             for (size_t i = 0; i < tmpStr.size();)
             {
               unsigned char c = tmpStr[i];
@@ -229,27 +234,27 @@ public:
               else
                 char_size = 1;
               index_char = tmpStr.substr(i, char_size);
-              if (index_char == std::string("\""))
-                result += std::string("\\");
+              if (index_char == str("\""))
+                result += str("\\");
               result += index_char;
               i += char_size;
             }
-            result += std::string("\"");
+            result += str("\"");
           }
           else if (node->isType<bool>())
-            result += node->as<bool>().value() ? std::string("true") : std::string("false");
+            result += node->as<bool>().value() ? str("true") : str("false");
           else if (node->isType<int>())
             result += std::to_string(node->as<int>().value());
           else if (node->isType<double>())
             result += std::to_string(node->as<double>().value());
-          else if (node->isType<std::vector<std::string>>())
+          else if (node->isType<vec<str>>())
           {
-            result += std::string("[");
-            const std::vector<std::string> tmp = node->as<std::vector<std::string>>().value();
-            for (const std::string &value : tmp)
+            result += str("[");
+            const vec<str> tmp = node->as<vec<str>>().value();
+            for (const str &value : tmp)
             {
-              result += std::string("\"");
-              std::string index_char;
+              result += str("\"");
+              str index_char;
               for (size_t i = 0; i < value.size();)
               {
                 unsigned char c = value[i];
@@ -265,69 +270,69 @@ public:
                 else
                   char_size = 1;
                 index_char = value.substr(i, char_size);
-                if (index_char == std::string("\""))
-                  result += std::string("\\");
+                if (index_char == str("\""))
+                  result += str("\\");
                 result += index_char;
                 i += char_size;
               }
-              result += std::string("\",");
-              if (type != std::string_view("min"))
-                result += std::string(" ");
+              result += str("\",");
+              if (type != strv("min"))
+                result += str(" ");
             }
-            if (type != std::string_view("min"))
+            if (type != strv("min"))
               result.pop_back();
             result.pop_back();
-            result += std::string("]");
+            result += str("]");
           }
-          else if (node->isType<std::vector<bool>>())
+          else if (node->isType<vec<bool>>())
           {
-            result += std::string("[");
-            const std::vector<bool> tmp = node->as<std::vector<bool>>().value();
+            result += str("[");
+            const vec<bool> tmp = node->as<vec<bool>>().value();
             for (const int &value : tmp)
             {
-              result += value ? std::string("true") : std::string("false") + std::string(",");
-              if (type != std::string_view("min"))
-                result += std::string(" ");
+              result += value ? str("true") : str("false") + str(",");
+              if (type != strv("min"))
+                result += str(" ");
             }
-            if (type != std::string_view("min"))
+            if (type != strv("min"))
               result.pop_back();
             result.pop_back();
-            result += std::string("]");
+            result += str("]");
           }
-          else if (node->isType<std::vector<int>>())
+          else if (node->isType<vec<int>>())
           {
-            result += std::string("[");
-            const std::vector<int> tmp = node->as<std::vector<int>>().value();
+            result += str("[");
+            const vec<int> tmp = node->as<vec<int>>().value();
             for (const int &value : tmp)
             {
-              result += std::to_string(value) + std::string(",");
-              if (type != std::string_view("min"))
-                result += std::string(" ");
+              result += std::to_string(value) + str(",");
+              if (type != strv("min"))
+                result += str(" ");
             }
-            if (type != std::string_view("min"))
+            if (type != strv("min"))
               result.pop_back();
             result.pop_back();
-            result += std::string("]");
+            result += str("]");
           }
-          else if (node->isType<std::vector<double>>())
+          else if (node->isType<vec<double>>())
           {
-            result += std::string("[");
-            const std::vector<double> tmp = node->as<std::vector<double>>().value();
+            result += str("[");
+            const vec<double> tmp = node->as<vec<double>>().value();
             for (const double &value : tmp)
             {
-              result += std::to_string(value) + std::string(",");
-              if (type != std::string_view("min"))
-                result += std::string(" ");
+              result += std::to_string(value) + str(",");
+              if (type != strv("min"))
+                result += str(" ");
             }
-            if (type != std::string_view("min"))
+            if (type != strv("min"))
               result.pop_back();
             result.pop_back();
-            result += std::string("]");
+            result += str("]");
           }
-          if (!node->getDesc().empty() && type != std::string_view("min") && type != std::string_view("nodesc"))
+          if (!node->getDesc().empty() && type != strv("min") && type != strv("nodesc"))
           {
-            result += std::string(" <");
-            std::string index_char, tmpStr = node->getDesc();
+            result += str(" <");
+            str index_char, tmpStr = node->getDesc();
             for (size_t i = 0; i < tmpStr.size();)
             {
               unsigned char c = tmpStr[i];
@@ -343,30 +348,30 @@ public:
               else
                 char_size = 1;
               index_char = tmpStr.substr(i, char_size);
-              if (index_char == std::string(">"))
-                result += std::string("\\");
+              if (index_char == str(">"))
+                result += str("\\");
               result += index_char;
               i += char_size;
             }
-            result += std::string(">");
+            result += str(">");
           }
-          result += std::string(";");
-          if (type != std::string_view("min"))
-            result += std::string("\n");
+          result += str(";");
+          if (type != strv("min"))
+            result += str("\n");
         }
         else
           for (const auto &[key, child] : node->children)
             printFunc(key, &child, indentLevel + 1);
         if (!node->children.empty() && !path.empty())
         {
-          if (type == std::string_view("min"))
-            result += std::string("}");
+          if (type == strv("min"))
+            result += str("}");
           else
-            result += indent + std::string("}");
-          if (!node->getDesc().empty() && type != std::string_view("min") && type != std::string_view("nodesc"))
+            result += indent + str("}");
+          if (!node->getDesc().empty() && type != strv("min") && type != strv("nodesc"))
           {
-            result += std::string(" <");
-            std::string index_char, tmpStr = node->getDesc();
+            result += str(" <");
+            str index_char, tmpStr = node->getDesc();
             for (size_t i = 0; i < tmpStr.size();)
             {
               unsigned char c = tmpStr[i];
@@ -382,20 +387,20 @@ public:
               else
                 char_size = 1;
               index_char = tmpStr.substr(i, char_size);
-              if (index_char == std::string(">"))
-                result += std::string("\\");
+              if (index_char == str(">"))
+                result += str("\\");
               result += index_char;
               i += char_size;
             }
-            result += std::string(">");
+            result += str(">");
           }
-          result += std::string(";");
-          if (type != std::string_view("min"))
-            result += std::string("\n");
+          result += str(";");
+          if (type != strv("min"))
+            result += str("\n");
         }
       };
-      printFunc(std::string(""), this, 0);
-      result += std::string("}");
+      printFunc(str(""), this, 0);
+      result += str("}");
       _shrink(&result);
       return result;
     }
@@ -403,22 +408,22 @@ public:
   class Parser
   {
   public:
-    static INLINE void ReadString(std::string txt, FVVV &targetFvv)
+    static INLINE void ReadString(str txt, FVVV &targetFvv)
     {
       if (txt.size() >= 3 &&
           static_cast<unsigned char>(txt[0]) == _bom[0] &&
           static_cast<unsigned char>(txt[1]) == _bom[1] &&
           static_cast<unsigned char>(txt[2]) == _bom[2])
         txt = txt.substr(3);
-      size_t start = std::string::npos;
-      size_t end = std::string::npos;
+      size_t start = str::npos;
+      size_t end = str::npos;
       for (size_t i = 0; i < txt.size(); ++i)
         if (txt[i] == '{' && (i == 0 || txt[i - 1] != '\\'))
         {
           start = i;
           break;
         }
-      if (start == std::string::npos)
+      if (start == str::npos)
         return;
       for (size_t i = txt.size(); i-- > 0;)
         if (txt[i] == '}' && (i == 0 || txt[i - 1] != '\\'))
@@ -426,17 +431,17 @@ public:
           end = i;
           break;
         }
-      if (end == std::string::npos || end <= start)
+      if (end == str::npos || end <= start)
         return;
       txt = txt.substr(start + 1, end - start - 1);
       start = txt.find_first_not_of(" \t\r\n");
-      txt = start == std::string::npos ? "" : txt.substr(start);
+      txt = start == str::npos ? "" : txt.substr(start);
       if (txt.empty())
         return;
       txt.shrink_to_fit();
-      std::string desc, index_char, index_desc, value, valueName;
-      std::vector<std::string> groupNames, valueNames, values;
-      std::vector<std::vector<std::string>> lastGroupNames;
+      str desc, index_char, index_desc, value, valueName;
+      vec<str> groupNames, valueNames, values;
+      vec<vec<str>> lastGroupNames;
       bool inDesc = false, inStr = false, inValue = false, isList, isRealChar, isStr;
       uint64_t inGroup = 0;
       for (size_t i = 0; i < txt.size();)
@@ -459,9 +464,9 @@ public:
         isRealChar = i >= char_size + 1 ? (txt[i - char_size - 1] != '\\' ? true : false) : true;
         if (inDesc)
         {
-          if (index_char != std::string(">") || !isRealChar)
+          if (index_char != str(">") || !isRealChar)
           {
-            if (index_char == std::string(">") && !isRealChar)
+            if (index_char == str(">") && !isRealChar)
             {
               index_desc.pop_back();
               _shrink(&index_desc);
@@ -470,7 +475,7 @@ public:
               index_desc += index_char;
             continue;
           }
-          else if (index_char == std::string(">") && isRealChar)
+          else if (index_char == str(">") && isRealChar)
           {
             desc = index_desc;
             _clearAndShrink(&index_desc);
@@ -481,9 +486,9 @@ public:
         }
         else
         {
-          if (!inStr && (index_char == std::string(" ") || index_char == std::string("\t") || index_char == std::string("\r") || index_char == std::string("\n")))
+          if (!inStr && (index_char == str(" ") || index_char == str("\t") || index_char == str("\r") || index_char == str("\n")))
             continue;
-          else if (index_char == std::string("<"))
+          else if (index_char == str("<"))
           {
             inDesc = true;
             continue;
@@ -493,7 +498,7 @@ public:
         {
           if (inStr)
           {
-            if (index_char == std::string("\""))
+            if (index_char == str("\""))
             {
               if (isRealChar)
               {
@@ -516,19 +521,19 @@ public:
           }
           else
           {
-            if (index_char == std::string("\""))
+            if (index_char == str("\""))
             {
               inStr = isStr = true;
               continue;
             }
-            else if (index_char == std::string("["))
+            else if (index_char == str("["))
             {
               isList = true;
               continue;
             }
-            else if (index_char == std::string(",") || index_char == std::string("]"))
+            else if (index_char == str(",") || index_char == str("]"))
             {
-              if (index_char == std::string("]"))
+              if (index_char == str("]"))
               {
                 size_t j = 1;
                 while (txt[i - char_size - j] == ' ' || txt[i - char_size - j] == '\t' || txt[i - char_size - j] == '\r' || txt[i - char_size - j] == '\n')
@@ -540,7 +545,7 @@ public:
               _clearAndShrink(&value);
               continue;
             }
-            else if (index_char == std::string("{"))
+            else if (index_char == str("{"))
             {
               groupNames.insert(groupNames.end(), valueNames.begin(), valueNames.end());
               lastGroupNames.push_back(valueNames);
@@ -549,13 +554,13 @@ public:
               inValue = false;
               continue;
             }
-            else if (index_char == std::string(";"))
+            else if (index_char == str(";"))
             {
               for (size_t i = 0; i < groupNames.size(); ++i)
                 index_key = &(*index_key)[groupNames[i]];
               for (size_t i = 0; i < valueNames.size(); ++i)
               {
-                const std::string &key = valueNames[i];
+                const str &key = valueNames[i];
                 if (i == valueNames.size() - 1)
                 {
                   if (isList)
@@ -564,27 +569,27 @@ public:
                       (*index_key)[key] = FVVV(values);
                     else
                     {
-                      std::string tmpStr = values.front();
-                      if (tmpStr == std::string("true") || tmpStr == std::string("false"))
+                      str tmpStr = values.front();
+                      if (tmpStr == str("true") || tmpStr == str("false"))
                       {
-                        std::vector<bool> tmp;
+                        vec<bool> tmp;
                         tmp.reserve(values.size());
-                        std::transform(values.begin(), values.end(), std::back_inserter(tmp), [](const std::string_view &str)
-                                       { return str == std::string_view("true"); });
+                        std::transform(values.begin(), values.end(), std::back_inserter(tmp), [](const strv &s)
+                                       { return s == strv("true"); });
                         (*index_key)[key] = FVVV(tmp);
                       }
                       else if (_isInt(tmpStr))
                       {
-                        std::vector<int> tmp;
-                        for (const std::string &str : values)
+                        vec<int> tmp;
+                        for (const str &str : values)
                           if (_isInt(str))
                             tmp.push_back(std::stoi(str));
                         (*index_key)[key] = FVVV(tmp);
                       }
                       else if (_isDouble(tmpStr))
                       {
-                        std::vector<double> tmp;
-                        for (const std::string &str : values)
+                        vec<double> tmp;
+                        for (const str &str : values)
                           if (_isDouble(str))
                             tmp.push_back(std::stod(str));
                         (*index_key)[key] = FVVV(tmp);
@@ -595,15 +600,15 @@ public:
                   {
                     if (isStr)
                       (*index_key)[key] = FVVV(value);
-                    else if (value == std::string("true") || value == std::string("false"))
-                      (*index_key)[key] = FVVV(value == std::string("true"));
+                    else if (value == str("true") || value == str("false"))
+                      (*index_key)[key] = FVVV(value == str("true"));
                     else if (_isInt(value))
                       (*index_key)[key] = FVVV(std::stoi(value));
                     else if (_isDouble(value))
                       (*index_key)[key] = FVVV(std::stod(value));
                     else
                     {
-                      std::vector<std::string> tmpName = _split(value, '.');
+                      vec<str> tmpName = _split(value, '.');
                       FVVV *tmpValue = index_key;
                       for (size_t i = 0; i < tmpName.size(); ++i)
                       {
@@ -646,14 +651,14 @@ public:
         }
         else
         {
-          if (index_char == std::string("="))
+          if (index_char == str("="))
           {
             valueNames = _split(valueName, '.');
             _clearAndShrink(&valueName);
             inValue = true;
             continue;
           }
-          else if (index_char == std::string(";") && inGroup > 0)
+          else if (index_char == str(";") && inGroup > 0)
           {
             if (!desc.empty())
               for (size_t i = 0; i < groupNames.size(); ++i)
@@ -673,9 +678,9 @@ public:
             inGroup--;
             continue;
           }
-          else if (index_char == std::string("}") && inGroup == 0)
+          else if (index_char == str("}") && inGroup == 0)
             break;
-          else if (index_char != std::string("}") && index_char != std::string(";"))
+          else if (index_char != str("}") && index_char != str(";"))
           {
             valueName += index_char;
             continue;
@@ -686,45 +691,45 @@ public:
 
   private:
     static INLINE constexpr const unsigned char _bom[] = {0xEF, 0xBB, 0xBF};
-    static INLINE std::vector<std::string> _split(const std::string &path, char delimiter)
+    static INLINE vec<str> _split(const str &path, char delimiter)
     {
-      std::vector<std::string> result;
+      vec<str> result;
       std::stringstream ss(path);
-      std::string item;
+      str item;
       while (std::getline(ss, item, delimiter))
         result.push_back(item);
       return result;
     }
   };
-  static INLINE bool _isInt(const std::string &str)
+  static INLINE bool _isInt(const str &s)
   {
-    if (str.empty())
+    if (s.empty())
       return false;
     size_t start = 0;
-    if (str[0] == '-' || str[0] == '+')
+    if (s[0] == '-' || s[0] == '+')
     {
-      if (str.size() == 1)
+      if (s.size() == 1)
         return false;
       start = 1;
     }
-    return std::all_of(str.begin() + start, str.end(), ::isdigit);
+    return std::all_of(s.begin() + start, s.end(), ::isdigit);
   }
-  static INLINE bool _isDouble(const std::string &str)
+  static INLINE bool _isDouble(const str &s)
   {
-    if (str.empty())
+    if (s.empty())
       return false;
     size_t start = 0;
     bool hasDecimal = false;
     bool hasDigit = false;
-    if (str[0] == '-' || str[0] == '+')
+    if (s[0] == '-' || s[0] == '+')
     {
-      if (str.size() == 1)
+      if (s.size() == 1)
         return false;
       start = 1;
     }
-    for (size_t i = start; i < str.size(); ++i)
+    for (size_t i = start; i < s.size(); ++i)
     {
-      char c = str[i];
+      char c = s[i];
       if (std::isdigit(c))
         hasDigit = true;
       else if (c == '.')
