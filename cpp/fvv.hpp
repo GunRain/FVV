@@ -177,6 +177,12 @@ public:
       link = nullptr;
       _clearAndShrink(&linkName);
     }
+    INLINE void link2Real(void)
+    {
+      value = link->value;
+      link = nullptr;
+      _clearAndShrink(&linkName);
+    }
     INLINE std::string print(const std::string_view &type = "common") const
     {
       std::string result;
@@ -318,7 +324,7 @@ public:
             result.pop_back();
             result += std::string("]");
           }
-          if (!node->getDesc().empty() && type != std::string_view("min"))
+          if (!node->getDesc().empty() && type != std::string_view("min") && type != std::string_view("nodesc"))
           {
             result += std::string(" <");
             std::string index_char, tmpStr = node->getDesc();
@@ -357,7 +363,7 @@ public:
             result += std::string("}");
           else
             result += indent + std::string("}");
-          if (!node->getDesc().empty() && type != std::string_view("min"))
+          if (!node->getDesc().empty() && type != std::string_view("min") && type != std::string_view("nodesc"))
           {
             result += std::string(" <");
             std::string index_char, tmpStr = node->getDesc();
