@@ -1,3 +1,3 @@
-package zip.latestfile
+package zip.latestfile.fvv
 
 class FVV {}
