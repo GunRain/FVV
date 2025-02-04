@@ -33,14 +33,14 @@ class FVV
   using vec = std::vector<T>;
 
 public:
-  static FVV_INLINE constexpr const bool defaultBool = false;
-  static FVV_INLINE constexpr const int defaultInt = 0;
-  static FVV_INLINE constexpr const double defaultDouble = 0.0;
-  static FVV_INLINE const str defaultString = "";
-  static FVV_INLINE const vec<bool> defaultBools = {};
-  static FVV_INLINE const vec<int> defaultInts = {};
-  static FVV_INLINE const vec<double> defaultDoubles = {};
-  static FVV_INLINE const vec<str> defaultStrings = {};
+  static constexpr const bool defaultBool = false;
+  static constexpr const int defaultInt = 0;
+  static constexpr const double defaultDouble = 0.0;
+  static constexpr const str defaultString = "";
+  static constexpr const vec<bool> defaultBools = {};
+  static constexpr const vec<int> defaultInts = {};
+  static constexpr const vec<double> defaultDoubles = {};
+  static constexpr const vec<str> defaultStrings = {};
   struct FVVV
   {
     using FVVVT = std::variant<std::monostate, bool, int, double, str,
@@ -642,7 +642,7 @@ public:
     }
 
   private:
-    static FVV_INLINE constexpr const unsigned char _bom[] = {0xEF, 0xBB, 0xBF};
+    static constexpr const unsigned char _bom[] = {0xEF, 0xBB, 0xBF};
     static FVV_INLINE vec<str> _split(const str &path, char delimiter)
     {
       vec<str> result;
