@@ -4,7 +4,7 @@
 This page is written in Chinese, please use the translation if you do not understand.
 
 
-闲余时间搓出来的文本格式，目前仅支持`C++`(最低支持C++`17`)，以后可能会支持`Go`、`Dart`、`Kotlin`等常用语言，反正目前是还没有写的。
+闲余时间搓出来的文本格式，目前仅支持`C++`(最低支持C++`20`)，以后可能会支持`Go`、`Dart`、`Kotlin`等常用语言，反正目前是还没有写的。
 
 不会支持的语言: `Python`、`Java`、`Rust`等
 
