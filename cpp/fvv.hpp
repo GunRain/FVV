@@ -121,11 +121,11 @@ public:
     }
     FVV_INLINE bool isEmpty(void) const
     {
-      return !isLink() && std::holds_alternative<std::monostate>(value);
+      return !isLink() && std::holds_alternative<std::monostate>(value) && children.empty();
     }
     FVV_INLINE bool isNotEmpty(void) const
     {
-      return isLink() || !std::holds_alternative<std::monostate>(value);
+      return isLink() || !std::holds_alternative<std::monostate>(value) || !children.empty();
     }
     template <typename T>
     FVV_INLINE bool isType(void) const
