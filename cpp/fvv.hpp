@@ -222,9 +222,14 @@ public:
           else if (node->isType<vec<str>>())
           {
             result += str("[");
+            str vecIndent((indentLevel + 1) * 2, ' ');
+            if (type == strv("bigvec"))
+              result += str("\n");
             const vec<str> tmp = node->as<vec<str>>().value();
             for (const str &value : tmp)
             {
+              if (type == strv("bigvec"))
+                result += vecIndent;
               result += str("\"");
               _utf8ForEach(
                   value, value.size(),
@@ -238,57 +243,100 @@ public:
                     return false;
                   });
               result += str("\",");
-              if (type != strv("min"))
+              if (type == strv("bigvec"))
+                result += str("\n");
+              else if (type != strv("min"))
                 result += str(" ");
             }
-            if (type != strv("min"))
+            if (type != strv("bigvec"))
+            {
               result.pop_back();
-            result.pop_back();
+              if (type != strv("min"))
+                result.pop_back();
+            }
+            else if (type == strv("bigvec"))
+              result += indent;
             result += str("]");
           }
           else if (node->isType<vec<bool>>())
           {
             result += str("[");
+            str vecIndent((indentLevel + 1) * 2, ' ');
+            if (type == strv("bigvec"))
+              result += str("\n");
             const vec<bool> tmp = node->as<vec<bool>>().value();
             for (const int &value : tmp)
             {
+              if (type == strv("bigvec"))
+                result += vecIndent;
               result += value ? str("true") : str("false") + str(",");
-              if (type != strv("min"))
+              if (type == strv("bigvec"))
+                result += str("\n");
+              else if (type != strv("min"))
                 result += str(" ");
             }
-            if (type != strv("min"))
+            if (type != strv("bigvec"))
+            {
               result.pop_back();
-            result.pop_back();
+              if (type != strv("min"))
+                result.pop_back();
+            }
+            else if (type == strv("bigvec"))
+              result += indent;
             result += str("]");
           }
           else if (node->isType<vec<int>>())
           {
             result += str("[");
+            str vecIndent((indentLevel + 1) * 2, ' ');
+            if (type == strv("bigvec"))
+              result += str("\n");
             const vec<int> tmp = node->as<vec<int>>().value();
             for (const int &value : tmp)
             {
+              if (type == strv("bigvec"))
+                result += vecIndent;
               result += std::to_string(value) + str(",");
-              if (type != strv("min"))
+              if (type == strv("bigvec"))
+                result += str("\n");
+              else if (type != strv("min"))
                 result += str(" ");
             }
-            if (type != strv("min"))
+            if (type != strv("bigvec"))
+            {
               result.pop_back();
-            result.pop_back();
+              if (type != strv("min"))
+                result.pop_back();
+            }
+            else if (type == strv("bigvec"))
+              result += indent;
             result += str("]");
           }
           else if (node->isType<vec<double>>())
           {
             result += str("[");
+            str vecIndent((indentLevel + 1) * 2, ' ');
+            if (type == strv("bigvec"))
+              result += str("\n");
             const vec<double> tmp = node->as<vec<double>>().value();
             for (const double &value : tmp)
             {
+              if (type == strv("bigvec"))
+                result += vecIndent;
               result += std::to_string(value) + str(",");
-              if (type != strv("min"))
+              if (type == strv("bigvec"))
+                result += str("\n");
+              else if (type != strv("min"))
                 result += str(" ");
             }
-            if (type != strv("min"))
+            if (type != strv("bigvec"))
+            {
               result.pop_back();
-            result.pop_back();
+              if (type != strv("min"))
+                result.pop_back();
+            }
+            else if (type == strv("bigvec"))
+              result += indent;
             result += str("]");
           }
           if (!node->getDesc().empty() && type != strv("min") &&
