@@ -29,4 +29,12 @@ class FVV {
     }
     return result;
   }
+
+  static String string2Fvv(String name, String value) {
+    return '{ $name = "$value"; }';
+  }
+
+  static String bool2Fvv(String name, bool value) {
+    return '{ $name = $value; }';
+  }
 }
