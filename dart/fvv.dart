@@ -34,6 +34,14 @@ class FVV {
     return '{ $name = "$value"; }';
   }
 
+  static String double2Fvv(String name, double value) {
+    return '{ $name = $value; }';
+  }
+
+  static String int2Fvv(String name, int value) {
+    return '{ $name = $value; }';
+  }
+
   static String bool2Fvv(String name, bool value) {
     return '{ $name = $value; }';
   }
