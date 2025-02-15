@@ -30,6 +30,10 @@ class FVV {
     return result;
   }
 
+  static String listString2Fvv(String name, List<String> value) {
+    return '{ $name = [${value.map((v) => '"$v"').join(', ')}]; }';
+  }
+
   static String string2Fvv(String name, String value) {
     return '{ $name = "$value"; }';
   }
