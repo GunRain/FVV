@@ -149,7 +149,7 @@ public:
       _shrink(&desc);
     }
     FVV_INLINE void delDesc(void) { _clearAndShrink(&desc); }
-    FVV_INLINE bool isLink(void) const { return link != nullptr; }
+    FVV_INLINE bool isLink(void) const { return link; }
     FVV_INLINE FVVV &getLink(void) const { return *link; }
     FVV_INLINE const str &getLinkName(void) const { return linkName; }
     FVV_INLINE void setLink(FVVV *newLink) { link = newLink; }
