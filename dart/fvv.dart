@@ -1,5 +1,8 @@
 class FVV {
-  static String mapListString2FvvGroup(String name, Map<String, List<String>> input) {
+  static String mapListString2FvvGroup(
+    String name,
+    Map<String, List<String>> input,
+  ) {
     String result = '{\n  $name = {\n';
     input.forEach((k, l) {
       result += '    $k = [\n';
@@ -12,18 +15,32 @@ class FVV {
     return result;
   }
 
-  static Map<String, List<String>> fvvGroup2MapListString(String name, String input) {
-    RegExp regExp = RegExp(r'\b' + RegExp.escape(name) + r'\s*=\s*\{(.*?)\};', dotAll: true);
+  static Map<String, List<String>> fvvGroup2MapListString(
+    String name,
+    String input,
+  ) {
+    RegExp regExp = RegExp(
+      r'\b' + RegExp.escape(name) + r'\s*=\s*\{(.*?)\};',
+      dotAll: true,
+    );
     Match? match = regExp.firstMatch(input);
     Map<String, List<String>> result = {};
     if (match != null) {
       String valueContent = match.group(1) ?? '';
-      RegExp keyValueRegExp = RegExp(r'(\w+)\s*=\s*\[\s*(.*?)\s*\];', dotAll: true);
+      RegExp keyValueRegExp = RegExp(
+        r'(\w+)\s*=\s*\[\s*(.*?)\s*\];',
+        dotAll: true,
+      );
       Iterable<Match> keyMatches = keyValueRegExp.allMatches(valueContent);
       for (var keyMatch in keyMatches) {
         String key = keyMatch.group(1) ?? '';
         String valuesString = keyMatch.group(2) ?? '';
-        List<String> values = valuesString.split(',').map((e) => e.trim().replaceAll('"', '')).where((e) => e.isNotEmpty).toList();
+        List<String> values =
+            valuesString
+                .split(',')
+                .map((e) => e.trim().replaceAll('"', ''))
+                .where((e) => e.isNotEmpty)
+                .toList();
         result[key] = values;
       }
     }
