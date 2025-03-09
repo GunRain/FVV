@@ -34,11 +34,11 @@ class FVV {
   static constexpr const bool defaultBool = false;
   static constexpr const int defaultInt = 0;
   static constexpr const double defaultDouble = 0.0;
-  static constexpr const str defaultString = "";
-  static constexpr const vec<bool> defaultBools = {};
-  static constexpr const vec<int> defaultInts = {};
-  static constexpr const vec<double> defaultDoubles = {};
-  static constexpr const vec<str> defaultStrings = {};
+  static const str defaultString;
+  static const vec<bool> defaultBools;
+  static const vec<int> defaultInts;
+  static const vec<double> defaultDoubles;
+  static const vec<str> defaultStrings;
   struct FVVV {
     using FVVVT = std::variant<std::monostate, bool, int, double, str, vec<bool>, vec<int>, vec<double>, vec<str>>;
     FVVVT value;
@@ -139,195 +139,195 @@ class FVV {
     }
     FVV_INLINE str print(const strv& type = "common") const {
       str result;
-      result += str("{");
-      if (type != strv("min"))
-        result += str("\n");
-      std::function<void(const str&, const FVVV*, int)> printFunc;
-      printFunc = [&](const str& path, const FVVV* node, int indentLevel) {
+      std::function<void(const str&, const FVVV*, size_t)> printFunc;
+      printFunc = [&](const str& path, const FVVV* node, size_t indentLevel) {
         str indent(indentLevel * 2, ' ');
         if (!node->children.empty() && !path.empty()) {
-          if (type == strv("min"))
-            result += path + str("={");
+          if (type == "min")
+            result += path + "={";
           else
-            result += indent + path + str(" = {\n");
+            result += indent + path + " = {\n";
         }
         if (node->children.empty() && node->isNotEmpty()) {
-          if (type == strv("min"))
-            result += path + str("=");
+          if (type == "min")
+            result += path + '=';
           else
-            result += indent + path + str(" = ");
+            result += indent + path + " = ";
           if (node->isLink()) {
             result += node->getLinkName();
           }
           else if (node->isType<str>()) {
-            result += str("\"");
+            result += '"';
             str tmpStr = node->as<str>().value();
             _utf8ForEach(tmpStr, tmpStr.size(),
                          [&result]([[maybe_unused]] const size_t& index, const strv& index_char,
                                    [[maybe_unused]] const uint8_t& char_size) -> bool {
-                           if (index_char == str("\""))
-                             result += str("\\");
+                           if (index_char == "\"")
+                             result += '\\';
                            result += index_char;
                            return false;
                          });
-            result += str("\"");
+            result += '"';
           }
           else if (node->isType<bool>())
-            result += node->as<bool>().value() ? str("true") : str("false");
+            result += node->as<bool>().value() ? "true" : "false";
           else if (node->isType<int>())
             result += std::to_string(node->as<int>().value());
           else if (node->isType<double>())
             result += std::to_string(node->as<double>().value());
           else if (node->isType<vec<str>>()) {
-            result += str("[");
+            result += '[';
             str vecIndent((indentLevel + 1) * 2, ' ');
-            if (type == strv("biglist"))
-              result += str("\n");
+            if (type == "biglist")
+              result += '\n';
             const vec<str> tmp = node->as<vec<str>>().value();
             for (const str& value : tmp) {
-              if (type == strv("biglist"))
+              if (type == "biglist")
                 result += vecIndent;
-              result += str("\"");
+              result += '"';
               _utf8ForEach(value, value.size(),
                            [&result]([[maybe_unused]] const size_t& index, const strv& index_char,
                                      [[maybe_unused]] const uint8_t& char_size) -> bool {
-                             if (index_char == str("\""))
-                               result += str("\\");
+                             if (index_char == "\"")
+                               result += '\\';
                              result += index_char;
                              return false;
                            });
-              result += str("\",");
-              if (type == strv("biglist"))
-                result += str("\n");
-              else if (type != strv("min"))
-                result += str(" ");
+              result += "\",";
+              if (type == "biglist")
+                result += '\n';
+              else if (type != "min")
+                result += ' ';
             }
-            if (type != strv("biglist")) {
+            if (type != "biglist") {
               result.pop_back();
-              if (type != strv("min"))
+              if (type != "min")
                 result.pop_back();
             }
-            else if (type == strv("biglist"))
+            else if (type == "biglist")
               result += indent;
-            result += str("]");
+            result += ']';
           }
           else if (node->isType<vec<bool>>()) {
-            result += str("[");
+            result += '[';
             str vecIndent((indentLevel + 1) * 2, ' ');
-            if (type == strv("biglist"))
-              result += str("\n");
+            if (type == "biglist")
+              result += '\n';
             const vec<bool> tmp = node->as<vec<bool>>().value();
             for (const int& value : tmp) {
-              if (type == strv("biglist"))
+              if (type == "biglist")
                 result += vecIndent;
-              result += value ? str("true") : str("false") + str(",");
-              if (type == strv("biglist"))
-                result += str("\n");
-              else if (type != strv("min"))
-                result += str(" ");
+              result += str(value ? "true" : "false") + ",";
+              if (type == "biglist")
+                result += '\n';
+              else if (type != "min")
+                result += ' ';
             }
-            if (type != strv("biglist")) {
+            if (type != "biglist") {
               result.pop_back();
-              if (type != strv("min"))
+              if (type != "min")
                 result.pop_back();
             }
-            else if (type == strv("biglist"))
+            else if (type == "biglist")
               result += indent;
-            result += str("]");
+            result += ']';
           }
           else if (node->isType<vec<int>>()) {
-            result += str("[");
+            result += '[';
             str vecIndent((indentLevel + 1) * 2, ' ');
-            if (type == strv("biglist"))
-              result += str("\n");
+            if (type == "biglist")
+              result += '\n';
             const vec<int> tmp = node->as<vec<int>>().value();
             for (const int& value : tmp) {
-              if (type == strv("biglist"))
+              if (type == "biglist")
                 result += vecIndent;
-              result += std::to_string(value) + str(",");
-              if (type == strv("biglist"))
-                result += str("\n");
-              else if (type != strv("min"))
-                result += str(" ");
+              result += std::to_string(value) + ',';
+              if (type == "biglist")
+                result += '\n';
+              else if (type != "min")
+                result += ' ';
             }
-            if (type != strv("biglist")) {
+            if (type != "biglist") {
               result.pop_back();
-              if (type != strv("min"))
+              if (type != "min")
                 result.pop_back();
             }
-            else if (type == strv("biglist"))
+            else if (type == "biglist")
               result += indent;
-            result += str("]");
+            result += ']';
           }
           else if (node->isType<vec<double>>()) {
-            result += str("[");
+            result += '[';
             str vecIndent((indentLevel + 1) * 2, ' ');
-            if (type == strv("biglist"))
-              result += str("\n");
+            if (type == "biglist")
+              result += '\n';
             const vec<double> tmp = node->as<vec<double>>().value();
             for (const double& value : tmp) {
-              if (type == strv("biglist"))
+              if (type == "biglist")
                 result += vecIndent;
-              result += std::to_string(value) + str(",");
-              if (type == strv("biglist"))
-                result += str("\n");
-              else if (type != strv("min"))
-                result += str(" ");
+              result += std::to_string(value) + ',';
+              if (type == "biglist")
+                result += '\n';
+              else if (type != "min")
+                result += ' ';
             }
-            if (type != strv("biglist")) {
+            if (type != "biglist") {
               result.pop_back();
-              if (type != strv("min"))
+              if (type != "min")
                 result.pop_back();
             }
-            else if (type == strv("biglist"))
+            else if (type == "biglist")
               result += indent;
-            result += str("]");
+            result += ']';
           }
-          if (!node->getDesc().empty() && type != strv("min") && type != strv("nodesc")) {
-            result += str(" <");
+          if (!node->getDesc().empty() && type != "min" && type != "nodesc") {
+            result += " <";
             str tmpStr = node->getDesc();
             _utf8ForEach(tmpStr, tmpStr.size(),
                          [&result]([[maybe_unused]] const size_t& index, const strv& index_char,
                                    [[maybe_unused]] const uint8_t& char_size) -> bool {
-                           if (index_char == str(">"))
-                             result += str("\\");
+                           if (index_char == ">")
+                             result += '\\';
                            result += index_char;
                            return false;
                          });
-            result += str(">");
+            result += '>';
           }
-          result += str(";");
-          if (type != strv("min"))
-            result += str("\n");
+          if (type == "min")
+            result += ';';
+          else
+            result += '\n';
         }
         else
           for (const auto& [key, child] : node->children)
             printFunc(key, &child, indentLevel + 1);
         if (!node->children.empty() && !path.empty()) {
-          if (type == strv("min"))
-            result += str("}");
+          if (type == "min")
+            result += '}';
           else
-            result += indent + str("}");
-          if (!node->getDesc().empty() && type != strv("min") && type != strv("nodesc")) {
-            result += str(" <");
+            result += indent + '}';
+          if (!node->getDesc().empty() && type != "min" && type != "nodesc") {
+            result += " <";
             str tmpStr = node->getDesc();
             _utf8ForEach(tmpStr, tmpStr.size(),
                          [&result]([[maybe_unused]] const size_t& index, const strv& index_char,
                                    [[maybe_unused]] const uint8_t& char_size) -> bool {
-                           if (index_char == str(">"))
-                             result += str("\\");
+                           if (index_char == ">")
+                             result += '\\';
                            result += index_char;
                            return false;
                          });
-            result += str(">");
+            result += '>';
           }
-          result += str(";");
-          if (type != strv("min"))
-            result += str("\n");
+          if (type == "min")
+            result += ';';
+          else
+            result += '\n';
         }
       };
-      printFunc(str(""), this, 0);
-      result += str("}");
+      for (const auto& [key, child] : children)
+        printFunc(key, &child, 0);
+      result.pop_back();
       _shrink(&result);
       return result;
     }
@@ -338,32 +338,20 @@ public:
       if (txt.size() >= 3 && static_cast<unsigned char>(txt[0]) == _bom[0] &&
           static_cast<unsigned char>(txt[1]) == _bom[1] && static_cast<unsigned char>(txt[2]) == _bom[2])
         txt = txt.substr(3);
-      size_t start = str::npos;
-      size_t end = str::npos;
-      for (size_t i = 0; i < txt.size(); ++i)
-        if (txt[i] == '{' && (i == 0 || txt[i - 1] != '\\')) {
-          start = i;
-          break;
-        }
-      if (start == str::npos)
-        return;
-      for (size_t i = txt.size(); i-- > 0;)
-        if (txt[i] == '}' && (i == 0 || txt[i - 1] != '\\')) {
-          end = i;
-          break;
-        }
-      if (end == str::npos || end <= start)
-        return;
-      txt = txt.substr(start + 1, end - start - 1);
-      start = txt.find_first_not_of(" \t\r\n");
+      size_t start = txt.find_first_not_of(" \t\r\n");
       txt = start == str::npos ? "" : txt.substr(start);
       if (txt.empty())
         return;
+      if (txt.back() != '}' && txt.back() != '\n')
+        txt += '\n';
+      _replace(txt, "\r\n", "\n");
+      _replace(txt, "\r", "\n");
       _shrink(&txt);
       str desc, index_desc, value, valueName;
       vec<str> groupNames, valueNames, values;
       vec<vec<str>> lastGroupNames;
-      bool inValue = false, inDesc = false, inStr = false, isRealChar = false, isStr = false, isList = false;
+      bool endGroup = false, first = false, inValue = false, inDesc = false, inStr = false, isRealChar = false,
+           isStr = false, isList = false;
       size_t inGroup = 0;
       uint8_t last_char_size = 0;
       _utf8ForEach(txt, txt.size(), [&](const size_t& index, const strv& index_char, const uint8_t& char_size) -> bool {
@@ -371,8 +359,8 @@ public:
         isRealChar = index >= 1 ? (last_char_size == 1 ? (txt[index - 1] != '\\' ? true : false) : true) : true;
         last_char_size = char_size;
         if (inDesc) {
-          if (index_char != str(">") || !isRealChar) {
-            if (index_char == str(">") && !isRealChar) {
+          if (index_char != ">" || !isRealChar) {
+            if (index_char == ">" && !isRealChar) {
               index_desc.pop_back();
               _shrink(&index_desc);
             }
@@ -380,7 +368,7 @@ public:
               index_desc += index_char;
             return false;
           }
-          else if (index_char == str(">") && isRealChar) {
+          else if (index_char == ">" && isRealChar) {
             desc = index_desc;
             _clearAndShrink(&index_desc);
             _shrink(&desc);
@@ -389,17 +377,16 @@ public:
           }
         }
         else {
-          if (!inStr &&
-              (index_char == str(" ") || index_char == str("\t") || index_char == str("\r") || index_char == str("\n")))
+          if (!inStr && (index_char == " " || index_char == "\t" || index_char == "\r"))
             return false;
-          else if (index_char == str("<")) {
+          else if (index_char == "<") {
             inDesc = true;
             return false;
           }
         }
         if (inValue) {
           if (inStr) {
-            if (index_char == str("\"")) {
+            if (index_char == "\"") {
               if (isRealChar) {
                 inStr = false;
                 return false;
@@ -417,19 +404,18 @@ public:
             }
           }
           else {
-            if (index_char == str("\"")) {
+            if (index_char == "\"") {
               inStr = isStr = true;
               return false;
             }
-            else if (index_char == str("[")) {
+            else if (index_char == "[") {
               isList = true;
               return false;
             }
-            else if (index_char == str(",") || index_char == str("]")) {
-              if (index_char == str("]")) {
+            else if (_eq_or(index_char, strv(","), strv("]"))) {
+              if (index_char == "]") {
                 size_t j = 1;
-                while (txt[index - j] == ' ' || txt[index - j] == '\t' || txt[index - j] == '\r' ||
-                       txt[index - j] == '\n')
+                while (_eq_or(txt[index - j], ' ', '\t', '\r', '\n'))
                   ++j;
                 if (txt[index - j] == ',')
                   return false;
@@ -438,7 +424,7 @@ public:
               _clearAndShrink(&value);
               return false;
             }
-            else if (index_char == str("{")) {
+            else if (index_char == "{") {
               groupNames.insert(groupNames.end(), valueNames.begin(), valueNames.end());
               lastGroupNames.push_back(valueNames);
               _clearAndShrink(&valueNames);
@@ -446,7 +432,7 @@ public:
               inValue = false;
               return false;
             }
-            else if (index_char == str(";")) {
+            else if (_eq_or(index_char, strv(";"), strv("\n"))) {
               for (size_t i = 0; i < groupNames.size(); ++i)
                 index_key = &(*index_key)[groupNames[i]];
               for (size_t i = 0; i < valueNames.size(); ++i) {
@@ -457,11 +443,11 @@ public:
                       (*index_key)[key] = FVVV(values);
                     else {
                       str tmpStr = values.front();
-                      if (tmpStr == str("true") || tmpStr == str("false")) {
+                      if (_eq_or(tmpStr, str("true"), str("false"))) {
                         vec<bool> tmp;
                         tmp.reserve(values.size());
                         std::transform(values.begin(), values.end(), std::back_inserter(tmp),
-                                       [](const strv& s) { return s == strv("true"); });
+                                       [](const strv& s) { return s == "true"; });
                         (*index_key)[key] = FVVV(tmp);
                       }
                       else if (_isInt(tmpStr)) {
@@ -483,8 +469,8 @@ public:
                   else {
                     if (isStr)
                       (*index_key)[key] = FVVV(value);
-                    else if (value == str("true") || value == str("false"))
-                      (*index_key)[key] = FVVV(value == str("true"));
+                    else if (_eq_or(value, str("true"), str("false")))
+                      (*index_key)[key] = FVVV(value == "true");
                     else if (_isInt(value))
                       (*index_key)[key] = FVVV(std::stoi(value));
                     else if (_isDouble(value))
@@ -528,13 +514,18 @@ public:
           }
         }
         else {
-          if (index_char == str("=")) {
+          if (!first && index_char == "{" && valueName.empty()) {
+            first = true;
+            return false;
+          }
+          if (index_char == "=") {
             valueNames = _split(valueName, '.');
             _clearAndShrink(&valueName);
             inValue = true;
             return false;
           }
-          else if (index_char == str(";") && inGroup > 0) {
+          else if (endGroup && _eq_or(index_char, strv(";"), strv("\n")) && inGroup > 0) {
+            endGroup = false;
             if (!desc.empty())
               for (size_t i = 0; i < groupNames.size(); ++i) {
                 if (i == groupNames.size() - 1) {
@@ -544,16 +535,21 @@ public:
                 }
                 index_key = &(*index_key)[groupNames[i]];
               }
-            for (const auto& _ : lastGroupNames.back())
+            for ([[maybe_unused]] const auto& _ : lastGroupNames.back())
               groupNames.pop_back();
             lastGroupNames.pop_back();
             _shrink(&groupNames, &lastGroupNames);
             inGroup--;
             return false;
           }
-          else if (index_char == str("}") && inGroup == 0)
-            return true;
-          else if (index_char != str("}") && index_char != str(";")) {
+          else if (index_char == "}")
+            if (inGroup == 0)
+              return true;
+            else {
+              endGroup = true;
+              return false;
+            }
+          else if (index_char != "}" && index_char != ";") {
             valueName += index_char;
             return false;
           }
@@ -564,13 +560,33 @@ public:
 
 private:
     static constexpr const unsigned char _bom[] = {0xEF, 0xBB, 0xBF};
+    template <typename T>
+    static FVV_INLINE bool _eq_or(T a, T b) {
+      return (a == b);
+    }
+    template <typename T, typename... Args>
+    static FVV_INLINE bool _eq_or(T a, T b, Args... args) {
+      return (a == b) || _eq_or(a, args...);
+    }
     static FVV_INLINE vec<str> _split(const str& path, char delimiter) {
+      size_t start = path.find_first_not_of("\n");
+      size_t end = path.find_last_not_of("\n");
+      if (start == str::npos || end == str::npos)
+        return {};
+      str target = path.substr(start, end - start + 1);
       vec<str> result;
-      std::stringstream ss(path);
+      std::stringstream ss(target);
       str item;
       while (std::getline(ss, item, delimiter))
         result.push_back(item);
       return result;
+    }
+    static FVV_INLINE void _replace(str& s, const strv& f, const strv& t) {
+      size_t p = 0;
+      while ((p = s.find(f, p)) != str::npos) {
+        s.replace(p, f.length(), t);
+        p += t.length();
+      }
     }
   };
   static FVV_INLINE bool _isInt(const strv& s) {
@@ -654,4 +670,11 @@ private:
     }
   }
 };
+
+const std::string defaultString = "";
+const std::vector<bool> defaultBools = {};
+const std::vector<int> defaultInts = {};
+const std::vector<double> defaultDoubles = {};
+const std::vector<std::string> defaultStrings = {};
+
 #endif

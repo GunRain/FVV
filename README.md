@@ -4,7 +4,7 @@
 This page is written in Chinese, please use the translation if you do not understand.
 
 
-闲余时间搓出来的文本格式，目前仅支持`C++`(最低支持C++`20`)，以后可能会支持`Go`、`Dart`、`Kotlin`等常用语言，反正目前是还没有写的。
+闲余时间搓出来的文本格式，目前仅支持`C++`(最低支持C++`17`)，以后可能会支持`Go`、`Dart`、`Kotlin`等常用语言，反正目前是还没有写的。
 
 不会支持的语言: `Python`、`Java`、`Rust`等
 
@@ -18,25 +18,23 @@ TODO:
 名字显而易见，是个~~废物~~清新的文本格式，那么有多清新呢，请看示例:
 
 ``` fvv
-{
-  ValueName1 = "114514\"" <字符串与转义\>>;
-  ValueName2 = true       <布尔值>;
-  ValueName3 = 114514     <整数>  ;
-  ValueName4 = 114.514    <浮点数>;
+ValueName1 = "114514\"" <字符串与转义\>>;
+ValueName2 = true       <布尔值>;
+ValueName3 = 114514     <整数>  ;
+ValueName4 = 114.514    <浮点数>;
 
-  ValueName5 = ["1", "1", "4", "5", "1", "4"] <字符串组>;
-  ValueName6 = [1, 1, 4, 5, 1, 4, ] <整数组(这个“,”是故意多打的)>;
+ValueName5 = ["1", "1", "4", "5", "1", "4"] <字符串组>;
+ValueName6 = [1, 1, 4, 5, 1, 4, ] <整数组(这个“,”是故意多打的)>;
 
-  GroupName = {
-    SubGroupName = {
-        a = ValueName3 <支持赋值操作(这个是跨组赋值)>;
-    } <子组>;
-    c = SubGroupName.a <这个是跨组赋值>;
-  } <组>;
+GroupName = {
+  SubGroupName = {
+      a = ValueName3 <支持赋值操作(这个是跨组赋值)>;
+  } <子组>;
+  c = SubGroupName.a <这个是跨组赋值>;
+} <组>;
 
-  GroupName.SubGroupName.b = a                        <还支持用“.”连接组名(这个是同组赋值)>;
-  GroupName.SubGroupName.b = GroupName.SubGroupName.a <这个是同组赋值，只不过用“.”表示了完整名称>;
-}
+GroupName.SubGroupName.b = a                        <还支持用“.”连接组名(这个是同组赋值)>;
+GroupName.SubGroupName.b = GroupName.SubGroupName.a <这个是同组赋值，只不过用“.”表示了完整名称>;
 ```
 
 显而易见，支持`字符串`、`布尔值`、`整数`、`浮点数`以及它们的`组`的存储，还支持`值组`以及`赋值`
@@ -44,11 +42,9 @@ TODO:
 值的命名也是没有什么忌口的，请看示例:
 
 ``` fvv
-{
-    114514 = 114514;
-    一一四五一四 = 114514;
-    ()()(((())))((((()))))()(((()))) = 114514;
-}
+114514 = 114514;
+一一四五一四 = 114514;
+()()(((())))((((()))))()(((()))) = 114514;
 ```
 
 需要注意的是，如果一个值被命名为`纯数字`(整数和浮点数都算)，那么这个值将`无法用于赋值`，因为没法判断到底给的是值还是值的名称
@@ -56,7 +52,7 @@ TODO:
 还需要注意的是正常命名不要带“.”啊喂，会被认为是组的名称的
 
 
-本文本格式的值的存储使用`;`进行分割，所有的值都必须至于根路径的`{}`里面，注释使用`<>`进行存储
+本文本格式的值的存储使用`;`或`换行`进行分割，所有的值都可以置于根路径的`{}`里面(放不放都没区别)，注释使用`<>`进行存储
 
 注释是本文本格式的一个比较特色的功能，它可以放到任何地方，请看示例:
 
@@ -66,7 +62,7 @@ TODO:
 
 可以非常直接地看出来，注释完全是想怎么写就怎么写，但是它的作用不止于此
 
-介于`=`与`;`之间的`最后一个`注释，将会被认定为是该值的`描述`，本人认为这是一个非常不错的功能
+介于`=`与`;`(或`换行`)之间的`最后一个`注释，将会被认定为是该值的`描述`，本人认为这是一个非常不错的功能
 
 
 ## C++
@@ -95,10 +91,10 @@ const string fvv_txt = R"(
 
         GroupName = {
             SubGroupName = {
-                a = ValueName3 <支持赋值操作(这个是跨组赋值)>;
-            } <子组>;
-            c = SubGroupName.a <这个是跨组赋值>;
-        } <组>;
+                a = ValueName3 <支持赋值操作(这个是跨组赋值)>
+            } <子组>
+            c = SubGroupName.a <这个是跨组赋值>
+        } <组>
 
         GroupName.SubGroupName.b = a                        <还支持用“.”连接组名(这个是同组赋值)>;
         GroupName.SubGroupName.b = GroupName.SubGroupName.a <这个是同组赋值，只不过用“.”表示了完整名称>;
@@ -143,25 +139,23 @@ int main(void) {
 FVV API: 1
 值 GroupName.SubGroupName.114514 不存在
 值 GroupName.SubGroupName.a (int): 114514
-{
-  ()()(((())))((((()))))()(((()))) = 114514;
-  114514 = 114514;
-  GroupName = {
-    SubGroupName = {
-      a = ValueName3 <支持赋值操作(这个是跨组赋值)>;
-      b = GroupName.SubGroupName.a <这个是同组赋值，只不过用“.”表示了完整名称>;
-    } <子组>;
-    c = SubGroupName.a <这个是跨组赋值>;
-  } <组>;
-  ValueName1 = "114514\"" <字符串与转义\>>;
-  ValueName2 = true <布尔值>;
-  ValueName3 = 114514 <整数>;
-  ValueName4 = 114.514000 <浮点数>;
-  ValueName5 = ["1", "1", "4", "5", "1", "4"] <字符串组>;
-  ValueName6 = [1, 1, 4, 5, 1, 4] <整数组(这个“,”是故意多打的)>;
-  一一四五一四 = 114514;
-}
-{()()(((())))((((()))))()(((())))=114514;114514=114514;GroupName={SubGroupName={a=ValueName3;b=GroupName.SubGroupName.a;};c=SubGroupName.a;};ValueName1="114514\"";ValueName2=true;ValueName3=114514;ValueName4=114.514000;ValueName5=["1","1","4","5","1","4"];ValueName6=[1,1,4,5,1,4];一一四五一四=114514;}
+()()(((())))((((()))))()(((()))) = 114514
+114514 = 114514
+GroupName = {
+  SubGroupName = {
+    a = ValueName3 <支持赋值操作(这个是跨组赋值)>
+    b = GroupName.SubGroupName.a <这个是同组赋值，只不过用“.”表示了完整名称>
+  } <子组>
+  c = SubGroupName.a <这个是跨组赋值>
+} <组>
+ValueName1 = "114514\"" <字符串与转义\>>
+ValueName2 = true <布尔值>
+ValueName3 = 114514 <整数>
+ValueName4 = 114.514000 <浮点数>
+ValueName5 = ["1", "1", "4", "5", "1", "4"] <字符串组>
+ValueName6 = [1, 1, 4, 5, 1, 4] <整数组(这个“,”是故意多打的)>
+一一四五一四 = 114514
+()()(((())))((((()))))()(((())))=114514;114514=114514;GroupName={SubGroupName={a=ValueName3;b=GroupName.SubGroupName.a;};c=SubGroupName.a;};ValueName1="114514\"";ValueName2=true;ValueName3=114514;ValueName4=114.514000;ValueName5=["1","1","4","5","1","4"];ValueName6=[1,1,4,5,1,4];一一四五一四=114514
 值 GroupName.SubGroupName.a (描述): 支持赋值操作(这个是跨组赋值)
 值 GroupName.SubGroupName.a (描述): 114514
 ```
