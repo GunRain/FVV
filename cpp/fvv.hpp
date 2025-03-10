@@ -671,10 +671,10 @@ private:
   }
 };
 
-const std::string defaultString = "";
-const std::vector<bool> defaultBools = {};
-const std::vector<int> defaultInts = {};
-const std::vector<double> defaultDoubles = {};
-const std::vector<std::string> defaultStrings = {};
+const std::string FVV::defaultString = "";
+const std::vector<bool> FVV::defaultBools = {};
+const std::vector<int> FVV::defaultInts = {};
+const std::vector<double> FVV::defaultDoubles = {};
+const std::vector<std::string> FVV::defaultStrings = {};
 
 #endif
