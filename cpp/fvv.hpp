@@ -247,7 +247,12 @@ private:
     FVV_INLINE FVVV(const vec<int>& v) : value(v) {}
     FVV_INLINE FVVV(const vec<double>& v) : value(v) {}
     FVV_INLINE FVVV(const vec<str>& v) : value(v) {}
-    FVV_INLINE FVVV& operator[](const strv& key) { return children[key.data()]; }
+    FVV_INLINE FVVV& operator[](const strv& key) {
+      return isLink() ? link->children[key.data()] : children[key.data()];
+    }
+    /// @brief  返回子值
+    /// @return 子值
+    FVV_INLINE PairList<str, FVVV>& sub(void) { return isLink() ? link->children : children; }
     /// @brief  以bool类型返回值
     /// @return 值
     FVV_INLINE bool asBool(void) const {
@@ -334,29 +339,12 @@ private:
     /// @brief  判断值是否有描述
     /// @return 值有描述时返回true，否则为false
     FVV_INLINE bool hasDesc(void) const { return !desc.empty(); }
-    /// @brief  返回值的描述
-    /// @return 值有描述时返回描述，否则为空字符串
-    FVV_INLINE const str& getDesc(void) const { return desc; }
-    /// @brief  设置值的描述
-    /// @param  描述
-    FVV_INLINE void setDesc(const strv& newDesc) {
-      desc = newDesc;
-      _shrink(&desc);
-    }
-    /// @brief  删除值的描述
-    FVV_INLINE void delDesc(void) { _clearAndShrink(&desc); }
     /// @brief  判断值是否为链接
     /// @return 值为链接时返回true，否则为false
     FVV_INLINE bool isLink(void) const { return link; }
-    /// @brief  返回值的链接
-    /// @return 值为链接时返回链接的指针，否则为nullopt
-    FVV_INLINE FVVV& getLink(void) const { return *link; }
     /// @brief  返回值的链接的名称
     /// @return 值为链接时返回链接的名称，否则为空字符串
     FVV_INLINE const str& getLinkName(void) const { return linkName; }
-    /// @brief  设置值的链接
-    /// @param  指针
-    FVV_INLINE void setLink(FVVV* newLink) { link = newLink; }
     /// @brief  设置值的链接的名称
     /// @param  名称
     FVV_INLINE void setLinkName(const strv& newlinkName) {
@@ -530,9 +518,9 @@ private:
               result += indent;
             result += ']';
           }
-          if (!node->getDesc().empty() && type != "min" && type != "nodesc") {
+          if (!node->desc.empty() && type != "min" && type != "nodesc") {
             result += " <";
-            str tmpStr = node->getDesc();
+            str tmpStr = node->desc;
             _utf8ForEach(tmpStr, tmpStr.size(),
                          [&result]([[maybe_unused]] const size_t& index, const strv& index_char,
                                    [[maybe_unused]] const uint8_t& char_size) -> bool {
@@ -556,9 +544,9 @@ private:
             result += '}';
           else
             result += indent + '}';
-          if (!node->getDesc().empty() && type != "min" && type != "nodesc") {
+          if (!node->desc.empty() && type != "min" && type != "nodesc") {
             result += " <";
-            str tmpStr = node->getDesc();
+            str tmpStr = node->desc;
             _utf8ForEach(tmpStr, tmpStr.size(),
                          [&result]([[maybe_unused]] const size_t& index, const strv& index_char,
                                    [[maybe_unused]] const uint8_t& char_size) -> bool {
@@ -744,26 +732,30 @@ public:
                       vec<str> tmpName = _split(value, '.');
                       FVVV* tmpValue = index_key;
                       for (size_t i = 0; i < tmpName.size(); ++i)
-                        if (!tmpValue->children.hasKey(tmpName[i]))
-                          continue;
+                        if (!tmpValue->sub().hasKey(tmpName[i])) {
+                          tmpValue = nullptr;
+                          break;
+                        }
                         else
                           tmpValue = &(*tmpValue)[tmpName[i]];
-                      if ((*tmpValue).isNotEmpty())
-                        (*index_key)[key].setLink(tmpValue);
+                      if (tmpValue)
+                        (*index_key)[key].link = tmpValue;
                       else {
                         tmpValue = &targetFvv;
                         for (size_t i = 0; i < tmpName.size(); ++i)
-                          if (!tmpValue->children.hasKey(tmpName[i]))
-                            continue;
+                          if (!tmpValue->sub().hasKey(tmpName[i])) {
+                            tmpValue = nullptr;
+                            break;
+                          }
                           else
                             tmpValue = &(*tmpValue)[tmpName[i]];
-                        if ((*tmpValue).isNotEmpty())
-                          (*index_key)[key].setLink(tmpValue);
+                        if (tmpValue)
+                          (*index_key)[key].link = tmpValue;
                       }
                       (*index_key)[key].setLinkName(value);
                     }
                   }
-                  (*index_key)[key].setDesc(desc);
+                  (*index_key)[key].desc = desc;
                   _clearAndShrink(&desc, &value, &values, &valueNames);
                   isList = isStr = inValue = false;
                   continue;
@@ -794,7 +786,7 @@ public:
             if (!desc.empty())
               for (size_t i = 0; i < groupNames.size(); ++i) {
                 if (i == groupNames.size() - 1) {
-                  (*index_key)[groupNames[i]].setDesc(desc);
+                  (*index_key)[groupNames[i]].desc = desc;
                   _clearAndShrink(&desc);
                   break;
                 }

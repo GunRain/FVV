@@ -77,7 +77,6 @@ GroupName.SubGroupName.b = GroupName.SubGroupName.a <这个是同组赋值，只
 #include "fvv.hpp"
 
 using namespace std;
-using namespace literals;
 
 const string fvv_txt = R"(
     {
@@ -103,7 +102,7 @@ const string fvv_txt = R"(
         一一四五一四 = 114514;
         ()()(((())))((((()))))()(((()))) = 114514;
     }
-)"s;
+)";
 
 int main(void) {
     FVV::FVVV fvv; // 这里初始化个struct
@@ -111,23 +110,23 @@ int main(void) {
 
     FVV::Parser::ReadString(fvv_txt, fvv); // 从字符串解析
 
-    cout << "FVV API: "s << FVV_API << endl; // 输出FVV的API版本
+    cout << "FVV API: " << FVV_API << endl; // 输出FVV的API版本
 
-    if (fvv["GroupName"s]["SubGroupName"s]["114514"s].isEmpty()) // 判断值是否存在
-        cout << "值 GroupName.SubGroupName.114514 不存在"s << endl;
+    if (fvv["GroupName"]["SubGroupName"]["114514"].isEmpty()) // 判断值是否存在
+        cout << "值 GroupName.SubGroupName.114514 不存在" << endl;
     else
-        cout << "值 GroupName.SubGroupName.114514 存在"s << endl;
+        cout << "值 GroupName.SubGroupName.114514 存在" << endl;
 
-    if (fvv["GroupName"s]["SubGroupName"s]["a"s].isType<string>()) // 判断值是否为指定类型
-        cout << "值 GroupName.SubGroupName.a (string): "s << fvv["GroupName"s]["SubGroupName"s]["a"s].as<string>().value() << endl;
-    if (fvv["GroupName"s]["SubGroupName"s]["a"s].isType<int>()) // 判断值是否为指定类型
-        cout << "值 GroupName.SubGroupName.a (int): "s << fvv["GroupName"s]["SubGroupName"s]["a"s].asInt() << endl;
+    if (fvv["GroupName"]["SubGroupName"]["a"].isType<string>()) // 判断值是否为指定类型
+        cout << "值 GroupName.SubGroupName.a (string): " << fvv["GroupName"]["SubGroupName"]["a"].as<string>().value() << endl;
+    if (fvv["GroupName"]["SubGroupName"]["a"].isType<int>()) // 判断值是否为指定类型
+        cout << "值 GroupName.SubGroupName.a (int): " << fvv["GroupName"]["SubGroupName"]["a"].asInt() << endl;
 
-    cout << fvv.print() << endl << fvv.print("min"sv) << endl; // 输出正常格式和缩减格式
+    cout << fvv.print() << endl << fvv.print("min") << endl; // 输出正常格式和缩减格式
 
-    cout << "值 GroupName.SubGroupName.a (描述): "s << fvv["GroupName"s]["SubGroupName"s]["a"s].getDesc() << endl; // 输出描述
-    fvv["GroupName"s]["SubGroupName"s]["a"s].setDesc("114514"sv); // 修改描述
-    cout << "值 GroupName.SubGroupName.a (描述): "s << fvv["GroupName"s]["SubGroupName"s]["a"s].getDesc() << endl; // 输出描述
+    cout << "值 GroupName.SubGroupName.a (描述): " << fvv["GroupName"]["SubGroupName"]["a"].desc << endl; // 输出描述
+    fvv["GroupName"]["SubGroupName"]["a"].desc = "114514"; // 修改描述
+    cout << "值 GroupName.SubGroupName.a (描述): " << fvv["GroupName"]["SubGroupName"]["a"].desc << endl; // 输出描述
 
     return 0;
 }
@@ -169,16 +168,12 @@ ValueName6 = [1, 1, 4, 5, 1, 4] <整数组(这个“,”是故意多打的)>
 `FVV::Parser::ReadString`是将FVV格式文本解析为FVVV struct的函数
 
 下面是FVVV struct的用法:
+ - `sub()`: 会返回子值
  - `asBool()`、`asInt()`、`asDouble()`、`asString()`、`asBools()`、`asInts()`、`asDoubles()`、`asStrings()`: 分别会返回`bool`、`int`、`double`、`std::string`、`std::vector<bool>`、`std::vector<int>`、`std::vector<double>`、`std::vector<std::string>`类型的值，如果值不存在，会分别返回`false`、`0`、`0.0`、`""`、`{}`、`{}`、`{}`、`{}`
  - `as<typename>()`: 会返回一个`std::optional`类型的值
  - `hasDesc()`: 用于判断值是否有描述，会返回一个`bool`类型的值
- - `getDesc()`: 会返回值的描述(`std::string`)，如果没有，会返回空的字符串
- - `setDesc(str)`: 需要传入一个`std::string`类型的值，用于设置值的描述，没有返回值
- - `delDesc()`: 会删除值的描述，没有返回值
  - `isLink()`: 用于判断值是否是链接，会返回一个`bool`类型的值
- - `getLink()`: 会返回值的链接(`FVV::FVVV`)，如果没有，会返回`nullptr`
  - `getLinkName()`: 会返回值的链接名称(`std::string`)，如果没有，会返回空的字符串(返回的链接名称取决于解析时原始文本的定义，如果是相对链接，则仍是相对链接，如果是绝对链接，则仍是绝对链接)
- - `setLink(fvvv)`: 需要传入一个`FVV::FVVV`类型的值，用于设置值的链接，没有返回值
  - `setLinkName(str)`: 需要传入一个`std::string`类型的值，用于设置值的链接名称，没有返回值
  - `delLink()`: 会删除值的链接(包括链接名称)，没有返回值
  - `link2Real()`: 会将链接值更改为实际值，删除值的链接(包括链接名称)，没有返回值(更改后值将不会再受到链接的影响)
