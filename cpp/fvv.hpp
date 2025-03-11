@@ -1,3 +1,15 @@
+//================================================================================================================
+// Copyright (c) 2023-present Anne Sakitin (Tianwan Ayana).                                                      =
+//                                                                                                               =
+// Licensed under the F2DLPR License.                                                                            =
+//                                                                                                               =
+// YOU MAY NOT USE THIS FILE EXCEPT IN COMPLIANCE WITH THE LICENSE.                                              =
+// Provided "AS IS", WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,                                               =
+// unless required by applicable law or agreed to in writing.                                                    =
+//                                                                                                               =
+// For details about the F2DLPR License terms and conditions, visit: http://license.fileto.download.             =
+//================================================================================================================
+
 #pragma once
 
 #define FVV_API 1
@@ -8,7 +20,6 @@
 #include <algorithm>
 #include <cstdint>
 #include <functional>
-#include <map>
 #include <optional>
 #include <sstream>
 #include <string>
@@ -30,6 +41,187 @@ class FVV {
   template <typename T>
   using vec = std::vector<T>;
 
+  template <typename _keyType, typename _valueType>
+  class PairList {
+public:
+    class Pair {
+  public:
+      FVV_INLINE Pair(void) : _key(), _value() {}
+      FVV_INLINE Pair(const _keyType& key, const _valueType& value) : _key(key), _value(value) {}
+      FVV_INLINE Pair(const Pair& other) : _key(other.key()), _value(other.value()) {}
+      FVV_INLINE Pair(Pair&& other) noexcept : _key(other.key_rv()), _value(other.value_rv()) {}
+      FVV_INLINE Pair& operator=(const Pair& other) {
+        if (std::addressof(other) != this) {
+          _key = other.key();
+          _value = other.value();
+        }
+        return *this;
+      }
+      FVV_INLINE Pair& operator=(Pair&& other) noexcept {
+        if (std::addressof(other) != this) {
+          _key = other.key();
+          _value = other.value();
+        }
+        return *this;
+      }
+      FVV_INLINE bool operator==(const Pair& other) const {
+        if (std::addressof(other) == this)
+          return true;
+        return (_key == other.key() && _value == other.value());
+      }
+      FVV_INLINE bool operator!=(const Pair& other) const {
+        if (std::addressof(other) == this)
+          return false;
+        return (_key != other.key() || _value != other.value());
+      }
+      FVV_INLINE _keyType& key(void) { return _key; }
+      FVV_INLINE const _keyType& key(void) const { return _key; }
+      FVV_INLINE _valueType& value(void) { return _value; }
+      FVV_INLINE const _valueType& value(void) const { return _value; }
+      FVV_INLINE _keyType&& key_rv(void) { return std::move(_key); }
+      FVV_INLINE _valueType&& value_rv(void) { return std::move(_value); }
+
+  private:
+      _keyType _key;
+      _valueType _value;
+    };
+    typedef typename std::vector<Pair>::iterator iterator;
+    typedef typename std::vector<Pair>::const_iterator const_iterator;
+    FVV_INLINE PairList(void) : _data() {}
+    FVV_INLINE PairList(const PairList& other) : _data(other.data()) {}
+    FVV_INLINE PairList(PairList&& other) noexcept : _data(other.data_rv()) {}
+    FVV_INLINE ~PairList(void) {}
+    FVV_INLINE PairList& operator=(const PairList& other) {
+      if (std::addressof(other) != this)
+        _data = other.data();
+      return *this;
+    }
+    FVV_INLINE PairList& operator=(PairList&& other) noexcept {
+      if (std::addressof(other) != this)
+        _data = other.data_rv();
+      return *this;
+    }
+    FVV_INLINE bool operator==(const PairList& other) const {
+      if (std::addressof(other) == this)
+        return true;
+      return (other.data() == _data);
+    }
+    FVV_INLINE bool operator!=(const PairList& other) const {
+      if (std::addressof(other) == this)
+        return false;
+      return (other.data() != _data);
+    }
+    FVV_INLINE _valueType& operator[](const _keyType& key) {
+      for (auto iter = _data.begin(); iter < _data.end(); ++iter)
+        if (iter->key() == key)
+          return iter->value();
+      _data.emplace_back(key, _valueType());
+      return _data.back().value();
+    }
+    FVV_INLINE _keyType& operator()(const _valueType& value) {
+      for (auto iter = _data.begin(); iter < _data.end(); ++iter)
+        if (iter->value() == value)
+          return iter->key();
+      _data.emplace_back(_keyType(), value);
+      return _data.back().key();
+    }
+    FVV_INLINE bool hasKey(const _keyType& key) const {
+      for (auto iter = _data.begin(); iter < _data.end(); ++iter)
+        if (iter->key() == key)
+          return true;
+      return false;
+    }
+    FVV_INLINE bool hasValue(const _valueType& value) const {
+      for (auto iter = _data.begin(); iter < _data.end(); ++iter)
+        if (iter->value() == value)
+          return true;
+      return false;
+    }
+    FVV_INLINE iterator begin(void) { return _data.begin(); }
+    FVV_INLINE const_iterator begin(void) const { return _data.begin(); }
+    FVV_INLINE iterator end(void) { return _data.end(); }
+    FVV_INLINE const_iterator end(void) const { return _data.end(); }
+    FVV_INLINE Pair& front(void) { return _data.front(); }
+    FVV_INLINE const Pair& front(void) const { return _data.front(); }
+    FVV_INLINE Pair& back(void) { return _data.back(); }
+    FVV_INLINE const Pair& back(void) const { return _data.back(); }
+    FVV_INLINE const_iterator findKey(const _keyType& key) const {
+      for (auto iter = _data.begin(); iter < _data.end(); ++iter)
+        if (iter->key() == key)
+          return iter;
+      return _data.end();
+    }
+    FVV_INLINE const_iterator findValue(const _valueType& value) const {
+      for (auto iter = _data.begin(); iter < _data.end(); ++iter)
+        if (iter->value() == value)
+          return iter;
+      return _data.end();
+    }
+    FVV_INLINE void add(const _keyType& key, const _valueType& value) {
+      for (auto& pair : _data)
+        if (pair.key() == key) {
+          pair.value() = value;
+          return;
+        }
+      _data.emplace_back(key, value);
+    }
+    FVV_INLINE void add(const Pair& other) {
+      for (auto& pair : _data)
+        if (pair.key() == other.key()) {
+          pair.value() = other.value();
+          return;
+        }
+      _data.emplace_back(other);
+    }
+    FVV_INLINE void remove(const_iterator iter) { _data.erase(iter); }
+    FVV_INLINE void remove(iterator iter) { _data.erase(iter); }
+    FVV_INLINE void removeKey(const _keyType& key) {
+      for (auto iter = _data.begin(); iter < _data.end(); ++iter)
+        if (iter->key() == key) {
+          _data.erase(iter);
+          break;
+        }
+    }
+    FVV_INLINE void removeValue(const _valueType& value) {
+      for (auto iter = _data.begin(); iter < _data.end(); ++iter)
+        if (iter->value() == value) {
+          _data.erase(iter);
+          break;
+        }
+    }
+    FVV_INLINE std::vector<_keyType> keys(void) const {
+      std::vector<_keyType> keysList{};
+      keysList.reserve(_data.size());
+      for (auto iter = _data.begin(); iter < _data.end(); ++iter)
+        keysList.emplace_back(iter->key());
+      return keysList;
+    }
+    FVV_INLINE std::vector<_valueType> values(void) const {
+      std::vector<_valueType> valuesList{};
+      valuesList.reserve(_data.size());
+      for (auto iter = _data.begin(); iter < _data.end(); ++iter)
+        valuesList.emplace_back(iter->value());
+      return valuesList;
+    }
+    FVV_INLINE const std::vector<Pair>& data(void) const { return _data; }
+    FVV_INLINE std::vector<Pair>&& data_rv(void) { return std::move(_data); }
+    FVV_INLINE void sort(std::function<bool(const Pair&, const Pair&)> compare_func = nullptr) {
+      static const std::function<bool(const Pair&, const Pair&)> default_comp =
+          [](const Pair& a, const Pair& b) -> bool { return (a.key() < b.key()); };
+      if (compare_func)
+        std::sort(_data.begin(), _data.end(), compare_func);
+      else
+        std::sort(_data.begin(), _data.end(), default_comp);
+    }
+    FVV_INLINE void reverse(void) { std::reverse(_data.begin(), _data.end()); }
+    FVV_INLINE void clear(void) { _data.clear(); }
+    FVV_INLINE size_t size(void) const noexcept { return _data.size(); }
+    FVV_INLINE bool empty(void) const noexcept { return (_data.begin() == _data.end()); }
+
+private:
+    std::vector<Pair> _data;
+  };
+
   public:
   static constexpr const bool defaultBool = false;
   static constexpr const int defaultInt = 0;
@@ -42,7 +234,7 @@ class FVV {
   struct FVVV {
     using FVVVT = std::variant<std::monostate, bool, int, double, str, vec<bool>, vec<int>, vec<double>, vec<str>>;
     FVVVT value;
-    std::map<str, FVVV> children = {};
+    PairList<str, FVVV> children = {};
     str desc = "";
     FVVV* link = nullptr;
     str linkName = "";
@@ -56,87 +248,137 @@ class FVV {
     FVV_INLINE FVVV(const vec<double>& v) : value(v) {}
     FVV_INLINE FVVV(const vec<str>& v) : value(v) {}
     FVV_INLINE FVVV& operator[](const strv& key) { return children[key.data()]; }
+    /// @brief  以bool类型返回值
+    /// @return 值
     FVV_INLINE bool asBool(void) const {
       using resultType = bool;
       std::optional<resultType> result = isLink() ? link->as<resultType>() : as<resultType>();
       return result.value_or(defaultBool);
     }
+    /// @brief  以int类型返回值
+    /// @return 值
     FVV_INLINE int asInt(void) const {
       using resultType = int;
       std::optional<resultType> result = isLink() ? link->as<resultType>() : as<resultType>();
       return result.value_or(defaultInt);
     }
+    /// @brief  以double类型返回值
+    /// @return 值
     FVV_INLINE double asDouble(void) const {
       using resultType = double;
       std::optional<resultType> result = isLink() ? link->as<resultType>() : as<resultType>();
       return result.value_or(defaultDouble);
     }
+    /// @brief  以string类型返回值
+    /// @return 值
     FVV_INLINE const str asString(void) const {
       using resultType = str;
       std::optional<resultType> result = isLink() ? link->as<resultType>() : as<resultType>();
       return result.value_or(defaultString);
     }
+    /// @brief  以vector<bool>类型返回值
+    /// @return 值
     FVV_INLINE const vec<bool> asBools(void) const {
       using resultType = vec<bool>;
       std::optional<resultType> result = isLink() ? link->as<resultType>() : as<resultType>();
       return result.value_or(defaultBools);
     }
+    /// @brief  以vector<int>类型返回值
+    /// @return 值
     FVV_INLINE const vec<int> asInts(void) const {
       using resultType = vec<int>;
       std::optional<resultType> result = isLink() ? link->as<resultType>() : as<resultType>();
       return result.value_or(defaultInts);
     }
+    /// @brief  以vector<double>类型返回值
+    /// @return 值
     FVV_INLINE const vec<double> asDoubles(void) const {
       using resultType = vec<double>;
       std::optional<resultType> result = isLink() ? link->as<resultType>() : as<resultType>();
       return result.value_or(defaultDoubles);
     }
+    /// @brief  以vector<string>类型返回值
+    /// @return 值
     FVV_INLINE const vec<str> asStrings(void) const {
       using resultType = vec<str>;
       std::optional<resultType> result = isLink() ? link->as<resultType>() : as<resultType>();
       return result.value_or(defaultStrings);
     }
+    /// @brief  判断值是否为空
+    /// @return 值为空时返回true，否则为false
     FVV_INLINE bool isEmpty(void) const {
       return !isLink() && std::holds_alternative<std::monostate>(value) && children.empty();
     }
+    /// @brief  判断值是否为非空
+    /// @return 值为非空时返回true，否则为false
     FVV_INLINE bool isNotEmpty(void) const {
       return isLink() || !std::holds_alternative<std::monostate>(value) || !children.empty();
     }
     template <typename T>
+    /// @brief  判断值是否为指定类型
+    /// @param  类型
+    /// @return 值为指定类型时返回true，否则为false
     FVV_INLINE bool isType(void) const {
       return isNotEmpty() && isLink() ? std::holds_alternative<T>(link->value) : std::holds_alternative<T>(value);
     }
     template <typename T>
+    /// @brief  以指定类型返回值
+    /// @param  类型
+    /// @return 值为指定类型时返回值，否则为nullopt
     FVV_INLINE std::optional<T> as(void) const {
       if (isLink() ? link->isType<T>() : isType<T>())
         return isLink() ? std::get<T>(link->value) : std::get<T>(value);
       else
         return std::nullopt;
     }
+    /// @brief  判断值是否有描述
+    /// @return 值有描述时返回true，否则为false
     FVV_INLINE bool hasDesc(void) const { return !desc.empty(); }
+    /// @brief  返回值的描述
+    /// @return 值有描述时返回描述，否则为空字符串
     FVV_INLINE const str& getDesc(void) const { return desc; }
+    /// @brief  设置值的描述
+    /// @param  描述
     FVV_INLINE void setDesc(const strv& newDesc) {
       desc = newDesc;
       _shrink(&desc);
     }
+    /// @brief  删除值的描述
     FVV_INLINE void delDesc(void) { _clearAndShrink(&desc); }
+    /// @brief  判断值是否为链接
+    /// @return 值为链接时返回true，否则为false
     FVV_INLINE bool isLink(void) const { return link; }
+    /// @brief  返回值的链接
+    /// @return 值为链接时返回链接的指针，否则为nullopt
     FVV_INLINE FVVV& getLink(void) const { return *link; }
+    /// @brief  返回值的链接的名称
+    /// @return 值为链接时返回链接的名称，否则为空字符串
     FVV_INLINE const str& getLinkName(void) const { return linkName; }
+    /// @brief  设置值的链接
+    /// @param  指针
     FVV_INLINE void setLink(FVVV* newLink) { link = newLink; }
+    /// @brief  设置值的链接的名称
+    /// @param  名称
     FVV_INLINE void setLinkName(const strv& newlinkName) {
       linkName = newlinkName;
       _shrink(&linkName);
     }
+    /// @brief  删除值的链接与其名称
     FVV_INLINE void delLink(void) {
       link = nullptr;
       _clearAndShrink(&linkName);
     }
+    /// @brief  将值的链接转为值
     FVV_INLINE void link2Real(void) {
       value = link->value;
       link = nullptr;
       _clearAndShrink(&linkName);
     }
+    /// @brief  输出格式化后的值
+    /// @param  为“common”或空时正常输出
+    /// @param  为“min”时最小化输出
+    /// @param  为“biglist”时会把值组内每个值换行输出
+    /// @return 格式化后的值
     FVV_INLINE str print(const strv& type = "common") const {
       str result;
       std::function<void(const str&, const FVVV*, size_t)> printFunc;
@@ -299,8 +541,8 @@ class FVV {
             result += '\n';
         }
         else
-          for (const auto& [key, child] : node->children)
-            printFunc(key, &child, indentLevel + 1);
+          for (const PairList<str, FVVV>::Pair& item : node->children)
+            printFunc(item.key(), &item.value(), indentLevel + 1);
         if (!node->children.empty() && !path.empty()) {
           if (type == "min")
             result += '}';
@@ -325,8 +567,8 @@ class FVV {
             result += '\n';
         }
       };
-      for (const auto& [key, child] : children)
-        printFunc(key, &child, 0);
+      for (const PairList<str, FVVV>::Pair& item : children)
+        printFunc(item.key(), &item.value(), 0);
       result.pop_back();
       _shrink(&result);
       return result;
@@ -334,6 +576,9 @@ class FVV {
   };
   class Parser {
 public:
+    /// @brief           解析字符串为FVVV
+    /// @param txt       FVV文本格式的字符串
+    /// @param targetFvv 在外部定义好了的FVVV
     static FVV_INLINE void ReadString(str txt, FVVV& targetFvv) {
       if (txt.size() >= 3 && static_cast<unsigned char>(txt[0]) == _bom[0] &&
           static_cast<unsigned char>(txt[1]) == _bom[1] && static_cast<unsigned char>(txt[2]) == _bom[2])
@@ -490,7 +735,7 @@ public:
                       vec<str> tmpName = _split(value, '.');
                       FVVV* tmpValue = index_key;
                       for (size_t i = 0; i < tmpName.size(); ++i) {
-                        if (tmpValue->children.find(tmpName[i]) == tmpValue->children.end())
+                        if (!tmpValue->children.hasKey(tmpName[i]))
                           continue;
                         tmpValue = &(*tmpValue)[tmpName[i]];
                       }
@@ -499,7 +744,7 @@ public:
                       else {
                         tmpValue = &targetFvv;
                         for (size_t i = 0; i < tmpName.size(); ++i) {
-                          if (tmpValue->children.find(tmpName[i]) == tmpValue->children.end())
+                          if (!tmpValue->children.hasKey(tmpName[i]))
                             continue;
                           tmpValue = &(*tmpValue)[tmpName[i]];
                         }
@@ -546,7 +791,7 @@ public:
                 }
                 index_key = &(*index_key)[groupNames[i]];
               }
-            for ([[maybe_unused]] const auto& _ : lastGroupNames.back())
+            for ([[maybe_unused]] const str& _ : lastGroupNames.back())
               groupNames.pop_back();
             lastGroupNames.pop_back();
             _shrink(&groupNames, &lastGroupNames);
