@@ -416,7 +416,6 @@ public:
               switch (index_char[0]) {
               case '\n':
                 return false;
-                break;
               case ']': {
                 inList = false;
                 size_t j = 1;
@@ -424,7 +423,8 @@ public:
                   ++j;
                 if (txt[index - j] == ',')
                   return false;
-                break;
+                else
+                  break;
               }
               }
               values.push_back(value);
