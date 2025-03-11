@@ -734,20 +734,20 @@ public:
                     else {
                       vec<str> tmpName = _split(value, '.');
                       FVVV* tmpValue = index_key;
-                      for (size_t i = 0; i < tmpName.size(); ++i) {
+                      for (size_t i = 0; i < tmpName.size(); ++i)
                         if (!tmpValue->children.hasKey(tmpName[i]))
                           continue;
-                        tmpValue = &(*tmpValue)[tmpName[i]];
-                      }
+                        else
+                          tmpValue = &(*tmpValue)[tmpName[i]];
                       if ((*tmpValue).isNotEmpty())
                         (*index_key)[key].setLink(tmpValue);
                       else {
                         tmpValue = &targetFvv;
-                        for (size_t i = 0; i < tmpName.size(); ++i) {
+                        for (size_t i = 0; i < tmpName.size(); ++i)
                           if (!tmpValue->children.hasKey(tmpName[i]))
                             continue;
-                          tmpValue = &(*tmpValue)[tmpName[i]];
-                        }
+                          else
+                            tmpValue = &(*tmpValue)[tmpName[i]];
                         if ((*tmpValue).isNotEmpty())
                           (*index_key)[key].setLink(tmpValue);
                       }
