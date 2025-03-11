@@ -85,8 +85,8 @@ public:
       _keyType _key;
       _valueType _value;
     };
-    typedef typename std::vector<Pair>::iterator iterator;
-    typedef typename std::vector<Pair>::const_iterator const_iterator;
+    typedef typename vec<Pair>::iterator iterator;
+    typedef typename vec<Pair>::const_iterator const_iterator;
     FVV_INLINE PairList(void) : _data() {}
     FVV_INLINE PairList(const PairList& other) : _data(other.data()) {}
     FVV_INLINE PairList(PairList&& other) noexcept : _data(other.data_rv()) {}
@@ -189,22 +189,22 @@ public:
           break;
         }
     }
-    FVV_INLINE std::vector<_keyType> keys(void) const {
-      std::vector<_keyType> keysList{};
+    FVV_INLINE vec<_keyType> keys(void) const {
+      vec<_keyType> keysList{};
       keysList.reserve(_data.size());
       for (auto iter = _data.begin(); iter < _data.end(); ++iter)
         keysList.emplace_back(iter->key());
       return keysList;
     }
-    FVV_INLINE std::vector<_valueType> values(void) const {
-      std::vector<_valueType> valuesList{};
+    FVV_INLINE vec<_valueType> values(void) const {
+      vec<_valueType> valuesList{};
       valuesList.reserve(_data.size());
       for (auto iter = _data.begin(); iter < _data.end(); ++iter)
         valuesList.emplace_back(iter->value());
       return valuesList;
     }
-    FVV_INLINE const std::vector<Pair>& data(void) const { return _data; }
-    FVV_INLINE std::vector<Pair>&& data_rv(void) { return std::move(_data); }
+    FVV_INLINE const vec<Pair>& data(void) const { return _data; }
+    FVV_INLINE vec<Pair>&& data_rv(void) { return std::move(_data); }
     FVV_INLINE void sort(std::function<bool(const Pair&, const Pair&)> compare_func = nullptr) {
       static const std::function<bool(const Pair&, const Pair&)> default_comp =
           [](const Pair& a, const Pair& b) -> bool { return (a.key() < b.key()); };
@@ -219,7 +219,7 @@ public:
     FVV_INLINE bool empty(void) const noexcept { return (_data.begin() == _data.end()); }
 
 private:
-    std::vector<Pair> _data;
+    vec<Pair> _data;
   };
 
   public:
