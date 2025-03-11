@@ -436,8 +436,10 @@ private:
                              return false;
                            });
               result += "\",";
-              if (type == "biglist")
+              if (type == "biglist") {
+                result.pop_back();
                 result += '\n';
+              }
               else if (type != "min")
                 result += ' ';
             }
@@ -460,8 +462,10 @@ private:
               if (type == "biglist")
                 result += vecIndent;
               result += str(value ? "true" : "false") + ",";
-              if (type == "biglist")
+              if (type == "biglist") {
+                result.pop_back();
                 result += '\n';
+              }
               else if (type != "min")
                 result += ' ';
             }
@@ -484,8 +488,10 @@ private:
               if (type == "biglist")
                 result += vecIndent;
               result += std::to_string(value) + ',';
-              if (type == "biglist")
+              if (type == "biglist") {
+                result.pop_back();
                 result += '\n';
+              }
               else if (type != "min")
                 result += ' ';
             }
@@ -508,8 +514,10 @@ private:
               if (type == "biglist")
                 result += vecIndent;
               result += std::to_string(value) + ',';
-              if (type == "biglist")
+              if (type == "biglist") {
+                result.pop_back();
                 result += '\n';
+              }
               else if (type != "min")
                 result += ' ';
             }
@@ -596,7 +604,7 @@ public:
       vec<str> groupNames, valueNames, values;
       vec<vec<str>> lastGroupNames;
       bool endGroup = false, first = false, inValue = false, inDesc = false, inStr = false, inList = false,
-           isRealChar = false, isStr = false, isList = false;
+           isRealChar = false, isStr = false, isEmptyStr = false, isList = false;
       size_t inGroup = 0;
       uint8_t last_char_size = 0;
       _utf8ForEach(txt, txt.size(), [&](const size_t& index, const strv& index_char, const uint8_t& char_size) -> bool {
@@ -607,7 +615,6 @@ public:
           if (index_char != ">" || !isRealChar) {
             if (index_char == ">" && !isRealChar) {
               index_desc.pop_back();
-              _shrink(&index_desc);
             }
             if (inValue || inGroup > 0)
               index_desc += index_char;
@@ -633,12 +640,15 @@ public:
           if (inStr) {
             if (index_char == "\"") {
               if (isRealChar) {
+                if (value.empty())
+                  isEmptyStr = true;
+                else
+                  isEmptyStr = false;
                 inStr = false;
                 return false;
               }
               else {
                 value.pop_back();
-                _shrink(&value);
                 value += index_char;
                 return false;
               }
@@ -658,22 +668,21 @@ public:
               return false;
             }
             else if (inList && _eq_or(index_char, strv(","), strv("]"), strv("\n"))) {
-              switch (index_char[0]) {
-              case '\n':
-                return false;
-              case ']': {
+              if (index_char == "]") {
                 inList = false;
                 size_t j = 1;
-                while (_eq_or(txt[index - j], ' ', '\t', '\r', '\n'))
+                while (_eq_or(txt[index - j], ' ', '\t', '\r'))
                   ++j;
-                if (txt[index - j] == ',')
+                if (txt[index - j] == ',' || txt[index - j] == '\n')
                   return false;
-                else
-                  break;
               }
-              }
+              else if (value.empty() && (!isStr || !isEmptyStr))
+                return false;
               values.push_back(value);
-              _clearAndShrink(&value);
+              if (isEmptyStr)
+                isEmptyStr = false;
+              else
+                _clearAndShrink(&value);
               return false;
             }
             else if (index_char == "{") {
