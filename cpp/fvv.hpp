@@ -442,6 +442,10 @@ public:
                     if (isStr)
                       (*index_key)[key] = FVVV(values);
                     else {
+                      if (values.empty()) {
+                        (*index_key)[key] = FVVV();
+                        return false;
+                      }
                       str tmpStr = values.front();
                       if (_eq_or(tmpStr, str("true"), str("false"))) {
                         vec<bool> tmp;
