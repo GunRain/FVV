@@ -350,8 +350,8 @@ public:
       str desc, index_desc, value, valueName;
       vec<str> groupNames, valueNames, values;
       vec<vec<str>> lastGroupNames;
-      bool endGroup = false, first = false, inValue = false, inDesc = false, inStr = false, isRealChar = false,
-           isStr = false, isList = false;
+      bool endGroup = false, first = false, inValue = false, inDesc = false, inStr = false, inList = false,
+           isRealChar = false, isStr = false, isList = false;
       size_t inGroup = 0;
       uint8_t last_char_size = 0;
       _utf8ForEach(txt, txt.size(), [&](const size_t& index, const strv& index_char, const uint8_t& char_size) -> bool {
@@ -409,16 +409,23 @@ public:
               return false;
             }
             else if (index_char == "[") {
-              isList = true;
+              inList = isList = true;
               return false;
             }
-            else if (_eq_or(index_char, strv(","), strv("]"))) {
-              if (index_char == "]") {
+            else if (inList && _eq_or(index_char, strv(","), strv("]"), strv("\n"))) {
+              switch (index_char[0]) {
+              case '\n':
+                return false;
+                break;
+              case ']': {
+                inList = false;
                 size_t j = 1;
                 while (_eq_or(txt[index - j], ' ', '\t', '\r', '\n'))
                   ++j;
                 if (txt[index - j] == ',')
                   return false;
+                break;
+              }
               }
               values.push_back(value);
               _clearAndShrink(&value);
@@ -432,7 +439,7 @@ public:
               inValue = false;
               return false;
             }
-            else if (_eq_or(index_char, strv(";"), strv("\n"))) {
+            else if (!inList && _eq_or(index_char, strv(";"), strv("\n"))) {
               for (size_t i = 0; i < groupNames.size(); ++i)
                 index_key = &(*index_key)[groupNames[i]];
               for (size_t i = 0; i < valueNames.size(); ++i) {
