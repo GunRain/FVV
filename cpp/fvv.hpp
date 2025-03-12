@@ -368,18 +368,19 @@ private:
     /// @param  为“biglist”时会把值组内每个值换行输出
     /// @return 格式化后的值
     FVV_INLINE str print(const strv& type = "common") const {
+      bool isMin = type == "min", isBigList = type == "biglist";
       str result;
       std::function<void(const str&, const FVVV*, size_t)> printFunc;
       printFunc = [&](const str& path, const FVVV* node, size_t indentLevel) {
         str indent(indentLevel * 2, ' ');
         if (!node->children.empty() && !path.empty()) {
-          if (type == "min")
+          if (isMin)
             result += path + "={";
           else
             result += indent + path + " = {\n";
         }
         if (node->children.empty() && node->isNotEmpty()) {
-          if (type == "min")
+          if (isMin)
             result += path + '=';
           else
             result += indent + path + " = ";
@@ -408,11 +409,11 @@ private:
           else if (node->isType<vec<str>>()) {
             result += '[';
             str vecIndent((indentLevel + 1) * 2, ' ');
-            if (type == "biglist")
+            if (isBigList)
               result += '\n';
             const vec<str> tmp = node->as<vec<str>>().value();
             for (const str& value : tmp) {
-              if (type == "biglist")
+              if (isBigList)
                 result += vecIndent;
               result += '"';
               _utf8ForEach(value, value.size(),
@@ -424,101 +425,101 @@ private:
                              return false;
                            });
               result += "\",";
-              if (type == "biglist") {
+              if (isBigList) {
                 result.pop_back();
                 result += '\n';
               }
-              else if (type != "min")
+              else if (!isMin)
                 result += ' ';
             }
-            if (type != "biglist") {
+            if (!isBigList) {
               result.pop_back();
-              if (type != "min")
+              if (!isMin)
                 result.pop_back();
             }
-            else if (type == "biglist")
+            else if (isBigList)
               result += indent;
             result += ']';
           }
           else if (node->isType<vec<bool>>()) {
             result += '[';
             str vecIndent((indentLevel + 1) * 2, ' ');
-            if (type == "biglist")
+            if (isBigList)
               result += '\n';
             const vec<bool> tmp = node->as<vec<bool>>().value();
             for (const int& value : tmp) {
-              if (type == "biglist")
+              if (isBigList)
                 result += vecIndent;
               result += str(value ? "true" : "false") + ",";
-              if (type == "biglist") {
+              if (isBigList) {
                 result.pop_back();
                 result += '\n';
               }
-              else if (type != "min")
+              else if (!isMin)
                 result += ' ';
             }
-            if (type != "biglist") {
+            if (!isBigList) {
               result.pop_back();
-              if (type != "min")
+              if (!isMin)
                 result.pop_back();
             }
-            else if (type == "biglist")
+            else if (isBigList)
               result += indent;
             result += ']';
           }
           else if (node->isType<vec<int>>()) {
             result += '[';
             str vecIndent((indentLevel + 1) * 2, ' ');
-            if (type == "biglist")
+            if (isBigList)
               result += '\n';
             const vec<int> tmp = node->as<vec<int>>().value();
             for (const int& value : tmp) {
-              if (type == "biglist")
+              if (isBigList)
                 result += vecIndent;
               result += std::to_string(value) + ',';
-              if (type == "biglist") {
+              if (isBigList) {
                 result.pop_back();
                 result += '\n';
               }
-              else if (type != "min")
+              else if (!isMin)
                 result += ' ';
             }
-            if (type != "biglist") {
+            if (!isBigList) {
               result.pop_back();
-              if (type != "min")
+              if (!isMin)
                 result.pop_back();
             }
-            else if (type == "biglist")
+            else if (isBigList)
               result += indent;
             result += ']';
           }
           else if (node->isType<vec<double>>()) {
             result += '[';
             str vecIndent((indentLevel + 1) * 2, ' ');
-            if (type == "biglist")
+            if (isBigList)
               result += '\n';
             const vec<double> tmp = node->as<vec<double>>().value();
             for (const double& value : tmp) {
-              if (type == "biglist")
+              if (isBigList)
                 result += vecIndent;
               result += std::to_string(value) + ',';
-              if (type == "biglist") {
+              if (isBigList) {
                 result.pop_back();
                 result += '\n';
               }
-              else if (type != "min")
+              else if (!isMin)
                 result += ' ';
             }
-            if (type != "biglist") {
+            if (!isBigList) {
               result.pop_back();
-              if (type != "min")
+              if (!isMin)
                 result.pop_back();
             }
-            else if (type == "biglist")
+            else if (isBigList)
               result += indent;
             result += ']';
           }
-          if (!node->desc.empty() && type != "min" && type != "nodesc") {
+          if (!node->desc.empty() && !isMin && type != "nodesc") {
             result += " <";
             str tmpStr = node->desc;
             _utf8ForEach(tmpStr, tmpStr.size(),
@@ -531,7 +532,7 @@ private:
                          });
             result += '>';
           }
-          if (type == "min")
+          if (isMin)
             result += ';';
           else
             result += '\n';
@@ -540,11 +541,11 @@ private:
           for (const PairList<str, FVVV>::Pair& item : node->children)
             printFunc(item.key(), &item.value(), indentLevel + 1);
         if (!node->children.empty() && !path.empty()) {
-          if (type == "min")
+          if (isMin)
             result += '}';
           else
             result += indent + '}';
-          if (!node->desc.empty() && type != "min" && type != "nodesc") {
+          if (!node->desc.empty() && !isMin && type != "nodesc") {
             result += " <";
             str tmpStr = node->desc;
             _utf8ForEach(tmpStr, tmpStr.size(),
@@ -557,7 +558,7 @@ private:
                          });
             result += '>';
           }
-          if (type == "min")
+          if (isMin)
             result += ';';
           else
             result += '\n';
@@ -572,10 +573,10 @@ private:
   };
   class Parser {
 public:
-    /// @brief           解析字符串为FVVV
-    /// @param txt       FVV文本格式的字符串
-    /// @param targetFvv 在外部定义好了的FVVV
-    static FVV_INLINE void ReadString(str txt, FVVV& targetFvv) {
+    /// @brief            解析字符串为FVVV
+    /// @param txt        FVV文本格式的字符串
+    /// @param targetFVVV 在外部定义好了的FVVV
+    static FVV_INLINE void ReadString(str txt, FVVV& targetFVVV) {
       if (txt.size() >= 3 && static_cast<unsigned char>(txt[0]) == _bom[0] &&
           static_cast<unsigned char>(txt[1]) == _bom[1] && static_cast<unsigned char>(txt[2]) == _bom[2])
         txt = txt.substr(3);
@@ -596,7 +597,7 @@ public:
       size_t inGroup = 0;
       uint8_t last_char_size = 0;
       _utf8ForEach(txt, txt.size(), [&](const size_t& index, const strv& index_char, const uint8_t& char_size) -> bool {
-        FVVV* index_key = &targetFvv;
+        FVVV* index_key = &targetFVVV;
         isRealChar = index >= 1 ? (last_char_size == 1 ? (txt[index - 1] != '\\' ? true : false) : true) : true;
         last_char_size = char_size;
         if (inDesc) {
@@ -741,7 +742,7 @@ public:
                       if (tmpValue)
                         (*index_key)[key].link = tmpValue;
                       else {
-                        tmpValue = &targetFvv;
+                        tmpValue = &targetFVVV;
                         for (size_t i = 0; i < tmpName.size(); ++i)
                           if (!tmpValue->sub().hasKey(tmpName[i])) {
                             tmpValue = nullptr;
@@ -806,7 +807,7 @@ public:
               endGroup = true;
               return false;
             }
-          else if (index_char != "}" && index_char != ";") {
+          else {
             valueName += index_char;
             return false;
           }
