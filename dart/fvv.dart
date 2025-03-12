@@ -32,7 +32,7 @@ class FVV {
     input.forEach((k, l) {
       result += '  $k = [\n';
       for (var v in l) {
-        result += '    "$v",\n';
+        result += '    "$v"\n';
       }
       result += '  ]\n';
     });
