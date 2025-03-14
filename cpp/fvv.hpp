@@ -36,6 +36,7 @@
 #endif
 
 class FVV {
+  public:
   using str = std::string;
   using strv = std::string_view;
   template <typename T>
@@ -222,7 +223,6 @@ private:
     vec<Pair> _data;
   };
 
-  public:
   static constexpr const bool defaultBool = false;
   static constexpr const int defaultInt = 0;
   static constexpr const double defaultDouble = 0.0;
@@ -234,10 +234,12 @@ private:
   struct FVVV {
     using FVVVT = std::variant<std::monostate, bool, int, double, str, vec<bool>, vec<int>, vec<double>, vec<str>>;
     FVVVT value;
+    /// @brief 子值
     PairList<str, FVVV> children = {};
+    /// @brief 描述
     str desc = "";
-    FVVV* link = nullptr;
-    str linkName = "";
+    /// @brief 链接名称
+    str link = "";
     FVV_INLINE FVVV(void) = default;
     FVV_INLINE FVVV(bool v) : value(v) {}
     FVV_INLINE FVVV(int v) : value(v) {}
@@ -247,121 +249,57 @@ private:
     FVV_INLINE FVVV(const vec<int>& v) : value(v) {}
     FVV_INLINE FVVV(const vec<double>& v) : value(v) {}
     FVV_INLINE FVVV(const vec<str>& v) : value(v) {}
-    FVV_INLINE FVVV& operator[](const strv& key) {
-      return isLink() ? link->children[key.data()] : children[key.data()];
-    }
-    /// @brief  返回子值
-    /// @return 子值
-    FVV_INLINE PairList<str, FVVV>& sub(void) { return isLink() ? link->children : children; }
+    FVV_INLINE FVVV& operator[](const strv& key) { return children[key.data()]; }
     /// @brief  以bool类型返回值
     /// @return 值
-    FVV_INLINE bool asBool(void) const {
-      using resultType = bool;
-      std::optional<resultType> result = isLink() ? link->as<resultType>() : as<resultType>();
-      return result.value_or(defaultBool);
-    }
+    FVV_INLINE bool asBool(void) const { return as<bool>().value_or(defaultBool); }
     /// @brief  以int类型返回值
     /// @return 值
-    FVV_INLINE int asInt(void) const {
-      using resultType = int;
-      std::optional<resultType> result = isLink() ? link->as<resultType>() : as<resultType>();
-      return result.value_or(defaultInt);
-    }
+    FVV_INLINE int asInt(void) const { return as<int>().value_or(defaultInt); }
     /// @brief  以double类型返回值
     /// @return 值
-    FVV_INLINE double asDouble(void) const {
-      using resultType = double;
-      std::optional<resultType> result = isLink() ? link->as<resultType>() : as<resultType>();
-      return result.value_or(defaultDouble);
-    }
+    FVV_INLINE double asDouble(void) const { return as<double>().value_or(defaultDouble); }
     /// @brief  以string类型返回值
     /// @return 值
-    FVV_INLINE const str asString(void) const {
-      using resultType = str;
-      std::optional<resultType> result = isLink() ? link->as<resultType>() : as<resultType>();
-      return result.value_or(defaultString);
-    }
+    FVV_INLINE const str asString(void) const { return as<str>().value_or(defaultString); }
     /// @brief  以vector<bool>类型返回值
     /// @return 值
-    FVV_INLINE const vec<bool> asBools(void) const {
-      using resultType = vec<bool>;
-      std::optional<resultType> result = isLink() ? link->as<resultType>() : as<resultType>();
-      return result.value_or(defaultBools);
-    }
+    FVV_INLINE const vec<bool> asBools(void) const { return as<vec<bool>>().value_or(defaultBools); }
     /// @brief  以vector<int>类型返回值
     /// @return 值
-    FVV_INLINE const vec<int> asInts(void) const {
-      using resultType = vec<int>;
-      std::optional<resultType> result = isLink() ? link->as<resultType>() : as<resultType>();
-      return result.value_or(defaultInts);
-    }
+    FVV_INLINE const vec<int> asInts(void) const { return as<vec<int>>().value_or(defaultInts); }
     /// @brief  以vector<double>类型返回值
     /// @return 值
-    FVV_INLINE const vec<double> asDoubles(void) const {
-      using resultType = vec<double>;
-      std::optional<resultType> result = isLink() ? link->as<resultType>() : as<resultType>();
-      return result.value_or(defaultDoubles);
-    }
+    FVV_INLINE const vec<double> asDoubles(void) const { return as<vec<double>>().value_or(defaultDoubles); }
     /// @brief  以vector<string>类型返回值
     /// @return 值
-    FVV_INLINE const vec<str> asStrings(void) const {
-      using resultType = vec<str>;
-      std::optional<resultType> result = isLink() ? link->as<resultType>() : as<resultType>();
-      return result.value_or(defaultStrings);
-    }
+    FVV_INLINE const vec<str> asStrings(void) const { return as<vec<str>>().value_or(defaultStrings); }
     /// @brief  判断值是否为空
     /// @return 值为空时返回true，否则为false
-    FVV_INLINE bool isEmpty(void) const {
-      return !isLink() && std::holds_alternative<std::monostate>(value) && children.empty();
-    }
+    FVV_INLINE bool isEmpty(void) const { return std::holds_alternative<std::monostate>(value) && children.empty(); }
     /// @brief  判断值是否为非空
     /// @return 值为非空时返回true，否则为false
-    FVV_INLINE bool isNotEmpty(void) const {
-      return isLink() || !std::holds_alternative<std::monostate>(value) || !children.empty();
-    }
+    FVV_INLINE bool isNotEmpty(void) const { return !isEmpty(); }
     template <typename T>
     /// @brief  判断值是否为指定类型
     /// @param  类型
     /// @return 值为指定类型时返回true，否则为false
     FVV_INLINE bool isType(void) const {
-      return isNotEmpty() && isLink() ? std::holds_alternative<T>(link->value) : std::holds_alternative<T>(value);
+      return isNotEmpty() && std::holds_alternative<T>(value);
     }
     template <typename T>
     /// @brief  以指定类型返回值
     /// @param  类型
     /// @return 值为指定类型时返回值，否则为nullopt
     FVV_INLINE std::optional<T> as(void) const {
-      if (isLink() ? link->isType<T>() : isType<T>())
-        return isLink() ? std::get<T>(link->value) : std::get<T>(value);
+      if (isType<T>())
+        return std::get<T>(value);
       else
         return std::nullopt;
     }
     /// @brief  判断值是否有描述
     /// @return 值有描述时返回true，否则为false
     FVV_INLINE bool hasDesc(void) const { return !desc.empty(); }
-    /// @brief  判断值是否为链接
-    /// @return 值为链接时返回true，否则为false
-    FVV_INLINE bool isLink(void) const { return link; }
-    /// @brief  返回值的链接的名称
-    /// @return 值为链接时返回链接的名称，否则为空字符串
-    FVV_INLINE const str& getLinkName(void) const { return linkName; }
-    /// @brief  设置值的链接的名称
-    /// @param  名称
-    FVV_INLINE void setLinkName(const strv& newlinkName) {
-      linkName = newlinkName;
-      _shrink(&linkName);
-    }
-    /// @brief  删除值的链接与其名称
-    FVV_INLINE void delLink(void) {
-      link = nullptr;
-      _clearAndShrink(&linkName);
-    }
-    /// @brief  将值的链接转为值
-    FVV_INLINE void link2Real(void) {
-      value = link->value;
-      link = nullptr;
-      _clearAndShrink(&linkName);
-    }
     /// @brief  输出格式化后的值
     /// @param  为“common”或空时正常输出
     /// @param  为“min”时最小化输出
@@ -384,9 +322,8 @@ private:
             result += path + '=';
           else
             result += indent + path + " = ";
-          if (node->isLink()) {
-            result += node->getLinkName();
-          }
+          if (!node->link.empty())
+            result += node->link;
           else if (node->isType<str>()) {
             result += '"';
             str tmpStr = node->as<str>().value();
@@ -733,27 +670,34 @@ public:
                       vec<str> tmpName = _split(value, '.');
                       FVVV* tmpValue = index_key;
                       for (size_t i = 0; i < tmpName.size(); ++i)
-                        if (!tmpValue->sub().hasKey(tmpName[i])) {
+                        if (!tmpValue->children.hasKey(tmpName[i])) {
                           tmpValue = nullptr;
                           break;
                         }
                         else
                           tmpValue = &(*tmpValue)[tmpName[i]];
                       if (tmpValue)
-                        (*index_key)[key].link = tmpValue;
+                        if (tmpValue->children.empty())
+                          (*index_key)[key] = FVVV(*tmpValue);
+                        else
+                          (*index_key)[key].children = tmpValue->children;
                       else {
                         tmpValue = &targetFVVV;
                         for (size_t i = 0; i < tmpName.size(); ++i)
-                          if (!tmpValue->sub().hasKey(tmpName[i])) {
+                          if (!tmpValue->children.hasKey(tmpName[i])) {
                             tmpValue = nullptr;
                             break;
                           }
                           else
                             tmpValue = &(*tmpValue)[tmpName[i]];
-                        if (tmpValue)
-                          (*index_key)[key].link = tmpValue;
+                        if (tmpValue) {
+                          if (tmpValue->children.empty())
+                            (*index_key)[key] = FVVV(*tmpValue);
+                          else
+                            (*index_key)[key].children = tmpValue->children;
+                        }
                       }
-                      (*index_key)[key].setLinkName(value);
+                      (*index_key)[key].link = value;
                     }
                   }
                   (*index_key)[key].desc = desc;
