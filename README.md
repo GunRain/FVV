@@ -10,13 +10,8 @@ This page is written in Chinese, please use the translation if you do not unders
 
 TODO:
 
- - 支持数学运算(需要显式定义)
- - 支持值组内的赋值(需要显式定义)
-
-
-已知问题:
-
- - 解析后赋值的指针异常，手动重新赋值指针可以解决
+ - 支持数学运算
+ - 支持值组内的赋值
 
 
 名字显而易见，是个~~废物~~清新的文本格式，那么有多清新呢，请看示例:
@@ -172,15 +167,9 @@ ValueName6 = [1, 1, 4, 5, 1, 4] <整数组(这个“,”是故意多打的)>
 `FVV::Parser::ReadString`是将FVV格式文本解析为FVVV struct的函数
 
 下面是FVVV struct的用法:
- - `sub()`: 会返回子值
  - `asBool()`、`asInt()`、`asDouble()`、`asString()`、`asBools()`、`asInts()`、`asDoubles()`、`asStrings()`: 分别会返回`bool`、`int`、`double`、`std::string`、`std::vector<bool>`、`std::vector<int>`、`std::vector<double>`、`std::vector<std::string>`类型的值，如果值不存在，会分别返回`false`、`0`、`0.0`、`""`、`{}`、`{}`、`{}`、`{}`
  - `as<typename>()`: 会返回一个`std::optional`类型的值
  - `hasDesc()`: 用于判断值是否有描述，会返回一个`bool`类型的值
- - `isLink()`: 用于判断值是否是链接，会返回一个`bool`类型的值
- - `getLinkName()`: 会返回值的链接名称(`std::string`)，如果没有，会返回空的字符串(返回的链接名称取决于解析时原始文本的定义，如果是相对链接，则仍是相对链接，如果是绝对链接，则仍是绝对链接)
- - `setLinkName(str)`: 需要传入一个`std::string`类型的值，用于设置值的链接名称，没有返回值
- - `delLink()`: 会删除值的链接(包括链接名称)，没有返回值
- - `link2Real()`: 会将链接值更改为实际值，删除值的链接(包括链接名称)，没有返回值(更改后值将不会再受到链接的影响)
  - `isEmpty()`、`isNotEmpty()`: 用于判断值是否存在(或是否存在子项)，会返回一个`bool`类型的值
  - `isType<typename>()`: 用于判断值是否为指定类型，会返回一个`bool`类型的值(如果值不存在，会返回`false`)
  - `print()`或`print("min")`或`print("nodesc")`或`print("biglist")`: 会把当前struct内所有值输出为FVV格式文本，传入“min”时会去除掉所有值的描述，并去除所有空格和换行，传入“nodesc”时会去除掉所有值的描述(两者均为在输出时去除，不会影响struct内的值)，传入“biglist”时会为所有组值中的所有值添加缩进与换行(而不是让所有值都处于同一行)
