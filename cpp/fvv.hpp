@@ -27,7 +27,7 @@
 #include <variant>
 #include <vector>
 
-#if defined(__GNUC__)
+#ifdef __GNUC__
 #define FVV_INLINE __attribute__((always_inline)) inline
 #elif defined(_MSC_VER)
 #define FVV_INLINE __forceinline
