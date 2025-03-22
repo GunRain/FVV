@@ -4,7 +4,7 @@
 This page is written in Chinese, please use the translation if you do not understand.
 
 
-闲余时间搓出来的文本格式，目前仅支持`C++`(最低支持C++`17`)，以后可能会支持`Go`、`Dart`、`Kotlin`等常用语言，反正目前是还没有写的。
+闲余时间搓出来的文本格式，目前支持`C++`(最低支持C++`17`)和`Go`(最低支持Go`1.18`)，以后可能会支持`Dart`、`Kotlin`等常用语言，反正目前是还没有写的。
 
 不会支持的语言: `Python`、`Java`、`Rust`等
 
@@ -169,12 +169,20 @@ ValueName6 = [1, 1, 4, 5, 1, 4] <整数组(这个“,”是故意多打的)>
 下面是FVVV struct的用法:
  - `asBool()`、`asInt()`、`asDouble()`、`asString()`、`asBools()`、`asInts()`、`asDoubles()`、`asStrings()`: 分别会返回`bool`、`int`、`double`、`std::string`、`std::vector<bool>`、`std::vector<int>`、`std::vector<double>`、`std::vector<std::string>`类型的值，如果值不存在，会分别返回`false`、`0`、`0.0`、`""`、`{}`、`{}`、`{}`、`{}`
  - `as<typename>()`: 会返回一个`std::optional`类型的值
- - `hasDesc()`: 用于判断值是否有描述，会返回一个`bool`类型的值
  - `isEmpty()`、`isNotEmpty()`: 用于判断值是否存在(或是否存在子项)，会返回一个`bool`类型的值
  - `isType<typename>()`: 用于判断值是否为指定类型，会返回一个`bool`类型的值(如果值不存在，会返回`false`)
  - `print()`或`print("min")`或`print("nodesc")`或`print("biglist")`: 会把当前struct内所有值输出为FVV格式文本，传入“min”时会去除掉所有值的描述，并去除所有空格和换行，传入“nodesc”时会去除掉所有值的描述(两者均为在输出时去除，不会影响struct内的值)，传入“biglist”时会为所有组值中的所有值添加缩进与换行(而不是让所有值都处于同一行)
 
 
+## Go
+
+下面是FVVV struct的用法:
+ - `IsEmpty()`、`IsNotEmpty()`: 用于判断值是否存在(或是否存在子项)，会返回一个`bool`类型的值
+ - `SubIsEmpty()`、`SubIsNotEmpty()`: 用于判断是否存在子项，会返回一个`bool`类型的值
+ - `Print()`或`Print("min")`或`Print("nodesc")`或`Print("biglist")`: 会把当前struct内所有值输出为FVV格式文本，传入“min”时会去除掉所有值的描述，并去除所有空格和换行，传入“nodesc”时会去除掉所有值的描述(两者均为在输出时去除，不会影响struct内的值)，传入“biglist”时会为所有组值中的所有值添加缩进与换行(而不是让所有值都处于同一行)
+ - `AddFromString(str)`: 用于解析传入的FVV格式文本到当前struct
+
+
 ## 注意点
- - 注释和字符串赋值支持`转义`，但是`仅支持转义“>”、“"”、“{”、“}”`，例如`<\>>`、`"\""`，解析时会自动去除里面的“\”，`直接使用“\”不需要重复两个“\”`，因为根本没做多复杂的转义检测逻辑
+ - 注释和字符串赋值支持`转义`，但是`仅支持转义“>”、“"”，例如`<\>>`、`"\""`，解析时会自动去除里面的“\”，`直接使用“\”不需要重复两个“\”`，因为根本没做多复杂的转义检测逻辑
  - `仅支持UTF-8文本`，`支持UTF-8 with BOM文本`，`支持LF和CRLF文本`
