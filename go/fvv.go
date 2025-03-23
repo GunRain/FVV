@@ -236,7 +236,7 @@ func (fvvv *FVVV) AddFromString(txt string) {
 	}
 	txtBytes = bytes.ReplaceAll(txtBytes, []byte("\r\n"), []byte("\n"))
 	txtBytes = bytes.ReplaceAll(txtBytes, []byte("\r"), []byte("\n"))
-	txt = strings.TrimSpace(string(txtBytes))
+	txt = strings.TrimSpace(string(txtBytes)) + "\n"
 	if txt == "" {
 		return
 	}
