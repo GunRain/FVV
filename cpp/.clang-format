@@ -38,7 +38,7 @@ IncludeCategories:
     Priority: 3
 IncludeIsMainRegex: '([-_](test|unittest))?$'
 IndentWidth: 4
-InsertNewlineAtEOF: true
+InsertNewlineAtEOF: false
 MacroBlockBegin: ''
 MacroBlockEnd: ''
 MaxEmptyLinesToKeep: 1
