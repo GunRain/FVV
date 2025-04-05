@@ -1,11 +1,12 @@
----
-Language: Cpp
 BasedOnStyle: Google
 AccessModifierOffset: -4
 AlignConsecutiveAssignments: true
+AlignConsecutiveBitFields: true
 AlignConsecutiveDeclarations: true
+AlignConsecutiveMacros: true
 AlignOperands: true
 AlignTrailingComments: true
+AllowShortFunctionsOnASingleLine: Inline
 AlwaysBreakTemplateDeclarations: Yes
 BraceWrapping: 
   AfterCaseLabel: true
@@ -50,6 +51,4 @@ SpacesInConditionalStatement: false
 SpacesInCStyleCastParentheses: false
 SpacesInParentheses: false
 TabWidth: 4
-AllowShortFunctionsOnASingleLine: Inline
-AlignConsecutiveMacros: true
-AlignConsecutiveBitFields: true
+UseTab: Never
