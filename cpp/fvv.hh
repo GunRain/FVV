@@ -352,7 +352,7 @@ public:
                         if (!is_biglist) {
                             result.pop_back();
                             if (!is_min) result.pop_back();
-                        } else if (is_biglist)
+                        } else
                             result += indent;
                         result += ']';
                     } else if (node->isType<vec<bool>>()) {
@@ -372,7 +372,7 @@ public:
                         if (!is_biglist) {
                             result.pop_back();
                             if (!is_min) result.pop_back();
-                        } else if (is_biglist)
+                        } else
                             result += indent;
                         result += ']';
                     } else if (node->isType<vec<int>>()) {
@@ -392,7 +392,7 @@ public:
                         if (!is_biglist) {
                             result.pop_back();
                             if (!is_min) result.pop_back();
-                        } else if (is_biglist)
+                        } else
                             result += indent;
                         result += ']';
                     } else if (node->isType<vec<double>>()) {
@@ -412,7 +412,7 @@ public:
                         if (!is_biglist) {
                             result.pop_back();
                             if (!is_min) result.pop_back();
-                        } else if (is_biglist)
+                        } else
                             result += indent;
                         result += ']';
                     }
@@ -500,7 +500,7 @@ public:
                             }
                             if (in_value || group_num > 0) tmp_desc += idx_char;
                             return false;
-                        } else if (idx_char == ">" && is_real_char) {
+                        } else if (idx_char == ">") {
                             idx_desc = tmp_desc;
                             _clearAndShrink(&tmp_desc);
                             _shrink(&idx_desc);
