@@ -226,46 +226,15 @@ public:
         /// @brief 描述
         str desc = "";
         /// @brief 链接名称
-        str              link       = "";
-        FVV_INLINE       FVVV(void) = default;
-        FVV_INLINE       FVVV(const bool v) : value(v) {}
-        FVV_INLINE       FVVV(const int v) : value(v) {}
-        FVV_INLINE       FVVV(const double v) : value(v) {}
-        FVV_INLINE       FVVV(const strv& v) : value(v.data()) {}
-        FVV_INLINE       FVVV(const vec<bool>& v) : value(v) {}
-        FVV_INLINE       FVVV(const vec<int>& v) : value(v) {}
-        FVV_INLINE       FVVV(const vec<double>& v) : value(v) {}
-        FVV_INLINE       FVVV(const vec<str>& v) : value(v) {}
+        str        link       = "";
+        FVV_INLINE FVVV(void) = default;
+        FVVV(const FVVVT& v) : value(v) {}
         FVV_INLINE FVVV& operator[](const strv& key) { return sub[key.data()]; }
-        FVV_INLINE FVVV& operator=(const bool val) {
+        FVV_INLINE FVVV& operator=(const FVVVT& val) {
             value = val;
             return *this;
         }
-        FVV_INLINE FVVV& operator=(const int val) {
-            value = val;
-            return *this;
-        }
-        FVV_INLINE FVVV& operator=(const double val) {
-            value = val;
-            return *this;
-        }
-        FVV_INLINE FVVV& operator=(const strv& val) {
-            value = val.data();
-            return *this;
-        }
-        FVV_INLINE FVVV& operator=(const vec<bool>& val) {
-            value = val;
-            return *this;
-        }
-        FVV_INLINE FVVV& operator=(const vec<int>& val) {
-            value = val;
-            return *this;
-        }
-        FVV_INLINE FVVV& operator=(const vec<double>& val) {
-            value = val;
-            return *this;
-        }
-        FVV_INLINE FVVV& operator=(const vec<str>& val) {
+        FVV_INLINE FVVV& operator=(FVVVT&& val) {
             value = val;
             return *this;
         }
