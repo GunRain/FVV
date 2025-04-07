@@ -608,20 +608,20 @@ public:
                                         else {
                                             vec<str> tmp_names = _split(value, '.');
                                             FVVV*    tmp_key   = idx_key;
-                                            for (size_t i = 0; i < tmp_names.size(); ++i)
-                                                if (!tmp_key->sub.hasKey(tmp_names[i])) {
+                                            for (const str& tmp_name : tmp_names)
+                                                if (!tmp_key->sub.hasKey(tmp_name)) {
                                                     tmp_key = nullptr;
                                                     break;
                                                 } else
-                                                    tmp_key = &(*tmp_key)[tmp_names[i]];
+                                                    tmp_key = &(*tmp_key)[tmp_name];
                                             if (!tmp_key) {
                                                 tmp_key = &target_fvvv;
-                                                for (size_t i = 0; i < tmp_names.size(); ++i)
-                                                    if (!tmp_key->sub.hasKey(tmp_names[i])) {
+                                                for (const str& tmp_name : tmp_names)
+                                                    if (!tmp_key->sub.hasKey(tmp_name)) {
                                                         tmp_key = nullptr;
                                                         break;
                                                     } else
-                                                        tmp_key = &(*tmp_key)[tmp_names[i]];
+                                                        tmp_key = &(*tmp_key)[tmp_name];
                                             }
                                             if (tmp_key) {
                                                 if (tmp_key->sub.empty())

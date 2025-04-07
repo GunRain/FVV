@@ -303,10 +303,10 @@ func (fvvv *FVVV) AddFromString(txt string) {
 						if idx_char == ']' {
 							in_list = false
 							j := 1
-							for idx-j-1 >= 0 && _eq_or(txt[idx-j-1], ' ', '\t') {
+							for _eq_or(txt[idx-j], ' ', '\t') {
 								j++
 							}
-							if idx-j >= 0 && (txt[idx-j] == ',' || txt[idx-j] == '\n') {
+							if txt[idx-j] == ',' || txt[idx-j] == '\n' {
 								return false
 							}
 						} else if value == "" && (!is_str || !is_empty_str) {
