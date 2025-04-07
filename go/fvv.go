@@ -107,7 +107,7 @@ func (fvvv *FVVV) Print(tp ...string) string {
 						if !is_min {
 							result = result[:len(result)-1]
 						}
-					} else if is_biglist {
+					} else {
 						result += indent
 					}
 					result += "]"
@@ -134,7 +134,7 @@ func (fvvv *FVVV) Print(tp ...string) string {
 						if !is_min {
 							result = result[:len(result)-1]
 						}
-					} else if is_biglist {
+					} else {
 						result += indent
 					}
 					result += "]"
@@ -161,7 +161,7 @@ func (fvvv *FVVV) Print(tp ...string) string {
 						if !is_min {
 							result = result[:len(result)-1]
 						}
-					} else if is_biglist {
+					} else {
 						result += indent
 					}
 					result += "]"
@@ -188,7 +188,7 @@ func (fvvv *FVVV) Print(tp ...string) string {
 						if !is_min {
 							result = result[:len(result)-1]
 						}
-					} else if is_biglist {
+					} else {
 						result += indent
 					}
 					result += "]"
