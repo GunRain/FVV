@@ -298,13 +298,13 @@ public:
             std::function<void(const str&, const FVVV*, size_t)> print_func;
             print_func = [&](const str& path, const FVVV* node, size_t indent_lv) {
                 str indent(indent_lv * 2, ' ');
-                if (!node->sub.empty() && !path.empty()) {
+                if (!node->sub.empty() && !path.empty() && node->link.empty()) {
                     if (is_min)
                         result += path + "={";
                     else
                         result += indent + path + " = {\n";
                 }
-                if (node->sub.empty() && node->isNotEmpty()) {
+                if (!node->link.empty() || node->isNotEmpty()) {
                     if (is_min)
                         result += path + '=';
                     else
@@ -436,7 +436,7 @@ public:
                 } else
                     for (const PairList<str, FVVV>::Pair& item : node->sub)
                         print_func(item.key(), &item.value(), indent_lv + 1);
-                if (!node->sub.empty() && !path.empty()) {
+                if (!node->sub.empty() && !path.empty() && node->link.empty()) {
                     if (is_min)
                         result += '}';
                     else

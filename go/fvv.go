@@ -59,14 +59,14 @@ func (fvvv *FVVV) Print(tp ...string) string {
 	var print_func func(path string, node *FVVV, indent_lv int)
 	print_func = func(path string, node *FVVV, indent_lv int) {
 		indent := strings.Repeat(" ", indent_lv*2)
-		if node.SubIsNotEmpty() && path != "" {
+		if node.SubIsNotEmpty() && path != "" && node.Link == "" {
 			if is_min {
 				result += path + "={"
 			} else {
 				result += indent + path + " = {\n"
 			}
 		}
-		if node.SubIsEmpty() && node.IsNotEmpty() {
+		if node.Link != "" || node.IsNotEmpty() {
 			if is_min {
 				result += path + "="
 			} else {
@@ -204,7 +204,7 @@ func (fvvv *FVVV) Print(tp ...string) string {
 				print_func(key, value, indent_lv+1)
 			}
 		}
-		if node.SubIsNotEmpty() && path != "" {
+		if node.SubIsNotEmpty() && path != "" && node.Link == "" {
 			if is_min {
 				result += "}"
 			} else {
