@@ -75,6 +75,7 @@ func (fvvv *FVVV) Print(tp ...string) string {
 			if node.Link != "" {
 				result += node.Link
 			} else {
+				vec_indent := strings.Repeat(" ", (indent_lv+1)*2)
 				switch v := node.Value.(type) {
 				case string:
 					result += `"` + strings.ReplaceAll(v, `"`, `\"`) + `"`
@@ -86,7 +87,6 @@ func (fvvv *FVVV) Print(tp ...string) string {
 					result += strconv.FormatFloat(v, 'f', -1, 64)
 				case []string:
 					result += "["
-					vec_indent := strings.Repeat(" ", (indent_lv+1)*2)
 					if is_biglist {
 						result += "\n"
 					}
@@ -113,7 +113,6 @@ func (fvvv *FVVV) Print(tp ...string) string {
 					result += "]"
 				case []bool:
 					result += "["
-					vec_indent := strings.Repeat(" ", (indent_lv+1)*2)
 					if is_biglist {
 						result += "\n"
 					}
@@ -140,7 +139,6 @@ func (fvvv *FVVV) Print(tp ...string) string {
 					result += "]"
 				case []int:
 					result += "["
-					vec_indent := strings.Repeat(" ", (indent_lv+1)*2)
 					if is_biglist {
 						result += "\n"
 					}
@@ -167,7 +165,6 @@ func (fvvv *FVVV) Print(tp ...string) string {
 					result += "]"
 				case []float64:
 					result += "["
-					vec_indent := strings.Repeat(" ", (indent_lv+1)*2)
 					if is_biglist {
 						result += "\n"
 					}
