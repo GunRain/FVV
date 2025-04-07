@@ -472,7 +472,6 @@ func (fvvv *FVVV) AddFromString(txt string) {
 							}
 							idx_key = idx_key.Sub[key]
 						}
-
 					}
 					for range last_group_names[len(last_group_names)-1] {
 						group_names = group_names[:len(group_names)-1]
