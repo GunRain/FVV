@@ -228,15 +228,47 @@ public:
         /// @brief 链接名称
         str              link       = "";
         FVV_INLINE       FVVV(void) = default;
-        FVV_INLINE       FVVV(bool v) : value(v) {}
-        FVV_INLINE       FVVV(int v) : value(v) {}
-        FVV_INLINE       FVVV(double v) : value(v) {}
+        FVV_INLINE       FVVV(const bool v) : value(v) {}
+        FVV_INLINE       FVVV(const int v) : value(v) {}
+        FVV_INLINE       FVVV(const double v) : value(v) {}
         FVV_INLINE       FVVV(const strv& v) : value(v.data()) {}
         FVV_INLINE       FVVV(const vec<bool>& v) : value(v) {}
         FVV_INLINE       FVVV(const vec<int>& v) : value(v) {}
         FVV_INLINE       FVVV(const vec<double>& v) : value(v) {}
         FVV_INLINE       FVVV(const vec<str>& v) : value(v) {}
         FVV_INLINE FVVV& operator[](const strv& key) { return sub[key.data()]; }
+        FVV_INLINE FVVV& operator=(const bool val) {
+            value = val;
+            return *this;
+        }
+        FVV_INLINE FVVV& operator=(const int val) {
+            value = val;
+            return *this;
+        }
+        FVV_INLINE FVVV& operator=(const double val) {
+            value = val;
+            return *this;
+        }
+        FVV_INLINE FVVV& operator=(const strv& val) {
+            value = val.data();
+            return *this;
+        }
+        FVV_INLINE FVVV& operator=(const vec<bool>& val) {
+            value = val;
+            return *this;
+        }
+        FVV_INLINE FVVV& operator=(const vec<int>& val) {
+            value = val;
+            return *this;
+        }
+        FVV_INLINE FVVV& operator=(const vec<double>& val) {
+            value = val;
+            return *this;
+        }
+        FVV_INLINE FVVV& operator=(const vec<str>& val) {
+            value = val;
+            return *this;
+        }
         /// @brief  以bool类型返回值
         /// @return 值
         FVV_INLINE bool asBool(void) const { return as<bool>().value_or(defaultBool); }
@@ -570,7 +602,7 @@ public:
                                     if (i == value_names.size() - 1) {
                                         if (is_list) {
                                             if (is_str)
-                                                (*idx_key)[key] = FVVV(values);
+                                                (*idx_key)[key] = values;
                                             else {
                                                 if (values.empty()) {
                                                     (*idx_key)[key] = FVVV();
@@ -583,27 +615,27 @@ public:
                                                     std::transform(values.begin(), values.end(),
                                                                    std::back_inserter(tmp),
                                                                    [](const strv& s) { return s == "true"; });
-                                                    (*idx_key)[key] = FVVV(tmp);
+                                                    (*idx_key)[key] = tmp;
                                                 } else if (_isInt(tmp_str)) {
                                                     vec<int> tmp;
                                                     for (const str& str : values)
                                                         if (_isInt(str)) tmp.push_back(std::stoi(str));
-                                                    (*idx_key)[key] = FVVV(tmp);
+                                                    (*idx_key)[key] = tmp;
                                                 } else if (_isDouble(tmp_str)) {
                                                     vec<double> tmp;
                                                     for (const str& str : values)
                                                         if (_isDouble(str)) tmp.push_back(std::stod(str));
-                                                    (*idx_key)[key] = FVVV(tmp);
+                                                    (*idx_key)[key] = tmp;
                                                 }
                                             }
                                         } else if (is_str)
-                                            (*idx_key)[key] = FVVV(value);
+                                            (*idx_key)[key] = value;
                                         else if (_eq_or(value, str("true"), str("false")))
-                                            (*idx_key)[key] = FVVV(value == "true");
+                                            (*idx_key)[key] = value == "true";
                                         else if (_isInt(value))
-                                            (*idx_key)[key] = FVVV(std::stoi(value));
+                                            (*idx_key)[key] = std::stoi(value);
                                         else if (_isDouble(value))
-                                            (*idx_key)[key] = FVVV(std::stod(value));
+                                            (*idx_key)[key] = std::stod(value);
                                         else {
                                             vec<str> tmp_names = _split(value, '.');
                                             FVVV*    tmp_key   = idx_key;
