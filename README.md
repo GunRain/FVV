@@ -4,7 +4,7 @@
 This page is written in Chinese, please use the translation if you do not understand.
 
 
-闲余时间搓出来的文本格式，目前支持`C++`(最低支持C++`17`)和`Go`(最低支持Go`1.18`)，以后可能会支持`Dart`、`Kotlin`等常用语言，反正目前是还没有写的。
+闲余时间搓出来的文本格式，目前支持`C++`(最低支持C++`17`)、`Go`(最低支持Go`1.18`)以及`Dart`(最低支持Dart`3`)，以后可能会支持`Kotlin`等常用语言，反正目前是还没有写的。
 
 不会支持的语言: `Python`、`Java`、`Rust`等
 
@@ -181,6 +181,11 @@ ValueName6 = [1, 1, 4, 5, 1, 4] <整数组(这个“,”是故意多打的)>
  - `SubIsEmpty()`、`SubIsNotEmpty()`: 用于判断是否存在子项，会返回一个`bool`类型的值
  - `Print()`或`Print("min")`或`Print("nodesc")`或`Print("biglist")`: 会把当前struct内所有值输出为FVV格式文本，传入“min”时会去除掉所有值的描述，并去除所有空格和换行，传入“nodesc”时会去除掉所有值的描述(两者均为在输出时去除，不会影响struct内的值)，传入“biglist”时会为所有组值中的所有值添加缩进与换行(而不是让所有值都处于同一行)
  - `AddFromString(str)`: 用于解析传入的FVV格式文本到当前struct
+
+
+## Dart
+
+不想写了，看[Pub文档](https://pub-web.flutter-io.cn/documentation/fvv/latest/fvv/)吧！
 
 
 ## 注意点
