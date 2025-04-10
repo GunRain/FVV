@@ -40,10 +40,10 @@ class FVVV {
   int asInt([int defaultVal = 0]) => as<int>() ?? defaultVal;
   double asDouble([double defaultVal = 0]) => as<double>() ?? defaultVal;
   String asString([String defaultVal = '']) => as<String>() ?? defaultVal;
-  List<bool> asBools([List<bool>? defaultVal]) => as<List<bool>>() ?? defaultVal ?? [];
-  List<int> asInts([List<int>? defaultVal]) => as<List<int>>() ?? defaultVal ?? [];
-  List<double> asDoubles([List<double>? defaultVal]) => as<List<double>>() ?? defaultVal ?? [];
-  List<String> asStrings([List<String>? defaultVal]) => as<List<String>>() ?? defaultVal ?? [];
+  List<bool> asBools([List<bool>? defaultVal]) => (as<List<bool>>() ?? defaultVal ?? []).toList();
+  List<int> asInts([List<int>? defaultVal]) => (as<List<int>>() ?? defaultVal ?? []).toList();
+  List<double> asDoubles([List<double>? defaultVal]) => (as<List<double>>() ?? defaultVal ?? []).toList();
+  List<String> asStrings([List<String>? defaultVal]) => (as<List<String>>() ?? defaultVal ?? []).toList();
 
   bool get isEmpty {
     if (_value == null) return true;
