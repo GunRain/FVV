@@ -135,9 +135,9 @@ class FVVV {
                   result += ' ';
                 }
               }
-              if (!isBiglist) {
+              if (!isBiglist && v.isNotEmpty) {
                 result = result.removeLast;
-                if (!isMin) {
+                if (!isMin && v.isNotEmpty) {
                   result = result.removeLast;
                 }
               } else {
@@ -162,9 +162,9 @@ class FVVV {
                   result += ' ';
                 }
               }
-              if (!isBiglist) {
+              if (!isBiglist && v.isNotEmpty) {
                 result = result.removeLast;
-                if (!isMin) {
+                if (!isMin && v.isNotEmpty) {
                   result = result.removeLast;
                 }
               } else {
@@ -189,9 +189,9 @@ class FVVV {
                   result += ' ';
                 }
               }
-              if (!isBiglist) {
+              if (!isBiglist && v.isNotEmpty) {
                 result = result.removeLast;
-                if (!isMin) {
+                if (!isMin && v.isNotEmpty) {
                   result = result.removeLast;
                 }
               } else {
@@ -216,9 +216,9 @@ class FVVV {
                   result += ' ';
                 }
               }
-              if (!isBiglist) {
+              if (!isBiglist && v.isNotEmpty) {
                 result = result.removeLast;
-                if (!isMin) {
+                if (!isMin && v.isNotEmpty) {
                   result = result.removeLast;
                 }
               } else {
