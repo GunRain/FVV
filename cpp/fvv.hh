@@ -263,6 +263,16 @@ public:
         /// @brief  以vector<string>类型返回值
         /// @return 值
         FVV_INLINE const vec<str> asStrings(void) const { return as<vec<str>>().value_or(defaultStrings); }
+        template <typename T>
+        /// @brief  以指定类型返回值
+        /// @param  类型
+        /// @return 值为指定类型时返回值，否则为nullopt
+        FVV_INLINE std::optional<T> as(void) const {
+            if (isType<T>())
+                return std::get<T>(value);
+            else
+                return std::nullopt;
+        }
         /// @brief  判断值是否为空
         /// @return 值为空时返回true，否则为false
         FVV_INLINE bool isEmpty(void) const {
@@ -277,16 +287,6 @@ public:
         /// @return 值为指定类型时返回true，否则为false
         FVV_INLINE bool isType(void) const {
             return isNotEmpty() && std::holds_alternative<T>(value);
-        }
-        template <typename T>
-        /// @brief  以指定类型返回值
-        /// @param  类型
-        /// @return 值为指定类型时返回值，否则为nullopt
-        FVV_INLINE std::optional<T> as(void) const {
-            if (isType<T>())
-                return std::get<T>(value);
-            else
-                return std::nullopt;
         }
         /// @brief  输出格式化后的值
         /// @param  为“common”或空时正常输出
