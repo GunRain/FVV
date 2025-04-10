@@ -182,7 +182,7 @@ ValueName6 = [1, 1, 4, 5, 1, 4] <整数组(这个“,”是故意多打的)>
  - `AddFromString(str)`: 用于解析传入的FVV格式文本到当前struct
 
 
-## Dart
+## [Dart](https://pub-web.flutter-io.cn/packages/fvv)
 
 不想写了，看[Pub文档](https://pub-web.flutter-io.cn/documentation/fvv/latest/fvv/)吧！
 
