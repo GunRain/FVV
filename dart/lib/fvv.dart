@@ -44,6 +44,10 @@ class FVVV {
   List<int> asInts([List<int>? defaultVal]) => (as<List<int>>() ?? defaultVal ?? []).toList();
   List<double> asDoubles([List<double>? defaultVal]) => (as<List<double>>() ?? defaultVal ?? []).toList();
   List<String> asStrings([List<String>? defaultVal]) => (as<List<String>>() ?? defaultVal ?? []).toList();
+  List<bool> asBoolsRef([List<bool>? defaultVal]) => as<List<bool>>() ?? defaultVal ?? [];
+  List<int> asIntsRef([List<int>? defaultVal]) => as<List<int>>() ?? defaultVal ?? [];
+  List<double> asDoublesRef([List<double>? defaultVal]) => as<List<double>>() ?? defaultVal ?? [];
+  List<String> asStringsRef([List<String>? defaultVal]) => as<List<String>>() ?? defaultVal ?? [];
 
   bool get isEmpty {
     if (_value == null) return true;
