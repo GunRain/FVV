@@ -287,7 +287,7 @@ class FVVV {
     }
 
     bool endGroup = false,
-        oldFvv = false,
+        oldFVV = false,
         isRealChar = false,
         inValue = false,
         inDesc = false,
@@ -465,8 +465,8 @@ class FVVV {
             }
           }
         } else {
-          if (!oldFvv && idxChar == '{' && valueName.isEmpty) {
-            oldFvv = true;
+          if (!oldFVV && idxChar == '{' && valueName.isEmpty) {
+            oldFVV = true;
             return false;
           } else if (idxChar == '=') {
             valueNames = valueName.trim().split(".");
