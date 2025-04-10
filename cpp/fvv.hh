@@ -263,10 +263,10 @@ public:
         /// @brief  以vector<string>类型返回值
         /// @return 值
         FVV_INLINE const vec<str> asStrings(void) const { return as<vec<str>>().value_or(defaultStrings); }
-        template <typename T>
         /// @brief  以指定类型返回值
         /// @param  类型
         /// @return 值为指定类型时返回值，否则为nullopt
+        template <typename T>
         FVV_INLINE std::optional<T> as(void) const {
             if (isType<T>())
                 return std::get<T>(value);
