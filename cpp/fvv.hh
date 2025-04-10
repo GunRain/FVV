@@ -221,15 +221,16 @@ public:
     public:
         using FVVVT =
             std::variant<std::monostate, bool, int, double, str, vec<bool>, vec<int>, vec<double>, vec<str>>;
+        /// @brief 值
         FVVVT value;
         /// @brief 子值
         PairList<str, FVVV> sub = {};
         /// @brief 描述
         str desc = "";
         /// @brief 链接名称
-        str        link       = "";
-        FVV_INLINE FVVV(void) = default;
-        FVV_INLINE FVVV(const FVVVT& v) : value(v) {}
+        str              link       = "";
+        FVV_INLINE       FVVV(void) = default;
+        FVV_INLINE       FVVV(const FVVVT& v) : value(v) {}
         FVV_INLINE FVVV& operator[](const strv& key) { return sub[key.data()]; }
         FVV_INLINE FVVV& operator=(const FVVVT& val) {
             value = val;
@@ -288,11 +289,11 @@ public:
         FVV_INLINE bool isType(void) const {
             return isNotEmpty() && std::holds_alternative<T>(value);
         }
-        /// @brief  输出格式化后的值
+        /// @brief  输出FVV文本格式格式化后的值
         /// @param  为“common”或空时正常输出
         /// @param  为“min”时最小化输出
         /// @param  为“biglist”时会把值组内每个值换行输出
-        /// @return 格式化后的值
+        /// @return FVV文本格式格式化后的值
         FVV_INLINE str print(const strv& type = "common") const {
             bool is_min = type == "min", is_biglist = type == "biglist", is_nodesc = type == "nodesc";
             str  result;
@@ -465,7 +466,7 @@ public:
             _shrink(&result);
             return result;
         }
-        /// @brief            解析字符串为FVVV
+        /// @brief            解析字符串到此FVVV
         /// @param txt        FVV文本格式的字符串
         FVV_INLINE void addFromString(str txt) {
             if (txt.size() >= 3 && static_cast<unsigned char>(txt[0]) == _bom[0] &&
@@ -629,7 +630,7 @@ public:
                                             }
                                             (*idx_key)[key].link = value;
                                         }
-                                        (*idx_key)[key].desc = idx_desc;
+                                        (*idx_key)[key].desc  = idx_desc;
                                         _clearAndShrink(&idx_desc, &value, &values, &value_names);
                                         is_list = is_str = in_value = false;
                                         continue;
