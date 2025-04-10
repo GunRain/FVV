@@ -303,8 +303,8 @@ class FVVV {
     for (int rune in txt.runes) {
       idxChar = String.fromCharCode(rune);
       isRealChar = lastChar != '\\';
-      if (((rootKey) {
-        FVVV idxKey = this;
+      if (((FVVV rootKey) {
+        FVVV idxKey = rootKey;
         if (inDesc) {
           if (idxChar != '>' || !isRealChar) {
             if (idxChar == '>' && !isRealChar) tmpDesc = tmpDesc.removeLast;
@@ -486,7 +486,7 @@ class FVVV {
                 idxKey = idxKey[key];
               }
             }
-            for (var _ in lastGroupNames.last) {
+            for (String _ in lastGroupNames.last) {
               groupNames = groupNames.sublist(0, groupNames.length - 1);
             }
             lastGroupNames = lastGroupNames.sublist(

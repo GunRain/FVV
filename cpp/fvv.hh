@@ -217,7 +217,8 @@ public:
     static const vec<int>         defaultInts;
     static const vec<double>      defaultDoubles;
     static const vec<str>         defaultStrings;
-    struct FVVV {
+    class FVVV {
+    public:
         using FVVVT =
             std::variant<std::monostate, bool, int, double, str, vec<bool>, vec<int>, vec<double>, vec<str>>;
         FVVVT value;
@@ -228,7 +229,7 @@ public:
         /// @brief 链接名称
         str        link       = "";
         FVV_INLINE FVVV(void) = default;
-        FVVV(const FVVVT& v) : value(v) {}
+        FVV_INLINE FVVV(const FVVVT& v) : value(v) {}
         FVV_INLINE FVVV& operator[](const strv& key) { return sub[key.data()]; }
         FVV_INLINE FVVV& operator=(const FVVVT& val) {
             value = val;
@@ -464,13 +465,9 @@ public:
             _shrink(&result);
             return result;
         }
-    };
-    class Parser {
-    public:
         /// @brief            解析字符串为FVVV
         /// @param txt        FVV文本格式的字符串
-        /// @param target_fvvv 在外部定义好了的FVVV
-        static FVV_INLINE void ReadString(str txt, FVVV& target_fvvv) {
+        FVV_INLINE void addFromString(str txt) {
             if (txt.size() >= 3 && static_cast<unsigned char>(txt[0]) == _bom[0] &&
                 static_cast<unsigned char>(txt[1]) == _bom[1] && static_cast<unsigned char>(txt[2]) == _bom[2])
                 txt = txt.substr(3);
@@ -488,9 +485,10 @@ public:
                  in_str = false, is_str = false, is_empty_str = false, in_list = false, is_list = false;
             size_t  group_num      = 0;
             uint8_t last_char_size = 0;
+            FVVV*   root_key       = this;
             _utf8ForEach(
                 txt, txt.size(), [&](const size_t& idx, const strv& idx_char, const uint8_t& char_size) -> bool {
-                    FVVV* idx_key = &target_fvvv;
+                    FVVV* idx_key = root_key;
                     is_real_char =
                         idx >= 1 ? (last_char_size == 1 ? (txt[idx - 1] != '\\' ? true : false) : true) : true;
                     last_char_size = char_size;
@@ -615,7 +613,7 @@ public:
                                                 } else
                                                     tmp_key = &(*tmp_key)[tmp_name];
                                             if (!tmp_key) {
-                                                tmp_key = &target_fvvv;
+                                                tmp_key = root_key;
                                                 for (const str& tmp_name : tmp_names)
                                                     if (!tmp_key->sub.hasKey(tmp_name)) {
                                                         tmp_key = nullptr;
@@ -742,8 +740,6 @@ public:
         }
         return hasDigit;
     }
-
-private:
     template <typename T>
     static FVV_INLINE void _shrink(T* container) {
         if (container) container->shrink_to_fit();
