@@ -358,11 +358,33 @@ class FVVV {
             } else if (inList && eqOr([idxChar, ',', ']', '\n'])) {
               if (idxChar == ']') {
                 inList = false;
-                int j = idxChar.length;
-                while (eqOr([txt[idx - j], ' ', '\t'])) {
-                  j++;
+                int pos = idxChar.length;
+                bool inListDesc = false;
+                for (;;) {
+                  if (() {
+                    switch (txt[idx - pos]) {
+                      case '<':
+                        if (!inListDesc) return true;
+                        if (idx - pos < 1 || txt[idx - pos - 1] != '\\') inListDesc = false;
+                        return false;
+                      case '>':
+                        inListDesc = true;
+                        return false;
+                      case ' ':
+                      case '\t':
+                        return false;
+                      case ',':
+                      case '\n':
+                      default:
+                        if (inListDesc) return false;
+                        return true;
+                    }
+                  }()) {
+                    break;
+                  }
+                  pos++;
                 }
-                if (txt[idx - j] == ',' || txt[idx - j] == '\n') return false;
+                if (txt[idx - pos] == ',' || txt[idx - pos] == '\n') return false;
               } else if (value.isEmpty && (!isStr || !isEmptyStr)) {
                 return false;
               }

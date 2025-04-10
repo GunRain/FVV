@@ -299,11 +299,41 @@ func (fvvv *FVVV) AddFromString(txt string) {
 					} else if in_list && _eq_or(idx_char, ',', ']', '\n') {
 						if idx_char == ']' {
 							in_list = false
-							j := 1
-							for _eq_or(txt[idx-j], ' ', '\t') {
-								j++
+							pos := 1
+							in_list_desc := false
+							for {
+								if func() bool {
+									switch txt[idx-pos] {
+									case '<':
+										if !in_list_desc {
+											return true
+										}
+										if idx-pos < 1 || txt[idx-pos-1] != '\\' {
+											in_list_desc = false
+										}
+										return false
+									case '>':
+										in_list_desc = true
+										return false
+									case ' ', '\t':
+										return false
+									case ',', '\n':
+										if in_list_desc {
+											return false
+										}
+										return true
+									default:
+										if in_list_desc {
+											return false
+										}
+										return true
+									}
+								}() {
+									break
+								}
+								pos++
 							}
-							if txt[idx-j] == ',' || txt[idx-j] == '\n' {
+							if txt[idx-pos] == ',' || txt[idx-pos] == '\n' {
 								return false
 							}
 						} else if value == "" && (!is_str || !is_empty_str) {

@@ -508,7 +508,7 @@ public:
                             return false;
                         }
                     } else {
-                        if (!in_str && (idx_char == " " || idx_char == "\t" || idx_char == "\r"))
+                        if (!in_str && (idx_char == " " || idx_char == "\t"))
                             return false;
                         else if (idx_char == "<") {
                             in_desc = true;
@@ -543,10 +543,34 @@ public:
                                 return false;
                             } else if (in_list && _eq_or(idx_char, strv(","), strv("]"), strv("\n"))) {
                                 if (idx_char == "]") {
-                                    in_list  = false;
-                                    size_t j = 1;
-                                    while (_eq_or(txt[idx - j], ' ', '\t', '\r')) ++j;
-                                    if (txt[idx - j] == ',' || txt[idx - j] == '\n') return false;
+                                    in_list             = false;
+                                    size_t pos          = 1;
+                                    bool   in_list_desc = false;
+                                    for (;;) {
+                                        if ([&]() -> bool {
+                                                switch (txt[idx - pos]) {
+                                                    case '<':
+                                                        if (!in_list_desc) return true;
+                                                        if (idx - pos < 1 || txt[idx - pos - 1] != '\\')
+                                                            in_list_desc = false;
+                                                        return false;
+                                                    case '>':
+                                                        in_list_desc = true;
+                                                        return false;
+                                                    case ' ':
+                                                    case '\t':
+                                                        return false;
+                                                    case ',':
+                                                    case '\n':
+                                                    default:
+                                                        if (in_list_desc) return false;
+                                                        return true;
+                                                }
+                                            }())
+                                            break;
+                                        ++pos;
+                                    }
+                                    if (txt[idx - pos] == ',' || txt[idx - pos] == '\n') return false;
                                 } else if (value.empty() && (!is_str || !is_empty_str))
                                     return false;
                                 values.push_back(value);
@@ -630,7 +654,7 @@ public:
                                             }
                                             (*idx_key)[key].link = value;
                                         }
-                                        (*idx_key)[key].desc  = idx_desc;
+                                        (*idx_key)[key].desc = idx_desc;
                                         _clearAndShrink(&idx_desc, &value, &values, &value_names);
                                         is_list = is_str = in_value = false;
                                         continue;
