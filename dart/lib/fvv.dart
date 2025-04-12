@@ -26,9 +26,18 @@ class FVVV {
   FVVV(this._value, {Map<String, FVVV>? sub, this.desc = '', this.link = ''}) : sub = sub ?? {};
 
   FVVV operator [](String key) => sub.putIfAbsent(key, () => FVVV(null));
-
   void operator []=(String key, dynamic val) =>
       sub.containsKey(key) ? sub[key]!._value = val : sub[key] = FVVV(val);
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is FVVV && _value == other._value;
+  }
+
+  @override
+  int get hashCode => _value.hashCode;
+  @override
+  String toString() => _value?.toString() ?? 'null';
 
   T? as<T>([T? dfltVal]) {
     if (_value is T) return _value;
@@ -59,7 +68,6 @@ class FVVV {
   bool get isNotEmpty => !isEmpty;
 
   bool isType<T>() => _value is T;
-
   Type getType() {
     if (_value is FVVV) {
       return (_value as FVVV).getType();
@@ -67,9 +75,6 @@ class FVVV {
       return _value.runtimeType;
     }
   }
-
-  @override
-  String toString() => _value?.toString() ?? 'null';
 
   String print([String type = 'common']) {
     bool isMin = false, isBiglist = false, isNodesc = false;

@@ -42,6 +42,7 @@ namespace FVV {
     template <typename Tp>
     using vec = vector<Tp>;
 
+    // Lite Code from CU Utils (https://github.com/chenzyadb/CU-Utils/blob/main/PairList/CuPairList.h)
     template <typename _keyTp, typename _valTp>
     class PairList {
     public:
@@ -67,11 +68,11 @@ namespace FVV {
             }
             FVV_INLINE bool operator==(const Pair& other) const {
                 if (addressof(other) == this) return true;
-                return (_key == other.key() && _value == other.value());
+                return _key == other.key() && _value == other.value();
             }
             FVV_INLINE bool operator!=(const Pair& other) const {
                 if (addressof(other) == this) return false;
-                return (_key != other.key() || _value != other.value());
+                return _key != other.key() || _value != other.value();
             }
             FVV_INLINE _keyTp&       key(void) { return _key; }
             FVV_INLINE const _keyTp& key(void) const { return _key; }
@@ -100,11 +101,11 @@ namespace FVV {
         }
         FVV_INLINE bool operator==(const PairList& other) const {
             if (addressof(other) == this) return true;
-            return (other.data() == _data);
+            return other.data() == _data;
         }
         FVV_INLINE bool operator!=(const PairList& other) const {
             if (addressof(other) == this) return false;
-            return (other.data() != _data);
+            return other.data() != _data;
         }
         FVV_INLINE _valTp& operator[](const _keyTp& key) {
             for (auto iter = _data.begin(); iter < _data.end(); ++iter)
@@ -194,7 +195,7 @@ namespace FVV {
         FVV_INLINE vec<Pair>&& data_rv(void) { return move(_data); }
         FVV_INLINE void        sort(function<bool(const Pair&, const Pair&)> compare_func = nullptr) {
             static const auto default_comp = [](const Pair& a, const Pair& b) -> bool {
-                return (a.key() < b.key());
+                return a.key() < b.key();
             };
             if (compare_func)
                 sort(_data.begin(), _data.end(), compare_func);
@@ -204,7 +205,7 @@ namespace FVV {
         FVV_INLINE void   reverse(void) { reverse(_data.begin(), _data.end()); }
         FVV_INLINE void   clear(void) { _data.clear(); }
         FVV_INLINE size_t size(void) const noexcept { return _data.size(); }
-        FVV_INLINE bool   empty(void) const noexcept { return (_data.begin() == _data.end()); }
+        FVV_INLINE bool   empty(void) const noexcept { return _data.begin() == _data.end(); }
 
     private:
         vec<Pair> _data;
@@ -230,6 +231,14 @@ namespace FVV {
         FVV_INLINE FVVV& operator=(FVVVT&& val) {
             value = val;
             return *this;
+        }
+        FVV_INLINE bool operator==(const FVVV& other) const {
+            if (addressof(other) == this) return true;
+            return value == other.value;
+        }
+        FVV_INLINE bool operator!=(const FVVV& other) const {
+            if (addressof(other) == this) return false;
+            return value != other.value;
         }
         /// @brief  以bool类型返回值
         /// @param  默认值(可选)
