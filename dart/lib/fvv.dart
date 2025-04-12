@@ -30,24 +30,24 @@ class FVVV {
   void operator []=(String key, dynamic val) =>
       sub.containsKey(key) ? sub[key]!._value = val : sub[key] = FVVV(val);
 
-  T? as<T>() {
+  T? as<T>([T? dfltVal]) {
     if (_value is T) return _value;
-    if (_value is FVVV) return _value.as<T>();
-    return null;
+    if (_value is FVVV) return _value.as<T>(dfltVal);
+    return dfltVal;
   }
 
-  bool asBool([bool defaultVal = false]) => as<bool>() ?? defaultVal;
-  int asInt([int defaultVal = 0]) => as<int>() ?? defaultVal;
-  double asDouble([double defaultVal = 0]) => as<double>() ?? defaultVal;
-  String asString([String defaultVal = '']) => as<String>() ?? defaultVal;
-  List<bool> asBools([List<bool>? defaultVal]) => (as<List<bool>>() ?? defaultVal ?? []).toList();
-  List<int> asInts([List<int>? defaultVal]) => (as<List<int>>() ?? defaultVal ?? []).toList();
-  List<double> asDoubles([List<double>? defaultVal]) => (as<List<double>>() ?? defaultVal ?? []).toList();
-  List<String> asStrings([List<String>? defaultVal]) => (as<List<String>>() ?? defaultVal ?? []).toList();
-  List<bool> asBoolsRef([List<bool>? defaultVal]) => as<List<bool>>() ?? defaultVal ?? [];
-  List<int> asIntsRef([List<int>? defaultVal]) => as<List<int>>() ?? defaultVal ?? [];
-  List<double> asDoublesRef([List<double>? defaultVal]) => as<List<double>>() ?? defaultVal ?? [];
-  List<String> asStringsRef([List<String>? defaultVal]) => as<List<String>>() ?? defaultVal ?? [];
+  bool asBool([bool dfltVal = false]) => as<bool>() ?? dfltVal;
+  int asInt([int dfltVal = 0]) => as<int>() ?? dfltVal;
+  double asDouble([double dfltVal = 0]) => as<double>() ?? dfltVal;
+  String asString([String dfltVal = '']) => as<String>() ?? dfltVal;
+  List<bool> asBools([List<bool>? dfltVal]) => (as<List<bool>>() ?? dfltVal ?? []).toList();
+  List<int> asInts([List<int>? dfltVal]) => (as<List<int>>() ?? dfltVal ?? []).toList();
+  List<double> asDoubles([List<double>? dfltVal]) => (as<List<double>>() ?? dfltVal ?? []).toList();
+  List<String> asStrings([List<String>? dfltVal]) => (as<List<String>>() ?? dfltVal ?? []).toList();
+  List<bool> asBoolsRef([List<bool>? dfltVal]) => as<List<bool>>() ?? dfltVal ?? [];
+  List<int> asIntsRef([List<int>? dfltVal]) => as<List<int>>() ?? dfltVal ?? [];
+  List<double> asDoublesRef([List<double>? dfltVal]) => as<List<double>>() ?? dfltVal ?? [];
+  List<String> asStringsRef([List<String>? dfltVal]) => as<List<String>>() ?? dfltVal ?? [];
 
   bool get isEmpty {
     if (_value == null) return true;
@@ -118,123 +118,68 @@ class FVVV {
             case double v:
               result += v.toString();
               break;
-            case List<String> v:
+            case List _:
               result += '[';
-              if (isBiglist) {
-                result += '\n';
+              if (isBiglist) result += '\n';
+              switch (node._value) {
+                case List<String> v:
+                  for (String value in v) {
+                    if (isBiglist) result += vecIndent;
+                    result += '"${value.replaceAll('"', '\\"')}",';
+                    if (isBiglist) {
+                      result = result.removeLast;
+                      result += '\n';
+                    } else if (!isMin) {
+                      result += ' ';
+                    }
+                  }
+                  break;
+                case List<bool> v:
+                  for (bool value in v) {
+                    if (isBiglist) result += vecIndent;
+                    result += '$value,';
+                    if (isBiglist) {
+                      result = result.removeLast;
+                      result += '\n';
+                    } else if (!isMin) {
+                      result += ' ';
+                    }
+                  }
+                  break;
+                case List<int> v:
+                  for (int value in v) {
+                    if (isBiglist) result += vecIndent;
+                    result += '$value,';
+                    if (isBiglist) {
+                      result = result.removeLast;
+                      result += '\n';
+                    } else if (!isMin) {
+                      result += ' ';
+                    }
+                  }
+                  break;
+                case List<double> v:
+                  for (double value in v) {
+                    if (isBiglist) result += vecIndent;
+                    result += '$value,';
+                    if (isBiglist) {
+                      result = result.removeLast;
+                      result += '\n';
+                    } else if (!isMin) {
+                      result += ' ';
+                    }
+                  }
+                  break;
               }
-              for (String value in v) {
-                if (isBiglist) {
-                  result += vecIndent;
-                }
-                result += '"${value.replaceAll('"', '\\"')}",';
-                if (isBiglist) {
-                  result = result.removeLast;
-                  result += '\n';
-                } else if (!isMin) {
-                  result += ' ';
-                }
-              }
-              if (!isBiglist && v.isNotEmpty) {
+              if (!isBiglist && (node._value as List).isNotEmpty) {
                 result = result.removeLast;
-                if (!isMin && v.isNotEmpty) {
-                  result = result.removeLast;
-                }
-              } else {
-                result += indent;
-              }
-              result += ']';
-              break;
-            case List<bool> v:
-              result += '[';
-              if (isBiglist) {
-                result += '\n';
-              }
-              for (bool value in v) {
-                if (isBiglist) {
-                  result += vecIndent;
-                }
-                result += '$value,';
-                if (isBiglist) {
-                  result = result.removeLast;
-                  result += '\n';
-                } else if (!isMin) {
-                  result += ' ';
-                }
-              }
-              if (!isBiglist && v.isNotEmpty) {
-                result = result.removeLast;
-                if (!isMin && v.isNotEmpty) {
-                  result = result.removeLast;
-                }
-              } else {
-                result += indent;
-              }
-              result += ']';
-              break;
-            case List<int> v:
-              result += '[';
-              if (isBiglist) {
-                result += '\n';
-              }
-              for (int value in v) {
-                if (isBiglist) {
-                  result += vecIndent;
-                }
-                result += '$value,';
-                if (isBiglist) {
-                  result = result.removeLast;
-                  result += '\n';
-                } else if (!isMin) {
-                  result += ' ';
-                }
-              }
-              if (!isBiglist && v.isNotEmpty) {
-                result = result.removeLast;
-                if (!isMin && v.isNotEmpty) {
-                  result = result.removeLast;
-                }
-              } else {
-                result += indent;
-              }
-              result += ']';
-              break;
-            case List<double> v:
-              result += '[';
-              if (isBiglist) {
-                result += '\n';
-              }
-              for (double value in v) {
-                if (isBiglist) {
-                  result += vecIndent;
-                }
-                result += '$value,';
-                if (isBiglist) {
-                  result = result.removeLast;
-                  result += '\n';
-                } else if (!isMin) {
-                  result += ' ';
-                }
-              }
-              if (!isBiglist && v.isNotEmpty) {
-                result = result.removeLast;
-                if (!isMin && v.isNotEmpty) {
-                  result = result.removeLast;
-                }
+                if (!isMin && (node._value as List).isNotEmpty) result = result.removeLast;
               } else {
                 result += indent;
               }
               result += ']';
               break;
           }
-        }
-        if (node.desc.isNotEmpty && !isMin && !isNodesc) {
-          result += ' <${node.desc.replaceAll('>', '\\>')}>';
-        }
-        if (isMin) {
-          result += ';';
-        } else {
-          result += '\n';
         }
       } else {
         node.sub.forEach((key, value) => printFunc(key, value, indentLv + 1));
@@ -245,14 +190,12 @@ class FVVV {
         } else {
           result += '$indent}';
         }
-        if (node.desc.isNotEmpty && !isMin && !isNodesc) {
-          result += ' <${node.desc.replaceAll('>', '\\>')}>';
-        }
-        if (isMin) {
-          result += ';';
-        } else {
-          result += '\n';
-        }
+      }
+      if (node.desc.isNotEmpty && !isMin && !isNodesc) result += ' <${node.desc.replaceAll('>', '\\>')}>';
+      if (isMin) {
+        result += ';';
+      } else {
+        result += '\n';
       }
     };
     sub.forEach((key, value) => printFunc(key, value, 0));

@@ -18,7 +18,7 @@ import (
 	"strings"
 )
 
-func _eq_or[T comparable](a T, args ...T) bool {
+func _eq_or[Tp comparable](a Tp, args ...Tp) bool {
 	for _, v := range args {
 		if a == v {
 			return true
@@ -75,7 +75,6 @@ func (fvvv *FVVV) Print(tp ...string) string {
 			if node.Link != "" {
 				result += node.Link
 			} else {
-				vec_indent := strings.Repeat(" ", (indent_lv+1)*2)
 				switch v := node.Value.(type) {
 				case string:
 					result += `"` + strings.ReplaceAll(v, `"`, `\"`) + `"`
@@ -85,99 +84,64 @@ func (fvvv *FVVV) Print(tp ...string) string {
 					result += strconv.Itoa(v)
 				case float64:
 					result += strconv.FormatFloat(v, 'f', -1, 64)
-				case []string:
+				case []string, []bool, []int, []float64:
+					vec_indent := strings.Repeat(" ", (indent_lv+1)*2)
 					result += "["
 					if is_biglist {
 						result += "\n"
 					}
-					for _, value := range v {
-						if is_biglist {
-							result += vec_indent
+					switch v := node.Value.(type) {
+					case []string:
+						for _, value := range v {
+							if is_biglist {
+								result += vec_indent
+							}
+							result += `"` + strings.ReplaceAll(value, `"`, `\"`) + `",`
+							if is_biglist {
+								result = result[:len(result)-1]
+								result += "\n"
+							} else if !is_min {
+								result += " "
+							}
 						}
-						result += `"` + strings.ReplaceAll(value, `"`, `\"`) + `",`
-						if is_biglist {
-							result = result[:len(result)-1]
-							result += "\n"
-						} else if !is_min {
-							result += " "
+					case []bool:
+						for _, value := range v {
+							if is_biglist {
+								result += vec_indent
+							}
+							result += strconv.FormatBool(value) + ","
+							if is_biglist {
+								result = result[:len(result)-1]
+								result += "\n"
+							} else if !is_min {
+								result += " "
+							}
 						}
-					}
-					if !is_biglist {
-						result = result[:len(result)-1]
-						if !is_min {
-							result = result[:len(result)-1]
+					case []int:
+						for _, value := range v {
+							if is_biglist {
+								result += vec_indent
+							}
+							result += strconv.Itoa(value) + ","
+							if is_biglist {
+								result = result[:len(result)-1]
+								result += "\n"
+							} else if !is_min {
+								result += " "
+							}
 						}
-					} else {
-						result += indent
-					}
-					result += "]"
-				case []bool:
-					result += "["
-					if is_biglist {
-						result += "\n"
-					}
-					for _, value := range v {
-						if is_biglist {
-							result += vec_indent
-						}
-						result += strconv.FormatBool(value) + ","
-						if is_biglist {
-							result = result[:len(result)-1]
-							result += "\n"
-						} else if !is_min {
-							result += " "
-						}
-					}
-					if !is_biglist {
-						result = result[:len(result)-1]
-						if !is_min {
-							result = result[:len(result)-1]
-						}
-					} else {
-						result += indent
-					}
-					result += "]"
-				case []int:
-					result += "["
-					if is_biglist {
-						result += "\n"
-					}
-					for _, value := range v {
-						if is_biglist {
-							result += vec_indent
-						}
-						result += strconv.Itoa(value) + ","
-						if is_biglist {
-							result = result[:len(result)-1]
-							result += "\n"
-						} else if !is_min {
-							result += " "
-						}
-					}
-					if !is_biglist {
-						result = result[:len(result)-1]
-						if !is_min {
-							result = result[:len(result)-1]
-						}
-					} else {
-						result += indent
-					}
-					result += "]"
-				case []float64:
-					result += "["
-					if is_biglist {
-						result += "\n"
-					}
-					for _, value := range v {
-						if is_biglist {
-							result += vec_indent
-						}
-						result += strconv.FormatFloat(value, 'f', -1, 64) + ","
-						if is_biglist {
-							result = result[:len(result)-1]
-							result += "\n"
-						} else if !is_min {
-							result += " "
+					case []float64:
+						for _, value := range v {
+							if is_biglist {
+								result += vec_indent
+							}
+							result += strconv.FormatFloat(value, 'f', -1, 64) + ","
+							if is_biglist {
+								result = result[:len(result)-1]
+								result += "\n"
+							} else if !is_min {
+								result += " "
+							}
 						}
 					}
 					if !is_biglist {
@@ -191,14 +155,6 @@ func (fvvv *FVVV) Print(tp ...string) string {
 					result += "]"
 				}
 			}
-			if node.Desc != "" && !is_min && !is_nodesc {
-				result += " <" + strings.ReplaceAll(node.Desc, `>`, `\>`) + ">"
-			}
-			if is_min {
-				result += ";"
-			} else {
-				result += "\n"
-			}
 		} else {
 			for key, value := range node.Sub {
 				print_func(key, value, indent_lv+1)
@@ -210,14 +166,14 @@ func (fvvv *FVVV) Print(tp ...string) string {
 			} else {
 				result += indent + "}"
 			}
-			if node.Desc != "" && !is_min && !is_nodesc {
-				result += " <" + strings.ReplaceAll(node.Desc, `>`, `\>`) + ">"
-			}
-			if is_min {
-				result += ";"
-			} else {
-				result += "\n"
-			}
+		}
+		if node.Desc != "" && !is_min && !is_nodesc {
+			result += " <" + strings.ReplaceAll(node.Desc, `>`, `\>`) + ">"
+		}
+		if is_min {
+			result += ";"
+		} else {
+			result += "\n"
 		}
 	}
 	for key, value := range fvvv.Sub {
