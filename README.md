@@ -117,7 +117,7 @@ int main(void) {
         cout << "值 GroupName.SubGroupName.114514 存在" << endl;
 
     if (fvv["GroupName"]["SubGroupName"]["a"].isType<string>()) // 判断值是否为指定类型
-        cout << "值 GroupName.SubGroupName.a (string): " << fvv["GroupName"]["SubGroupName"]["a"].as<string>().value() << endl;
+        cout << "值 GroupName.SubGroupName.a (string): " << fvv["GroupName"]["SubGroupName"]["a"].as<string>() << endl;
     if (fvv["GroupName"]["SubGroupName"]["a"].isType<int>()) // 判断值是否为指定类型
         cout << "值 GroupName.SubGroupName.a (int): " << fvv["GroupName"]["SubGroupName"]["a"].asInt() << endl;
 
@@ -166,7 +166,7 @@ ValueName6 = [1, 1, 4, 5, 1, 4] <整数组(这个“,”是故意多打的)>
 
 下面是FVVV class的用法:
  - `asBool()`、`asInt()`、`asDouble()`、`asString()`、`asBools()`、`asInts()`、`asDoubles()`、`asStrings()`: 分别会返回`bool`、`int`、`double`、`std::string`、`std::vector<bool>`、`std::vector<int>`、`std::vector<double>`、`std::vector<std::string>`类型的值，如果值不存在，会分别返回`false`、`0`、`0.0`、`""`、`{}`、`{}`、`{}`、`{}`
- - `as<typename>()`: 会返回一个`std::optional`类型的值
+ - `as<typename>()`: 会返回对应类型的值
  - `isEmpty()`、`isNotEmpty()`: 用于判断值是否存在(或是否存在子项)，会返回一个`bool`类型的值
  - `isType<typename>()`: 用于判断值是否为指定类型，会返回一个`bool`类型的值(如果值不存在，会返回`false`)
  - `print()`或`print("min")`或`print("nodesc")`或`print("biglist")`: 会把当前class内所有值输出为FVV格式文本，传入“min”时会去除掉所有值的描述，并去除所有空格和换行，传入“nodesc”时会去除掉所有值的描述(两者均为在输出时去除，不会影响class内的值)，传入“biglist”时会为所有组值中的所有值添加缩进与换行(而不是让所有值都处于同一行)
