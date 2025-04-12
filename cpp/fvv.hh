@@ -445,9 +445,7 @@ namespace FVV {
                     last_char_size = char_size;
                     if (in_desc) {
                         if (idx_char != ">" || !is_real_char) {
-                            if (idx_char == ">" && !is_real_char) {
-                                tmp_desc.pop_back();
-                            }
+                            if (idx_char == ">" && !is_real_char) tmp_desc.pop_back();
                             if (in_value || group_num > 0) tmp_desc += idx_char;
                             return false;
                         } else if (idx_char == ">") {
