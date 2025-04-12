@@ -427,8 +427,8 @@ namespace FVV {
             txt          = start == str::npos ? "" : txt.substr(start);
             if (txt.empty()) return;
             if (txt.back() != '}' && txt.back() != '\n') txt += '\n';
-            _replace_base(txt, "\r\n", "\n");
-            _replace_base(txt, "\r", "\n");
+            _replaceBase(txt, "\r\n", "\n");
+            _replaceBase(txt, "\r", "\n");
             _shrink(&txt);
             str           idx_desc, tmp_desc, value, value_name;
             vec<str>      group_names, value_names, values;
@@ -712,10 +712,10 @@ namespace FVV {
             return result;
         }
         FVV_INLINE static str _replace(str s, const strv& f, const strv& t) {
-            _replace_base(s, f, t);
+            _replaceBase(s, f, t);
             return s;
         }
-        FVV_INLINE static void _replace_base(str& s, const strv& f, const strv& t) {
+        FVV_INLINE static void _replaceBase(str& s, const strv& f, const strv& t) {
             size_t p = 0;
             while ((p = s.find(f, p)) != str::npos) {
                 s.replace(p, f.length(), t);
