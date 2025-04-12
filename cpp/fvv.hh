@@ -290,7 +290,7 @@ namespace FVV {
         /// @param defaultValue 默认值(可选)
         /// @return             值为指定类型时返回值，否则为默认值
         template <typename Tp>
-        const Tp& as(const Tp& defaultValue = DfltVals::get<Tp>()) const {
+        FVV_INLINE const Tp& as(const Tp& defaultValue = DfltVals::get<Tp>()) const {
             if (auto ptr = get_if<Tp>(&value)) return *ptr;
             return defaultValue;
         }
@@ -427,7 +427,8 @@ namespace FVV {
             txt          = start == str::npos ? "" : txt.substr(start);
             if (txt.empty()) return;
             if (txt.back() != '}' && txt.back() != '\n') txt += '\n';
-            txt = _replace(_replace(txt, "\r\n", "\n"), "\r", "\n");
+            _replace_base(txt, "\r\n", "\n");
+            _replace_base(txt, "\r", "\n");
             _shrink(&txt);
             str           idx_desc, tmp_desc, value, value_name;
             vec<str>      group_names, value_names, values;
@@ -495,7 +496,7 @@ namespace FVV {
                                     size_t pos          = 1;
                                     bool   in_list_desc = false;
                                     for (;;) {
-                                        if ([&]() -> bool {
+                                        if ([&txt, &idx, &pos, &in_list_desc]() -> bool {
                                                 switch (txt[idx - pos]) {
                                                     case '<':
                                                         if (!in_list_desc) return true;
@@ -658,7 +659,7 @@ namespace FVV {
         class DfltVals {
         public:
             template <typename Tp>
-            static const Tp& get() {
+            FVV_INLINE static const Tp& get() {
                 if constexpr (is_same_v<Tp, bool>)
                     return dfltBool;
                 else if constexpr (is_same_v<Tp, int>)
@@ -692,14 +693,14 @@ namespace FVV {
 
         static constexpr const unsigned char _bom[] = {0xEF, 0xBB, 0xBF};
         template <typename Tp>
-        static FVV_INLINE bool _eq_or(Tp a, Tp b) {
+        FVV_INLINE static bool _eq_or(Tp a, Tp b) {
             return (a == b);
         }
         template <typename Tp, typename... Args>
-        static FVV_INLINE bool _eq_or(Tp a, Tp b, Args... args) {
+        FVV_INLINE static bool _eq_or(Tp a, Tp b, Args... args) {
             return (a == b) || _eq_or(a, args...);
         }
-        static FVV_INLINE vec<str> _split(const str& path, char delimiter) {
+        FVV_INLINE static vec<str> _split(const str& path, char delimiter) {
             size_t start = path.find_first_not_of("\n");
             size_t end   = path.find_last_not_of("\n");
             if (start == str::npos || end == str::npos) return {};
@@ -710,15 +711,18 @@ namespace FVV {
             while (getline(ss, item, delimiter)) result.push_back(item);
             return result;
         }
-        static FVV_INLINE str _replace(str s, const strv& f, const strv& t) {
+        FVV_INLINE static str _replace(str s, const strv& f, const strv& t) {
+            _replace_base(s, f, t);
+            return s;
+        }
+        FVV_INLINE static void _replace_base(str& s, const strv& f, const strv& t) {
             size_t p = 0;
             while ((p = s.find(f, p)) != str::npos) {
                 s.replace(p, f.length(), t);
                 p += t.length();
             }
-            return s;
         }
-        static FVV_INLINE bool _isInt(const strv& s) {
+        FVV_INLINE static bool _isInt(const strv& s) {
             if (s.empty()) return false;
             size_t start = 0;
             if (s[0] == '-' || s[0] == '+') {
@@ -727,7 +731,7 @@ namespace FVV {
             }
             return all_of(s.begin() + start, s.end(), ::isdigit);
         }
-        static FVV_INLINE bool _isDouble(const strv& s) {
+        FVV_INLINE static bool _isDouble(const strv& s) {
             if (s.empty()) return false;
             size_t start    = 0;
             bool   hasDigit = false, hasDot = false;
@@ -748,27 +752,27 @@ namespace FVV {
             return hasDigit;
         }
         template <typename Tp>
-        static FVV_INLINE void _shrink(Tp* container) {
+        FVV_INLINE static void _shrink(Tp* container) {
             if (container) container->shrink_to_fit();
         }
         template <typename Tp, typename... Args>
-        static FVV_INLINE void _shrink(Tp* container, Args... args) {
+        FVV_INLINE static void _shrink(Tp* container, Args... args) {
             _shrink(container);
             _shrink(args...);
         }
         template <typename Tp>
-        static FVV_INLINE void _clearAndShrink(Tp* container) {
+        FVV_INLINE static void _clearAndShrink(Tp* container) {
             if (container) {
                 container->clear();
                 container->shrink_to_fit();
             }
         }
         template <typename Tp, typename... Args>
-        static FVV_INLINE void _clearAndShrink(Tp* container, Args... args) {
+        FVV_INLINE static void _clearAndShrink(Tp* container, Args... args) {
             _clearAndShrink(container);
             _clearAndShrink(args...);
         }
-        static FVV_INLINE void _utf8ForEach(const str& target, size_t size,
+        FVV_INLINE static void _utf8ForEach(const str& target, size_t size,
                                             function<bool(const size_t&, const strv&, const uint8_t&)> handler) {
             size_t i = 0;
             while (i < size) {
