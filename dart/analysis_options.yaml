@@ -3,6 +3,7 @@ formatter:
   page_width: 114
 linter:
   rules:
+    always_specify_types: true
     always_use_package_imports: false
     avoid_catches_without_on_clauses: false
     avoid_equals_and_hash_code_on_mutable_classes: false
@@ -10,9 +11,11 @@ linter:
     avoid_multiple_declarations_per_line: false
     avoid_positional_boolean_parameters: false
     avoid_types_on_closure_parameters: false
+    document_ignores: false
     lines_longer_than_80_chars: false
     matching_super_parameters: true
     no_literal_bool_comparisons: true
+    omit_local_variable_types: false
     parameter_assignments: false
     prefer_expression_function_bodies: true
     prefer_final_parameters: true
