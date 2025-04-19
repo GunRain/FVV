@@ -67,7 +67,7 @@ func (fvvv *FVVV) Print(tp ...string) string {
 	var result strings.Builder
 	var print_func func(path string, node *FVVV, indent_lv int)
 	print_func = func(path string, node *FVVV, indent_lv int) {
-		if path == "" || (node.IsEmpty() || node.SubIsEmpty()) {
+		if path == "" || (node.IsEmpty() && node.SubIsEmpty()) {
 			return
 		}
 		indent := strings.Repeat(" ", indent_lv*2)
@@ -346,7 +346,7 @@ func (fvvv *FVVV) AddFromString(txt string) {
 							}
 							if idx_key.Sub[key] == nil {
 								idx_key.Sub[key] = &FVVV{
-									Value: value,
+									Value: nil,
 									Sub:   make(map[string]*FVVV),
 								}
 							}
@@ -359,7 +359,7 @@ func (fvvv *FVVV) AddFromString(txt string) {
 								}
 								if idx_key.Sub[key] == nil {
 									idx_key.Sub[key] = &FVVV{
-										Value: value,
+										Value: nil,
 										Sub:   make(map[string]*FVVV),
 									}
 								}
@@ -397,7 +397,7 @@ func (fvvv *FVVV) AddFromString(txt string) {
 										}
 									}
 								} else if is_str {
-									idx_key.Sub[key].Value = value
+									idx_key.Sub[key].Value = value.String()
 								} else if eqOr(value.String(), "true", "false") {
 									idx_key.Sub[key].Value = value.String() == "true"
 								} else if tmp, err := strconv.Atoi(value.String()); err == nil {
@@ -445,7 +445,7 @@ func (fvvv *FVVV) AddFromString(txt string) {
 								}
 								if idx_key.Sub[key] == nil {
 									idx_key.Sub[key] = &FVVV{
-										Value: value,
+										Value: nil,
 										Sub:   make(map[string]*FVVV),
 									}
 								}
@@ -480,7 +480,7 @@ func (fvvv *FVVV) AddFromString(txt string) {
 							}
 							if idx_key.Sub[key] == nil {
 								idx_key.Sub[key] = &FVVV{
-									Value: value,
+									Value: nil,
 									Sub:   make(map[string]*FVVV),
 								}
 							}
