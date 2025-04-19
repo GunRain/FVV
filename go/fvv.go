@@ -18,13 +18,22 @@ import (
 	"strings"
 )
 
-func _eq_or[Tp comparable](a Tp, args ...Tp) bool {
+func eqOr[Tp comparable](a Tp, args ...Tp) bool {
 	for _, v := range args {
 		if a == v {
 			return true
 		}
 	}
 	return false
+}
+
+func removeLastChar(builder *strings.Builder) {
+	runes := []rune(builder.String())
+	if len(runes) > 0 {
+		runes = runes[:len(runes)-1]
+		builder.Reset()
+		builder.WriteString(string(runes))
+	}
 }
 
 type FVVV struct {
@@ -35,7 +44,7 @@ type FVVV struct {
 }
 
 func (fvvv *FVVV) IsEmpty() bool {
-	return len(fvvv.Sub) == 0 && fvvv.Value == nil
+	return fvvv.Value == nil
 }
 
 func (fvvv *FVVV) IsNotEmpty() bool {
@@ -55,104 +64,124 @@ func (fvvv *FVVV) Print(tp ...string) string {
 	if len(tp) > 0 {
 		is_min, is_biglist, is_nodesc = tp[0] == "min", tp[0] == "biglist", tp[0] == "nodesc"
 	}
-	var result string
+	var result strings.Builder
 	var print_func func(path string, node *FVVV, indent_lv int)
 	print_func = func(path string, node *FVVV, indent_lv int) {
+		if path == "" || (node.IsEmpty() || node.SubIsEmpty()) {
+			return
+		}
 		indent := strings.Repeat(" ", indent_lv*2)
-		if node.SubIsNotEmpty() && path != "" && node.Link == "" {
+		if node.SubIsNotEmpty() && node.Link == "" {
 			if is_min {
-				result += path + "={"
+				result.WriteString(path + "={")
 			} else {
-				result += indent + path + " = {\n"
+				result.WriteString(indent + path + " = {\n")
 			}
 		}
 		if node.Link != "" || node.IsNotEmpty() {
 			if is_min {
-				result += path + "="
+				result.WriteString(path + "=")
 			} else {
-				result += indent + path + " = "
+				result.WriteString(indent + path + " = ")
 			}
 			if node.Link != "" {
-				result += node.Link
+				result.WriteString(node.Link)
 			} else {
 				switch v := node.Value.(type) {
 				case string:
-					result += `"` + strings.ReplaceAll(v, `"`, `\"`) + `"`
+					result.WriteString(`"` + strings.ReplaceAll(v, `"`, `\"`) + `"`)
 				case bool:
-					result += strconv.FormatBool(v)
+					result.WriteString(strconv.FormatBool(v))
 				case int:
-					result += strconv.Itoa(v)
+					result.WriteString(strconv.Itoa(v))
 				case float64:
-					result += strconv.FormatFloat(v, 'f', -1, 64)
+					result.WriteString(strconv.FormatFloat(v, 'f', -1, 64))
 				case []string, []bool, []int, []float64:
 					vec_indent := strings.Repeat(" ", (indent_lv+1)*2)
-					result += "["
+					result.WriteString("[")
 					if is_biglist {
-						result += "\n"
+						result.WriteString("\n")
 					}
+					is_empty_list := true
 					switch v := node.Value.(type) {
 					case []string:
+						is_empty_list = len(v) == 0
 						for _, value := range v {
 							if is_biglist {
-								result += vec_indent
+								result.WriteString(vec_indent)
 							}
-							result += `"` + strings.ReplaceAll(value, `"`, `\"`) + `",`
+							result.WriteString(`"` + strings.ReplaceAll(value, `"`, `\"`) + `"`)
 							if is_biglist {
-								result = result[:len(result)-1]
-								result += "\n"
-							} else if !is_min {
-								result += " "
+								removeLastChar(&result)
+								result.WriteString("\n")
+							} else {
+								result.WriteString(",")
+								if !is_min {
+									result.WriteString(" ")
+								}
 							}
 						}
 					case []bool:
+						is_empty_list = len(v) == 0
 						for _, value := range v {
 							if is_biglist {
-								result += vec_indent
+								result.WriteString(vec_indent)
 							}
-							result += strconv.FormatBool(value) + ","
+							result.WriteString(strconv.FormatBool(value) + ",")
 							if is_biglist {
-								result = result[:len(result)-1]
-								result += "\n"
-							} else if !is_min {
-								result += " "
+								removeLastChar(&result)
+								result.WriteString("\n")
+							} else {
+								result.WriteString(",")
+								if !is_min {
+									result.WriteString(" ")
+								}
 							}
 						}
 					case []int:
+						is_empty_list = len(v) == 0
 						for _, value := range v {
 							if is_biglist {
-								result += vec_indent
+								result.WriteString(vec_indent)
 							}
-							result += strconv.Itoa(value) + ","
+							result.WriteString(strconv.Itoa(value) + ",")
 							if is_biglist {
-								result = result[:len(result)-1]
-								result += "\n"
-							} else if !is_min {
-								result += " "
+								removeLastChar(&result)
+								result.WriteString("\n")
+							} else {
+								result.WriteString(",")
+								if !is_min {
+									result.WriteString(" ")
+								}
 							}
 						}
 					case []float64:
+						is_empty_list = len(v) == 0
 						for _, value := range v {
 							if is_biglist {
-								result += vec_indent
+								result.WriteString(vec_indent)
 							}
-							result += strconv.FormatFloat(value, 'f', -1, 64) + ","
+							result.WriteString(strconv.FormatFloat(value, 'f', -1, 64) + ",")
 							if is_biglist {
-								result = result[:len(result)-1]
-								result += "\n"
-							} else if !is_min {
-								result += " "
+								removeLastChar(&result)
+								result.WriteString("\n")
+							} else {
+								result.WriteString(",")
+								if !is_min {
+									result.WriteString(" ")
+								}
 							}
 						}
 					}
-					if !is_biglist {
-						result = result[:len(result)-1]
+					if is_biglist {
+						result.WriteString(indent)
+					} else if !is_empty_list {
+						removeLastChar(&result)
 						if !is_min {
-							result = result[:len(result)-1]
+							removeLastChar(&result)
 						}
-					} else {
-						result += indent
 					}
-					result += "]"
+					result.WriteString("]")
 				}
 			}
 		} else {
@@ -160,26 +189,26 @@ func (fvvv *FVVV) Print(tp ...string) string {
 				print_func(key, value, indent_lv+1)
 			}
 		}
-		if node.SubIsNotEmpty() && path != "" && node.Link == "" {
-			if is_min {
-				result += "}"
-			} else {
-				result += indent + "}"
+		if node.SubIsNotEmpty() && node.Link == "" {
+			if !is_min {
+				result.WriteString(indent)
 			}
+			result.WriteString("}")
 		}
 		if node.Desc != "" && !is_min && !is_nodesc {
-			result += " <" + strings.ReplaceAll(node.Desc, `>`, `\>`) + ">"
+			result.WriteString(" <" + strings.ReplaceAll(node.Desc, `>`, `\>`) + ">")
 		}
 		if is_min {
-			result += ";"
+			result.WriteString(";")
 		} else {
-			result += "\n"
+			result.WriteString("\n")
 		}
 	}
 	for key, value := range fvvv.Sub {
 		print_func(key, value, 0)
 	}
-	return result[:len(result)-1]
+	removeLastChar(&result)
+	return result.String()
 }
 
 func (fvvv *FVVV) AddFromString(txt string) {
@@ -195,7 +224,8 @@ func (fvvv *FVVV) AddFromString(txt string) {
 	}
 	var last_char rune
 	var end_group, old_fvv, is_real_char, in_value, in_desc, in_str, is_str, is_empty_str, in_list, is_list bool
-	var idx_desc, tmp_desc, value, value_name string
+	var tmp_desc, value, value_name strings.Builder
+	var idx_desc string
 	var group_num uint64
 	values, value_names, group_names, last_group_names := make([]string, 0), make([]string, 0), make([]string, 0), make([][]string, 0)
 	for idx, idx_char := range txt {
@@ -205,20 +235,20 @@ func (fvvv *FVVV) AddFromString(txt string) {
 			if in_desc {
 				if idx_char != '>' || !is_real_char {
 					if idx_char == '>' && !is_real_char {
-						tmp_desc = tmp_desc[:len(tmp_desc)-1]
+						removeLastChar(&tmp_desc)
 					}
 					if in_value || group_num > 0 {
-						tmp_desc += string(idx_char)
+						tmp_desc.WriteRune(idx_char)
 					}
 					return false
 				} else if idx_char == '>' && is_real_char {
-					idx_desc = tmp_desc
-					tmp_desc = ""
+					idx_desc = tmp_desc.String()
+					tmp_desc.Reset()
 					in_desc = false
 					return false
 				}
 			} else {
-				if !in_str && _eq_or(idx_char, ' ', '\t') {
+				if !in_str && eqOr(idx_char, ' ', '\t') {
 					return false
 				} else if idx_char == '<' {
 					in_desc = true
@@ -229,7 +259,7 @@ func (fvvv *FVVV) AddFromString(txt string) {
 				if in_str {
 					if idx_char == '"' {
 						if is_real_char {
-							if value == "" {
+							if value.String() == "" {
 								is_empty_str = true
 							} else {
 								is_empty_str = false
@@ -237,12 +267,12 @@ func (fvvv *FVVV) AddFromString(txt string) {
 							in_str = false
 							return false
 						} else {
-							value = value[:len(value)-1]
-							value += string(idx_char)
+							removeLastChar(&value)
+							value.WriteRune(idx_char)
 							return false
 						}
 					} else {
-						value += string(idx_char)
+						value.WriteRune(idx_char)
 						return false
 					}
 				} else {
@@ -252,7 +282,7 @@ func (fvvv *FVVV) AddFromString(txt string) {
 					} else if idx_char == '[' {
 						in_list, is_list = true, true
 						return false
-					} else if in_list && _eq_or(idx_char, ',', ']', '\n') {
+					} else if in_list && eqOr(idx_char, ',', ']', '\n') {
 						if idx_char == ']' {
 							in_list = false
 							pos := 1
@@ -292,14 +322,14 @@ func (fvvv *FVVV) AddFromString(txt string) {
 							if txt[idx-pos] == ',' || txt[idx-pos] == '\n' {
 								return false
 							}
-						} else if value == "" && (!is_str || !is_empty_str) {
+						} else if value.String() == "" && (!is_str || !is_empty_str) {
 							return false
 						}
-						values = append(values, value)
+						values = append(values, value.String())
 						if is_empty_str {
 							is_empty_str = false
 						} else {
-							value = ""
+							value.Reset()
 						}
 						return false
 					} else if idx_char == '{' {
@@ -309,7 +339,7 @@ func (fvvv *FVVV) AddFromString(txt string) {
 						group_num++
 						in_value = false
 						return false
-					} else if !in_list && _eq_or(idx_char, ';', '\n') {
+					} else if !in_list && eqOr(idx_char, ';', '\n') {
 						for _, key := range group_names {
 							if idx_key.Sub == nil {
 								idx_key.Sub = make(map[string]*FVVV)
@@ -342,7 +372,7 @@ func (fvvv *FVVV) AddFromString(txt string) {
 											return false
 										}
 										tmp_str := values[0]
-										if _eq_or(tmp_str, "true", "false") {
+										if eqOr(tmp_str, "true", "false") {
 											tmps := make([]bool, len(values))
 											for i, s := range values {
 												tmps[i] = s == "true"
@@ -368,14 +398,14 @@ func (fvvv *FVVV) AddFromString(txt string) {
 									}
 								} else if is_str {
 									idx_key.Sub[key].Value = value
-								} else if _eq_or(value, "true", "false") {
-									idx_key.Sub[key].Value = value == "true"
-								} else if tmp, err := strconv.Atoi(value); err == nil {
+								} else if eqOr(value.String(), "true", "false") {
+									idx_key.Sub[key].Value = value.String() == "true"
+								} else if tmp, err := strconv.Atoi(value.String()); err == nil {
 									idx_key.Sub[key].Value = tmp
-								} else if tmp, err := strconv.ParseFloat(value, 64); err == nil {
+								} else if tmp, err := strconv.ParseFloat(value.String(), 64); err == nil {
 									idx_key.Sub[key].Value = tmp
 								} else {
-									tmp_names := strings.Split(strings.TrimSpace(value), ".")
+									tmp_names := strings.Split(strings.TrimSpace(value.String()), ".")
 									tmp_key := idx_key
 									for _, key := range tmp_names {
 										if tmp_key.Sub[key] == nil {
@@ -403,10 +433,11 @@ func (fvvv *FVVV) AddFromString(txt string) {
 											idx_key.Sub[key].Sub = tmp_key.Sub
 										}
 									}
-									idx_key.Sub[key].Link = value
+									idx_key.Sub[key].Link = value.String()
 								}
 								idx_key.Sub[key].Desc = idx_desc
-								idx_desc, value, values, value_names, in_value, is_str, is_list = "", "", nil, nil, false, false, false
+								idx_desc, values, value_names, in_value, is_str, is_list = "", nil, nil, false, false, false
+								value.Reset()
 								continue
 							} else {
 								if idx_key.Sub == nil {
@@ -422,20 +453,20 @@ func (fvvv *FVVV) AddFromString(txt string) {
 							}
 						}
 					} else {
-						value += string(idx_char)
+						value.WriteRune(idx_char)
 						return false
 					}
 				}
 			} else {
-				if !old_fvv && idx_char == '{' && value_name == "" {
+				if !old_fvv && idx_char == '{' && value_name.String() == "" {
 					old_fvv = true
 					return false
 				} else if idx_char == '=' {
-					value_names = strings.Split(strings.TrimSpace(value_name), ".")
-					value_name = ""
+					value_names = strings.Split(strings.TrimSpace(value_name.String()), ".")
+					value_name.Reset()
 					in_value = true
 					return false
-				} else if end_group && _eq_or(idx_char, ';', '\n') && group_num > 0 {
+				} else if end_group && eqOr(idx_char, ';', '\n') && group_num > 0 {
 					end_group = false
 					if idx_desc != "" {
 						for idx, key := range group_names {
@@ -470,7 +501,7 @@ func (fvvv *FVVV) AddFromString(txt string) {
 						return false
 					}
 				} else {
-					value_name += string(idx_char)
+					value_name.WriteRune(idx_char)
 					return false
 				}
 			}

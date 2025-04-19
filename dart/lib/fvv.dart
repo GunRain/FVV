@@ -10,219 +10,222 @@
 // For details about the F2DLPR License terms and conditions, visit: http://license.fileto.download.             =
 //================================================================================================================
 
-library;
-
 import 'dart:core';
 
-extension FVVExt on String {
-  String get removeLast => substring(0, length - 1);
+extension FVVStrExt on String {
+  String get removeLastChar => substring(0, length - 1);
+}
+
+extension FVVStrBfExt on StringBuffer {
+  void removeLastChar() {
+    var result = toString();
+    if (result.isNotEmpty) {
+      result = result.substring(0, result.length - 1);
+      clear();
+      write(result);
+    }
+  }
 }
 
 class FVVV {
-  dynamic _value;
+  FVVV(this.value, {final Map<String, FVVV>? sub, this.desc = '', this.link = ''}) : sub = sub ?? {};
+  dynamic value;
   Map<String, FVVV> sub;
   String desc, link;
 
-  FVVV(this._value, {Map<String, FVVV>? sub, this.desc = '', this.link = ''}) : sub = sub ?? {};
-
-  FVVV operator [](String key) => sub.putIfAbsent(key, () => FVVV(null));
-  void operator []=(String key, dynamic val) =>
-      sub.containsKey(key) ? sub[key]!._value = val : sub[key] = FVVV(val);
+  FVVV operator [](final String key) => sub.putIfAbsent(key, () => FVVV(null));
+  void operator []=(final String key, final dynamic val) =>
+      sub.containsKey(key) ? sub[key]!.value = val : sub[key] = FVVV(val);
   @override
-  bool operator ==(Object other) {
+  bool operator ==(final Object other) {
     if (identical(this, other)) return true;
-    return other is FVVV && _value == other._value;
+    return other is FVVV && value == other.value;
   }
 
   @override
-  int get hashCode => _value.hashCode;
+  int get hashCode => value.hashCode;
   @override
-  String toString() => _value?.toString() ?? 'null';
+  String toString() => value?.toString() ?? 'null';
 
-  T? as<T>([T? dfltVal]) {
-    if (_value is T) return _value;
-    if (_value is FVVV) return _value.as<T>(dfltVal);
+  T? as<T>([final T? dfltVal]) {
+    if (value is T) return value as T;
+    if (value is FVVV) return (value as FVVV).as<T>(dfltVal) as T;
     return dfltVal;
   }
 
-  bool asBool([bool dfltVal = false]) => as<bool>() ?? dfltVal;
-  int asInt([int dfltVal = 0]) => as<int>() ?? dfltVal;
-  double asDouble([double dfltVal = 0]) => as<double>() ?? dfltVal;
-  String asString([String dfltVal = '']) => as<String>() ?? dfltVal;
-  List<bool> asBools([List<bool>? dfltVal]) => (as<List<bool>>() ?? dfltVal ?? []).toList();
-  List<int> asInts([List<int>? dfltVal]) => (as<List<int>>() ?? dfltVal ?? []).toList();
-  List<double> asDoubles([List<double>? dfltVal]) => (as<List<double>>() ?? dfltVal ?? []).toList();
-  List<String> asStrings([List<String>? dfltVal]) => (as<List<String>>() ?? dfltVal ?? []).toList();
-  List<bool> asBoolsRef([List<bool>? dfltVal]) => as<List<bool>>() ?? dfltVal ?? [];
-  List<int> asIntsRef([List<int>? dfltVal]) => as<List<int>>() ?? dfltVal ?? [];
-  List<double> asDoublesRef([List<double>? dfltVal]) => as<List<double>>() ?? dfltVal ?? [];
-  List<String> asStringsRef([List<String>? dfltVal]) => as<List<String>>() ?? dfltVal ?? [];
+  bool asBool([final bool dfltVal = false]) => as<bool>() ?? dfltVal;
+  int asInt([final int dfltVal = 0]) => as<int>() ?? dfltVal;
+  double asDouble([final double dfltVal = 0]) => as<double>() ?? dfltVal;
+  String asString([final String dfltVal = '']) => as<String>() ?? dfltVal;
+  List<bool> asBools([final List<bool>? dfltVal]) => (as<List<bool>>() ?? dfltVal ?? []).toList();
+  List<int> asInts([final List<int>? dfltVal]) => (as<List<int>>() ?? dfltVal ?? []).toList();
+  List<double> asDoubles([final List<double>? dfltVal]) => (as<List<double>>() ?? dfltVal ?? []).toList();
+  List<String> asStrings([final List<String>? dfltVal]) => (as<List<String>>() ?? dfltVal ?? []).toList();
+  List<bool> asBoolsRef([final List<bool>? dfltVal]) => as<List<bool>>() ?? dfltVal ?? [];
+  List<int> asIntsRef([final List<int>? dfltVal]) => as<List<int>>() ?? dfltVal ?? [];
+  List<double> asDoublesRef([final List<double>? dfltVal]) => as<List<double>>() ?? dfltVal ?? [];
+  List<String> asStringsRef([final List<String>? dfltVal]) => as<List<String>>() ?? dfltVal ?? [];
 
   bool get isEmpty {
-    if (_value == null) return true;
-    if (_value is String) return (_value as String).isEmpty;
-    if (_value is List) return (_value as List).isEmpty;
+    if (value == null) return true;
+    if (value is String) return (value as String).isEmpty;
+    if (value is List) return (value as List).isEmpty;
     return false;
   }
 
   bool get isNotEmpty => !isEmpty;
 
-  bool isType<T>() => _value is T;
+  bool isType<T>() => getType() is T;
   Type getType() {
-    if (_value is FVVV) {
-      return (_value as FVVV).getType();
+    if (value is FVVV) {
+      return (value as FVVV).getType();
     } else {
-      return _value.runtimeType;
+      return value.runtimeType;
     }
   }
 
-  String print([String type = 'common']) {
-    bool isMin = false, isBiglist = false, isNodesc = false;
+  String print([final String type = 'common']) {
+    var isMin = false, isBiglist = false, isNodesc = false;
     switch (type) {
       case 'min':
         isMin = true;
-        break;
       case 'biglist':
         isBiglist = true;
-        break;
       case 'nodesc':
         isNodesc = true;
-        break;
     }
-    String result = '';
-    void Function(String path, FVVV node, int indentLv) printFunc = (String path, FVVV node, int indentLv) {};
-    printFunc = (String path, FVVV node, int indentLv) {
-      String indent = ' ' * indentLv * 2;
-      if (node.sub.isNotEmpty && path.isNotEmpty && node.link.isEmpty) {
+    final result = StringBuffer();
+    var printFunc = (final String path, final FVVV node, final int indentLv) {};
+    printFunc = (final String path, final FVVV node, final int indentLv) {
+      if (path.isEmpty || (isEmpty && sub.isEmpty)) return;
+      final indent = ' ' * indentLv * 2;
+      if (node.sub.isNotEmpty && node.link.isEmpty) {
         if (isMin) {
-          result += '$path={';
+          result.write('$path={');
         } else {
-          result += '$indent$path = {\n';
+          result.write('$indent$path = {\n');
         }
       }
-      if (node.link.isNotEmpty || node._value != null) {
+      if (node.link.isNotEmpty || node.value != null) {
         if (isMin) {
-          result += '$path=';
+          result.write('$path=');
         } else {
-          result += '$indent$path = ';
+          result.write('$indent$path = ');
         }
         if (node.link.isNotEmpty) {
-          result += node.link;
+          result.write(node.link);
         } else {
-          String vecIndent = ' ' * (indentLv + 1) * 2;
-          switch (node._value) {
-            case String v:
-              result += '"${v.replaceAll('"', '\\"')}"';
-              break;
-            case bool v:
-              result += v.toString();
-              break;
-            case int v:
-              result += v.toString();
-              break;
-            case double v:
-              result += v.toString();
-              break;
-            case List _:
-              result += '[';
-              if (isBiglist) result += '\n';
-              switch (node._value) {
-                case List<String> v:
-                  for (String value in v) {
-                    if (isBiglist) result += vecIndent;
-                    result += '"${value.replaceAll('"', '\\"')}",';
+          final vecIndent = ' ' * (indentLv + 1) * 2;
+          switch (node.value) {
+            case final String v:
+              result.write('"${v.replaceAll('"', r'\"')}"');
+            case final bool v:
+              result.write(v.toString());
+            case final int v:
+              result.write(v.toString());
+            case final double v:
+              result.write(v.toString());
+            case List<dynamic> _:
+              result.write('[');
+              if (isBiglist) result.write('\n');
+              switch (node.value) {
+                case final List<String> v:
+                  for (final value in v) {
+                    if (isBiglist) result.write(vecIndent);
+                    result.write('"${value.replaceAll('"', r'\"')}"');
                     if (isBiglist) {
-                      result = result.removeLast;
-                      result += '\n';
-                    } else if (!isMin) {
-                      result += ' ';
+                      result.write('\n');
+                    } else {
+                      result.write(',');
+                      if (!isMin) {
+                        result.write(' ');
+                      }
                     }
                   }
-                  break;
-                case List<bool> v:
-                  for (bool value in v) {
-                    if (isBiglist) result += vecIndent;
-                    result += '$value,';
+                case final List<bool> v:
+                  for (final value in v) {
+                    if (isBiglist) result.write(vecIndent);
+                    result.write(value.toString());
                     if (isBiglist) {
-                      result = result.removeLast;
-                      result += '\n';
-                    } else if (!isMin) {
-                      result += ' ';
+                      result.write('\n');
+                    } else {
+                      result.write(',');
+                      if (!isMin) {
+                        result.write(' ');
+                      }
                     }
                   }
-                  break;
-                case List<int> v:
-                  for (int value in v) {
-                    if (isBiglist) result += vecIndent;
-                    result += '$value,';
+                case final List<int> v:
+                  for (final value in v) {
+                    if (isBiglist) result.write(vecIndent);
+                    result.write(value.toString());
                     if (isBiglist) {
-                      result = result.removeLast;
-                      result += '\n';
-                    } else if (!isMin) {
-                      result += ' ';
+                      result.write('\n');
+                    } else {
+                      result.write(',');
+                      if (!isMin) {
+                        result.write(' ');
+                      }
                     }
                   }
-                  break;
-                case List<double> v:
-                  for (double value in v) {
-                    if (isBiglist) result += vecIndent;
-                    result += '$value,';
+                case final List<double> v:
+                  for (final value in v) {
+                    if (isBiglist) result.write(vecIndent);
+                    result.write(value.toString());
                     if (isBiglist) {
-                      result = result.removeLast;
-                      result += '\n';
-                    } else if (!isMin) {
-                      result += ' ';
+                      result.write('\n');
+                    } else {
+                      result.write(',');
+                      if (!isMin) {
+                        result.write(' ');
+                      }
                     }
                   }
-                  break;
               }
-              if (!isBiglist && (node._value as List).isNotEmpty) {
-                result = result.removeLast;
-                if (!isMin && (node._value as List).isNotEmpty) result = result.removeLast;
-              } else {
-                result += indent;
+              if (isBiglist) {
+                result.write(indent);
+              } else if ((node.value as List).isNotEmpty) {
+                result.removeLastChar();
+                if (!isMin) result.removeLastChar();
               }
-              result += ']';
-              break;
+              result.write(']');
           }
         }
       } else {
-        node.sub.forEach((key, value) => printFunc(key, value, indentLv + 1));
+        node.sub.forEach((final key, final value) => printFunc(key, value, indentLv + 1));
       }
-      if (node.sub.isNotEmpty && path.isNotEmpty && node.link.isEmpty) {
-        if (isMin) {
-          result += '}';
-        } else {
-          result += '$indent}';
+      if (node.sub.isNotEmpty && node.link.isEmpty) {
+        if (!isMin) {
+          result.write(indent);
         }
+        result.write('}');
       }
-      if (node.desc.isNotEmpty && !isMin && !isNodesc) result += ' <${node.desc.replaceAll('>', '\\>')}>';
+      if (node.desc.isNotEmpty && !isMin && !isNodesc) result.write(' <${node.desc.replaceAll('>', r'\>')}>');
       if (isMin) {
-        result += ';';
+        result.write(';');
       } else {
-        result += '\n';
+        result.write('\n');
       }
     };
-    sub.forEach((key, value) => printFunc(key, value, 0));
-    return result.removeLast;
+    sub.forEach((final key, final value) => printFunc(key, value, 0));
+    return (result..removeLastChar()).toString();
   }
 
   void addFromString(String txt) {
     if (txt.startsWith('\u{FEFF}')) txt = txt.substring(1);
-    txt = txt.trim();
-    txt.replaceAll(RegExp(r'\r\n|\r'), '\n');
+    txt = txt.trim().replaceAll(RegExp(r'\r\n|\r'), '\n');
     if (txt.isEmpty) return;
     if (String.fromCharCode(txt.runes.last) != '}') txt += '\n';
-    bool eqOr<T>(List<T> values) {
+    bool eqOr<T>(final List<T> values) {
       if (values.isEmpty) return false;
-      T first = values[0];
-      for (int i = 1; i < values.length; i++) {
+      final first = values[0];
+      for (var i = 1; i < values.length; i++) {
         if (first == values[i]) return true;
       }
       return false;
     }
 
-    int? tryInt(String s) {
+    int? tryInt(final String s) {
       try {
         return int.parse(s);
       } catch (_) {
@@ -230,7 +233,7 @@ class FVVV {
       }
     }
 
-    double? tryDouble(String s) {
+    double? tryDouble(final String s) {
       try {
         return double.parse(s);
       } catch (_) {
@@ -238,7 +241,7 @@ class FVVV {
       }
     }
 
-    bool endGroup = false,
+    var endGroup = false,
         oldFVV = false,
         isRealChar = false,
         inValue = false,
@@ -248,23 +251,23 @@ class FVVV {
         isEmptyStr = false,
         inList = false,
         isList = false;
-    String idxDesc = '', tmpDesc = '', value = '', valueName = '', idxChar = '', lastChar = '';
-    int groupNum = 0, idx = 0;
-    List<String> values = [], valueNames = [], groupNames = [];
-    List<List<String>> lastGroupNames = [];
-    for (int rune in txt.runes) {
+    final tmpDesc = StringBuffer(), value = StringBuffer(), valueName = StringBuffer();
+    var idxDesc = '', idxChar = '', lastChar = '';
+    var groupNum = 0, idx = 0;
+    var values = <String>[], valueNames = <String>[], groupNames = <String>[];
+    var lastGroupNames = <List<String>>[];
+    for (final rune in txt.runes) {
       idxChar = String.fromCharCode(rune);
-      isRealChar = lastChar != '\\';
-      if (((FVVV rootKey) {
-        FVVV idxKey = rootKey;
+      isRealChar = lastChar != r'\';
+      if (((final FVVV rootKey) {
+        var idxKey = rootKey;
         if (inDesc) {
           if (idxChar != '>' || !isRealChar) {
-            if (idxChar == '>' && !isRealChar) tmpDesc = tmpDesc.removeLast;
-            if (inValue || groupNum > 0) tmpDesc += idxChar;
+            if (idxChar == '>' && !isRealChar) tmpDesc.removeLastChar();
+            if (inValue || groupNum > 0) tmpDesc.write(idxChar);
             return false;
           } else if (idxChar == '>' && isRealChar) {
-            idxDesc = tmpDesc;
-            tmpDesc = '';
+            idxDesc = tmpDesc.toString();
             inDesc = false;
             return false;
           }
@@ -288,12 +291,13 @@ class FVVV {
                 inStr = false;
                 return false;
               } else {
-                value = value.removeLast;
-                value += idxChar;
+                value
+                  ..removeLastChar()
+                  ..write(idxChar);
                 return false;
               }
             } else {
-              value += idxChar;
+              value.write(idxChar);
               return false;
             }
           } else {
@@ -306,14 +310,14 @@ class FVVV {
             } else if (inList && eqOr([idxChar, ',', ']', '\n'])) {
               if (idxChar == ']') {
                 inList = false;
-                int pos = idxChar.length;
-                bool inListDesc = false;
+                var pos = idxChar.length;
+                var inListDesc = false;
                 for (;;) {
                   if (() {
                     switch (txt[idx - pos]) {
                       case '<':
                         if (!inListDesc) return true;
-                        if (idx - pos < 1 || txt[idx - pos - 1] != '\\') inListDesc = false;
+                        if (idx - pos < 1 || txt[idx - pos - 1] != r'\') inListDesc = false;
                         return false;
                       case '>':
                         inListDesc = true;
@@ -336,11 +340,11 @@ class FVVV {
               } else if (value.isEmpty && (!isStr || !isEmptyStr)) {
                 return false;
               }
-              values.add(value);
+              values.add(value.toString());
               if (isEmptyStr) {
                 isEmptyStr = false;
               } else {
-                value = '';
+                value.clear();
               }
               return false;
             } else if (idxChar == '{') {
@@ -351,11 +355,11 @@ class FVVV {
               inValue = false;
               return false;
             } else if (!inList && eqOr([idxChar, ';', '\n'])) {
-              for (String key in groupNames) {
+              for (final key in groupNames) {
                 idxKey = idxKey[key];
               }
-              for (int idx = 0; idx < valueNames.length; idx++) {
-                String key = valueNames[idx];
+              for (var idx = 0; idx < valueNames.length; idx++) {
+                final key = valueNames[idx];
                 if (idx == valueNames.length - 1) {
                   if (isList) {
                     if (isStr) {
@@ -365,39 +369,39 @@ class FVVV {
                         idxKey[key] = null;
                         return false;
                       }
-                      String tmpStr = values[0];
+                      final tmpStr = values[0];
                       if (eqOr([tmpStr, 'true', 'false'])) {
-                        List<bool> tmps = [];
-                        for (var s in values) {
-                          tmps.add(s == "true");
+                        final tmps = <bool>[];
+                        for (final s in values) {
+                          tmps.add(s == 'true');
                         }
                         idxKey[key] = tmps;
                       } else if (tryInt(tmpStr) != null) {
-                        List<int> tmps = [];
-                        for (var s in values) {
+                        final tmps = <int>[];
+                        for (final s in values) {
                           tmps.add(tryInt(s)!);
                         }
                         idxKey[key] = tmps;
                       } else if (tryDouble(tmpStr) != null) {
-                        List<double> tmps = [];
-                        for (var s in values) {
+                        final tmps = <double>[];
+                        for (final s in values) {
                           tmps.add(tryDouble(s)!);
                         }
                         idxKey[key] = tmps;
                       }
                     }
                   } else if (isStr) {
-                    idxKey[key] = value;
-                  } else if (eqOr([value, 'true', 'false'])) {
-                    idxKey[key] = value == 'true';
-                  } else if (tryInt(value) != null) {
-                    idxKey[key] = tryInt(value);
-                  } else if (tryDouble(value) != null) {
-                    idxKey[key] = tryDouble(value);
+                    idxKey[key] = value.toString();
+                  } else if (eqOr([value.toString(), 'true', 'false'])) {
+                    idxKey[key] = value.toString() == 'true';
+                  } else if (tryInt(value.toString()) != null) {
+                    idxKey[key] = tryInt(value.toString());
+                  } else if (tryDouble(value.toString()) != null) {
+                    idxKey[key] = tryDouble(value.toString());
                   } else {
-                    List<String> tmpNames = value.trim().split(".");
-                    FVVV tmpKey = idxKey;
-                    for (String key in tmpNames) {
+                    final tmpNames = value.toString().trim().split('.');
+                    var tmpKey = idxKey;
+                    for (final key in tmpNames) {
                       if (tmpKey.sub.containsKey(key)) {
                         tmpKey = tmpKey[key];
                       } else {
@@ -406,7 +410,7 @@ class FVVV {
                     }
                     if (tmpKey.isEmpty || tmpKey.sub.isEmpty) {
                       tmpKey = rootKey;
-                      for (String key in tmpNames) {
+                      for (final key in tmpNames) {
                         if (tmpKey.sub.containsKey(key)) {
                           tmpKey = tmpKey[key];
                         } else {
@@ -414,17 +418,18 @@ class FVVV {
                         }
                       }
                     }
-                    if (tmpKey._value != null || tmpKey.sub.isNotEmpty) {
+                    if (tmpKey.value != null || tmpKey.sub.isNotEmpty) {
                       if (tmpKey.sub.isEmpty) {
                         idxKey[key] = tmpKey;
                       } else {
                         idxKey[key].sub = tmpKey.sub;
                       }
                     }
-                    idxKey[key].link = value;
+                    idxKey[key].link = value.toString();
                   }
                   idxKey[key].desc = idxDesc;
-                  idxDesc = value = '';
+                  idxDesc = '';
+                  value.clear();
                   values.clear();
                   valueNames.clear();
                   inValue = isStr = isList = false;
@@ -434,7 +439,7 @@ class FVVV {
                 }
               }
             } else {
-              value += idxChar;
+              value.write(idxChar);
               return false;
             }
           }
@@ -443,24 +448,24 @@ class FVVV {
             oldFVV = true;
             return false;
           } else if (idxChar == '=') {
-            valueNames = valueName.trim().split(".");
-            valueName = "";
+            valueNames = valueName.toString().trim().split('.');
+            valueName.clear();
             inValue = true;
             return false;
           } else if (endGroup && eqOr([idxChar, ';', '\n']) && groupNum > 0) {
             endGroup = false;
             if (idxDesc.isNotEmpty) {
-              for (int idx = 0; idx < groupNames.length; idx++) {
-                String key = groupNames[idx];
+              for (var idx = 0; idx < groupNames.length; idx++) {
+                final key = groupNames[idx];
                 if (idx == groupNames.length - 1) {
                   idxKey[key].desc = idxDesc;
-                  idxDesc = "";
+                  idxDesc = '';
                   break;
                 }
                 idxKey = idxKey[key];
               }
             }
-            for (String _ in lastGroupNames.last) {
+            for (final _ in lastGroupNames.last) {
               groupNames = groupNames.sublist(0, groupNames.length - 1);
             }
             lastGroupNames = lastGroupNames.sublist(
@@ -477,7 +482,7 @@ class FVVV {
               return false;
             }
           } else {
-            valueName += idxChar;
+            valueName.write(idxChar);
             return false;
           }
         }

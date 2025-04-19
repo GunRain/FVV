@@ -133,8 +133,12 @@ int main(void) {
 FVV API: 1
 值 GroupName.SubGroupName.114514 不存在
 值 GroupName.SubGroupName.a (int): 114514
-()()(((())))((((()))))()(((()))) = 114514
-114514 = 114514
+ValueName1 = "114514\"" <字符串与转义\>>
+ValueName2 = true <布尔值>
+ValueName3 = 114514 <整数>
+ValueName4 = 114.514000 <浮点数>
+ValueName5 = ["1", "1", "4", "5", "1", "4"] <字符串组>
+ValueName6 = [1, 1, 4, 5, 1, 4] <整数组(这个“,”是故意多打的)>
 GroupName = {
   SubGroupName = {
     a = ValueName3 <支持赋值操作(这个是跨组赋值)>
@@ -142,14 +146,10 @@ GroupName = {
   } <子组>
   c = SubGroupName.a <这个是跨组赋值>
 } <组>
-ValueName1 = "114514\"" <字符串与转义\>>
-ValueName2 = true <布尔值>
-ValueName3 = 114514 <整数>
-ValueName4 = 114.514000 <浮点数>
-ValueName5 = ["1", "1", "4", "5", "1", "4"] <字符串组>
-ValueName6 = [1, 1, 4, 5, 1, 4] <整数组(这个“,”是故意多打的)>
+114514 = 114514
 一一四五一四 = 114514
-()()(((())))((((()))))()(((())))=114514;114514=114514;GroupName={SubGroupName={a=ValueName3;b=GroupName.SubGroupName.a;};c=SubGroupName.a;};ValueName1="114514\"";ValueName2=true;ValueName3=114514;ValueName4=114.514000;ValueName5=["1","1","4","5","1","4"];ValueName6=[1,1,4,5,1,4];一一四五一四=114514
+()()(((())))((((()))))()(((()))) = 114514
+ValueName1="114514\"";ValueName2=true;ValueName3=114514;ValueName4=114.514000;ValueName5=["1","1","4","5","1","4"];ValueName6=[1,1,4,5,1,4];GroupName={SubGroupName={a=ValueName3;b=GroupName.SubGroupName.a;};c=SubGroupName.a;};114514=114514;一一四五一四=114514;()()(((())))((((()))))()(((())))=114514
 值 GroupName.SubGroupName.a (描述): 支持赋值操作(这个是跨组赋值)
 值 GroupName.SubGroupName.a (描述): 114514
 ```
