@@ -64,12 +64,10 @@ namespace FVV {
                 return *this;
             }
             FVV_INLINE bool operator==(const Pair& other) const {
-                if (addressof(other) == this) return true;
-                return _key == other.key() && _value == other.value();
+                return addressof(other) == this || (_key == other.key() && _value == other.value());
             }
             FVV_INLINE bool operator!=(const Pair& other) const {
-                if (addressof(other) == this) return false;
-                return _key != other.key() || _value != other.value();
+                return addressof(other) != this && (_key != other.key() || _value != other.value());
             }
             FVV_INLINE _keyTp&       key(void) { return _key; }
             FVV_INLINE const _keyTp& key(void) const { return _key; }
@@ -97,12 +95,10 @@ namespace FVV {
             return *this;
         }
         FVV_INLINE bool operator==(const PairList& other) const {
-            if (addressof(other) == this) return true;
-            return other.data() == _data;
+            return addressof(other) == this || other.data() == _data;
         }
         FVV_INLINE bool operator!=(const PairList& other) const {
-            if (addressof(other) == this) return false;
-            return other.data() != _data;
+            return addressof(other) != this && other.data() != _data;
         }
         FVV_INLINE _valTp& operator[](const _keyTp& key) {
             const auto iter =
@@ -229,12 +225,10 @@ namespace FVV {
             return *this;
         }
         FVV_INLINE bool operator==(const FVVV& other) const {
-            if (addressof(other) == this) return true;
-            return value == other.value;
+            return addressof(other) == this || value == other.value;
         }
         FVV_INLINE bool operator!=(const FVVV& other) const {
-            if (addressof(other) == this) return false;
-            return value != other.value;
+            return addressof(other) != this && value != other.value;
         }
         /// @brief  以bool类型返回值
         /// @param  默认值(可选)
@@ -348,9 +342,9 @@ namespace FVV {
                             for (const str& value : tmp) {
                                 if (is_biglist) result << vec_indent;
                                 result << '"' << _replace(value, "\"", "\\\"") << '"';
-                                if (is_biglist) {
+                                if (is_biglist)
                                     result << '\n';
-                                } else {
+                                else {
                                     result << ',';
                                     if (!is_min) result << ' ';
                                 }
@@ -361,9 +355,9 @@ namespace FVV {
                             for (const int& value : tmp) {
                                 if (is_biglist) result << vec_indent;
                                 result << str(value ? "true" : "false");
-                                if (is_biglist) {
+                                if (is_biglist)
                                     result << '\n';
-                                } else {
+                                else {
                                     result << ',';
                                     if (!is_min) result << ' ';
                                 }
@@ -374,9 +368,9 @@ namespace FVV {
                             for (const int& value : tmp) {
                                 if (is_biglist) result << vec_indent;
                                 result << to_string(value);
-                                if (is_biglist) {
+                                if (is_biglist)
                                     result << '\n';
-                                } else {
+                                else {
                                     result << ',';
                                     if (!is_min) result << ' ';
                                 }
@@ -387,17 +381,17 @@ namespace FVV {
                             for (const double& value : tmp) {
                                 if (is_biglist) result << vec_indent;
                                 result << to_string(value);
-                                if (is_biglist) {
+                                if (is_biglist)
                                     result << '\n';
-                                } else {
+                                else {
                                     result << ',';
                                     if (!is_min) result << ' ';
                                 }
                             }
                         }
-                        if (is_biglist) {
+                        if (is_biglist)
                             result << indent;
-                        } else if (!is_empty_list) {
+                        else if (!is_empty_list) {
                             _removeLastChar(result);
                             if (!is_min) _removeLastChar(result);
                         }
@@ -439,7 +433,8 @@ namespace FVV {
             vec<str>      group_names, value_names, values;
             vec<vec<str>> last_group_names;
             bool end_group = false, old_fvv = false, is_real_char = false, in_value = false, in_desc = false,
-                 in_str = false, is_str = false, is_empty_str = false, in_list = false, is_list = false;
+                 in_str = false, is_str = false, is_all_str = false, is_empty_str = false, in_list = false,
+                 is_list           = false;
             size_t  group_num      = 0;
             uint8_t last_char_size = 0;
             FVVV*   root_key       = this;
@@ -491,7 +486,7 @@ namespace FVV {
                             }
                         } else {
                             if (idx_char == "\"") {
-                                in_str = is_str = true;
+                                in_str = is_str = is_all_str = true;
                                 return false;
                             } else if (idx_char == "[") {
                                 in_list = is_list = true;
@@ -527,15 +522,44 @@ namespace FVV {
                                         ++pos;
                                     }
                                     if (txt[idx - pos] == ',' || txt[idx - pos] == '\n') return false;
-                                } else if (value_str.empty() && (!is_str || !is_empty_str))
+                                } else if (value_str.empty() && (!is_all_str || !is_empty_str))
                                     return false;
-                                values.push_back(value_str);
+                                if ((is_all_str && is_str) || _eqOr(value_str, str("true"), str("false")) ||
+                                    _isInt(value_str) || _isDouble(value_str))
+                                    values.push_back(value_str);
+                                else if (idx_key = _getKey({value_str}, _getKey(group_names, idx_key));
+                                         idx_key->isNotEmpty())
+                                    if (idx_key->isType<str>())
+                                        values.push_back(idx_key->as<str>());
+                                    else if (idx_key->isType<bool>())
+                                        values.push_back(idx_key->as<bool>() ? "true" : "false");
+                                    else if (idx_key->isType<int>())
+                                        values.push_back(to_string(idx_key->as<int>()));
+                                    else if (idx_key->isType<double>())
+                                        values.push_back(to_string(idx_key->as<double>()));
+                                    else if (idx_key->isType<vec<str>>()) {
+                                        const vec<str> tmp = idx_key->as<vec<str>>();
+                                        values.insert(values.end(), tmp.begin(), tmp.end());
+                                    } else if (idx_key->isType<vec<bool>>()) {
+                                        const vec<bool> tmp = idx_key->as<vec<bool>>();
+                                        transform(tmp.begin(), tmp.end(), back_inserter(values),
+                                                  [](bool v) { return v ? "true" : "false"; });
+                                    } else if (idx_key->isType<vec<int>>()) {
+                                        const vec<int> tmp = idx_key->as<vec<int>>();
+                                        transform(tmp.begin(), tmp.end(), back_inserter(values),
+                                                  [](int v) { return to_string(v); });
+                                    } else if (idx_key->isType<vec<double>>()) {
+                                        const vec<double> tmp = idx_key->as<vec<double>>();
+                                        transform(tmp.begin(), tmp.end(), back_inserter(values),
+                                                  [](double v) { return to_string(v); });
+                                    }
                                 if (is_empty_str)
                                     is_empty_str = false;
                                 else {
                                     value.str("");
                                     value.clear();
                                 }
+                                is_str = false;
                                 return false;
                             } else if (idx_char == "{") {
                                 group_names.insert(group_names.end(), value_names.begin(), value_names.end());
@@ -545,84 +569,58 @@ namespace FVV {
                                 in_value = false;
                                 return false;
                             } else if (!in_list && _eqOr(idx_char, strv(";"), strv("\n"))) {
-                                for (size_t i = 0; i < group_names.size(); ++i)
-                                    idx_key = &(*idx_key)[group_names[i]];
-                                for (size_t i = 0; i < value_names.size(); ++i) {
-                                    const str& key = value_names[i];
-                                    if (i == value_names.size() - 1) {
-                                        if (is_list) {
-                                            if (is_str)
-                                                (*idx_key)[key] = values;
-                                            else {
-                                                if (values.empty()) {
-                                                    (*idx_key)[key] = FVVV();
-                                                    return false;
-                                                }
-                                                str tmp_str = values.front();
-                                                if (_eqOr(tmp_str, str("true"), str("false"))) {
-                                                    vec<bool> tmp;
-                                                    tmp.reserve(values.size());
-                                                    transform(values.begin(), values.end(), back_inserter(tmp),
-                                                              [](const strv& s) { return s == "true"; });
-                                                    (*idx_key)[key] = tmp;
-                                                } else if (_isInt(tmp_str)) {
-                                                    vec<int> tmp;
-                                                    for (const str& str : values)
-                                                        if (_isInt(str)) tmp.push_back(stoi(str));
-                                                    (*idx_key)[key] = tmp;
-                                                } else if (_isDouble(tmp_str)) {
-                                                    vec<double> tmp;
-                                                    for (const str& str : values)
-                                                        if (_isDouble(str)) tmp.push_back(stod(str));
-                                                    (*idx_key)[key] = tmp;
-                                                }
-                                            }
-                                        } else {
-                                            const str value_str = value.str();
-                                            if (is_str)
-                                                (*idx_key)[key] = value_str;
-                                            else if (_eqOr(value_str, str("true"), str("false")))
-                                                (*idx_key)[key] = value_str == "true";
-                                            else if (_isInt(value_str))
-                                                (*idx_key)[key] = stoi(value_str);
-                                            else if (_isDouble(value_str))
-                                                (*idx_key)[key] = stod(value_str);
-                                            else {
-                                                vec<str> tmp_names = _split(value_str, '.');
-                                                FVVV*    tmp_key   = idx_key;
-                                                for (const str& tmp_name : tmp_names)
-                                                    if (!tmp_key->sub.hasKey(tmp_name)) {
-                                                        tmp_key = nullptr;
-                                                        break;
-                                                    } else
-                                                        tmp_key = &(*tmp_key)[tmp_name];
-                                                if (!tmp_key) {
-                                                    tmp_key = root_key;
-                                                    for (const str& tmp_name : tmp_names)
-                                                        if (!tmp_key->sub.hasKey(tmp_name)) {
-                                                            tmp_key = nullptr;
-                                                            break;
-                                                        } else
-                                                            tmp_key = &(*tmp_key)[tmp_name];
-                                                }
-                                                if (tmp_key) {
-                                                    if (tmp_key->sub.empty())
-                                                        (*idx_key)[key] = FVVV(*tmp_key);
-                                                    else
-                                                        (*idx_key)[key].sub = tmp_key->sub;
-                                                }
-                                                (*idx_key)[key].link = value_str;
-                                            }
+                                idx_key = _getKey(value_names, _getKey(group_names, idx_key));
+                                if (is_list) {
+                                    if (is_all_str)
+                                        *idx_key = values;
+                                    else {
+                                        if (values.empty()) {
+                                            *idx_key = FVVV();
+                                            return false;
                                         }
-                                        (*idx_key)[key].desc = idx_desc;
-                                        value.str("");
-                                        value.clear();
-                                        _clearAndShrink(&idx_desc, &values, &value_names);
-                                        is_list = is_str = in_value = false;
-                                        continue;
-                                    } else
-                                        idx_key = &(*idx_key)[key];
+                                        str tmp_str = values.front();
+                                        if (_eqOr(tmp_str, str("true"), str("false"))) {
+                                            vec<bool> tmp;
+                                            tmp.reserve(values.size());
+                                            transform(values.begin(), values.end(), back_inserter(tmp),
+                                                      [](const strv& s) { return s == "true"; });
+                                            *idx_key = tmp;
+                                        } else if (_isInt(tmp_str)) {
+                                            vec<int> tmp;
+                                            for (const str& str : values)
+                                                if (_isInt(str)) tmp.push_back(stoi(str));
+                                            *idx_key = tmp;
+                                        } else if (_isDouble(tmp_str)) {
+                                            vec<double> tmp;
+                                            for (const str& str : values)
+                                                if (_isDouble(str)) tmp.push_back(stod(str));
+                                            *idx_key = tmp;
+                                        }
+                                    }
+                                } else {
+                                    const str value_str = value.str();
+                                    if (is_all_str)
+                                        *idx_key = value_str;
+                                    else if (_eqOr(value_str, str("true"), str("false")))
+                                        *idx_key = value_str == "true";
+                                    else if (_isInt(value_str))
+                                        *idx_key = stoi(value_str);
+                                    else if (_isDouble(value_str))
+                                        *idx_key = stod(value_str);
+                                    else if (FVVV* tmp_key = _findKey(value_str, idx_key, root_key); tmp_key) {
+                                        if (tmp_key->sub.empty())
+                                            *idx_key = tmp_key->value;
+                                        else
+                                            idx_key->sub = tmp_key->sub;
+                                        idx_key->link = value_str;
+                                    }
                                 }
+                                idx_key->desc = idx_desc;
+                                value.str("");
+                                value.clear();
+                                _clearAndShrink(&idx_desc, &values, &value_names);
+                                is_list = is_str = is_all_str = in_value = false;
+                                return false;
                             } else {
                                 value << idx_char;
                                 return false;
@@ -640,15 +638,10 @@ namespace FVV {
                             return false;
                         } else if (end_group && _eqOr(idx_char, strv(";"), strv("\n")) && group_num > 0) {
                             end_group = false;
-                            if (!idx_desc.empty())
-                                for (size_t i = 0; i < group_names.size(); ++i) {
-                                    if (i == group_names.size() - 1) {
-                                        (*idx_key)[group_names[i]].desc = idx_desc;
-                                        _clearAndShrink(&idx_desc);
-                                        break;
-                                    }
-                                    idx_key = &(*idx_key)[group_names[i]];
-                                }
+                            if (!idx_desc.empty()) {
+                                _getKey(group_names, idx_key)->desc = idx_desc;
+                                _clearAndShrink(&idx_desc);
+                            }
                             for ([[maybe_unused]] const str& _ : last_group_names.back()) group_names.pop_back();
                             last_group_names.pop_back();
                             _shrink(&group_names, &last_group_names);
@@ -666,7 +659,6 @@ namespace FVV {
                             return false;
                         }
                     }
-                    return false;
                 });
         }
 
@@ -701,13 +693,38 @@ namespace FVV {
             static Tp dfltTp{};
             return dfltTp;
         }
+        FVV_INLINE static FVVV* _getKey(const vec<str>& paths, FVVV* root_key) {
+            FVVV* tmp_key = root_key;
+            for (const str& path : paths) tmp_key = &(*tmp_key)[path];
+            return tmp_key;
+        }
+        FVV_INLINE static FVVV* _findKey(const strv& path, FVVV* idx_key, FVVV* root_key) {
+            vec<str> tmp_names = _split(path.data(), '.');
+            FVVV*    tmp_key   = idx_key;
+            for (const str& tmp_name : tmp_names)
+                if (!tmp_key->sub.hasKey(tmp_name)) {
+                    tmp_key = nullptr;
+                    break;
+                } else
+                    tmp_key = &(*tmp_key)[tmp_name];
+            if (!tmp_key) {
+                tmp_key = root_key;
+                for (const str& tmp_name : tmp_names)
+                    if (!tmp_key->sub.hasKey(tmp_name)) {
+                        tmp_key = nullptr;
+                        break;
+                    } else
+                        tmp_key = &(*tmp_key)[tmp_name];
+            }
+            return tmp_key;
+        }
         template <typename Tp>
         FVV_INLINE static bool _eqOr(Tp a, Tp b) {
-            return (a == b);
+            return a == b;
         }
         template <typename Tp, typename... Args>
         FVV_INLINE static bool _eqOr(Tp a, Tp b, Args... args) {
-            return (a == b) || _eqOr(a, args...);
+            return a == b || _eqOr(a, args...);
         }
         FVV_INLINE static vec<str> _split(const str& path, char delimiter) {
             size_t start = path.find_first_not_of("\n");

@@ -8,9 +8,9 @@ This page is written in Chinese, please use the translation if you do not unders
 
 TODO:
 
-- 支持数学运算
-- 支持值组内的赋值
 - 支持字符串连接
+- 支持数学运算
+- 支持类定义
 
 名字显而易见，是个~~废物~~清新的文本格式，那么有多清新呢，请看示例:
 
