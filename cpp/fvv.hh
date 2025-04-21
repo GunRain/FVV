@@ -239,48 +239,46 @@ namespace FVV {
         /// @brief  以bool类型返回值
         /// @param  默认值(可选)
         /// @return 值
-        FVV_INLINE bool asBool(bool defaultValue = _DfltVals::get<bool>()) const {
-            return as<bool>(defaultValue);
-        }
+        FVV_INLINE bool asBool(bool defaultValue = _getDfltVal<bool>()) const { return as<bool>(defaultValue); }
         /// @brief  以int类型返回值
         /// @param  默认值(可选)
         /// @return 值
-        FVV_INLINE int asInt(int defaultValue = _DfltVals::get<int>()) const { return as<int>(defaultValue); }
+        FVV_INLINE int asInt(int defaultValue = _getDfltVal<int>()) const { return as<int>(defaultValue); }
         /// @brief  以double类型返回值
         /// @param  默认值(可选)
         /// @return 值
-        FVV_INLINE double asDouble(double defaultValue = _DfltVals::get<double>()) const {
+        FVV_INLINE double asDouble(double defaultValue = _getDfltVal<double>()) const {
             return as<double>(defaultValue);
         }
         /// @brief  以string类型返回值
         /// @param  默认值(可选)
         /// @return 值
-        FVV_INLINE const str& asString(const str& defaultValue = _DfltVals::get<str>()) const {
+        FVV_INLINE const str& asString(const str& defaultValue = _getDfltVal<str>()) const {
             return as<str>(defaultValue);
         }
         /// @brief  以vector<bool>类型返回值
         /// @param  默认值(可选)
         /// @return 值
-        FVV_INLINE const vec<bool>& asBools(const vec<bool>& defaultValue = _DfltVals::get<vec<bool>>()) const {
+        FVV_INLINE const vec<bool>& asBools(const vec<bool>& defaultValue = _getDfltVal<vec<bool>>()) const {
             return as<vec<bool>>(defaultValue);
         }
         /// @brief  以vector<int>类型返回值
         /// @param  默认值(可选)
         /// @return 值
-        FVV_INLINE const vec<int>& asInts(const vec<int>& defaultValue = _DfltVals::get<vec<int>>()) const {
+        FVV_INLINE const vec<int>& asInts(const vec<int>& defaultValue = _getDfltVal<vec<int>>()) const {
             return as<vec<int>>(defaultValue);
         }
         /// @brief  以vector<double>类型返回值
         /// @param  默认值(可选)
         /// @return 值
         FVV_INLINE const vec<double>& asDoubles(
-            const vec<double>& defaultValue = _DfltVals::get<vec<double>>()) const {
+            const vec<double>& defaultValue = _getDfltVal<vec<double>>()) const {
             return as<vec<double>>(defaultValue);
         }
         /// @brief  以vector<string>类型返回值
         /// @param  默认值(可选)
         /// @return 值
-        FVV_INLINE const vec<str>& asStrings(const vec<str>& defaultValue = _DfltVals::get<vec<str>>()) const {
+        FVV_INLINE const vec<str>& asStrings(const vec<str>& defaultValue = _getDfltVal<vec<str>>()) const {
             return as<vec<str>>(defaultValue);
         }
         /// @brief              以指定类型返回值
@@ -288,7 +286,7 @@ namespace FVV {
         /// @param defaultValue 默认值(可选)
         /// @return             值为指定类型时返回值，否则为默认值
         template <typename Tp>
-        FVV_INLINE const Tp& as(const Tp& defaultValue = _DfltVals::get<Tp>()) const {
+        FVV_INLINE const Tp& as(const Tp& defaultValue = _getDfltVal<Tp>()) const {
             if (auto ptr = get_if<Tp>(&value)) return *ptr;
             return defaultValue;
         }
@@ -669,42 +667,36 @@ namespace FVV {
         }
 
     private:
-        class _DfltVals {
-        public:
-            template <typename Tp>
-            FVV_INLINE static const Tp& get() {
-                if constexpr (is_same_v<Tp, bool>)
-                    return dfltBool;
-                else if constexpr (is_same_v<Tp, int>)
-                    return dfltInt;
-                else if constexpr (is_same_v<Tp, double>)
-                    return dfltDouble;
-                else if constexpr (is_same_v<Tp, str>)
-                    return dfltStr;
-                else if constexpr (is_same_v<Tp, vec<bool>>)
-                    return dfltBools;
-                else if constexpr (is_same_v<Tp, vec<int>>)
-                    return dfltInts;
-                else if constexpr (is_same_v<Tp, vec<double>>)
-                    return dfltDoubles;
-                else if constexpr (is_same_v<Tp, vec<str>>)
-                    return dfltStrs;
-                static Tp dfltTp{};
-                return dfltTp;
-            }
-
-        private:
-            static constexpr const bool   dfltBool   = false;
-            static constexpr const int    dfltInt    = 0;
-            static constexpr const double dfltDouble = 0.0;
-            static const str              dfltStr;
-            static const vec<bool>        dfltBools;
-            static const vec<int>         dfltInts;
-            static const vec<double>      dfltDoubles;
-            static const vec<str>         dfltStrs;
-        };
-
         static constexpr const unsigned char _bom[] = {0xEF, 0xBB, 0xBF};
+        template <typename Tp>
+        FVV_INLINE static const Tp& _getDfltVal() {
+            static constexpr const bool   dfltBool    = false;
+            static constexpr const int    dfltInt     = 0;
+            static constexpr const double dfltDouble  = 0.0;
+            static const str              dfltStr     = "";
+            static const vec<bool>        dfltBools   = {};
+            static const vec<int>         dfltInts    = {};
+            static const vec<double>      dfltDoubles = {};
+            static const vec<str>         dfltStrs    = {};
+            if constexpr (is_same_v<Tp, bool>)
+                return dfltBool;
+            else if constexpr (is_same_v<Tp, int>)
+                return dfltInt;
+            else if constexpr (is_same_v<Tp, double>)
+                return dfltDouble;
+            else if constexpr (is_same_v<Tp, str>)
+                return dfltStr;
+            else if constexpr (is_same_v<Tp, vec<bool>>)
+                return dfltBools;
+            else if constexpr (is_same_v<Tp, vec<int>>)
+                return dfltInts;
+            else if constexpr (is_same_v<Tp, vec<double>>)
+                return dfltDoubles;
+            else if constexpr (is_same_v<Tp, vec<str>>)
+                return dfltStrs;
+            static Tp dfltTp{};
+            return dfltTp;
+        }
         template <typename Tp>
         FVV_INLINE static bool _eqOr(Tp a, Tp b) {
             return (a == b);
@@ -815,9 +807,4 @@ namespace FVV {
             }
         }
     };
-    const str         FVVV::_DfltVals::dfltStr     = "";
-    const vec<bool>   FVVV::_DfltVals::dfltBools   = {};
-    const vec<int>    FVVV::_DfltVals::dfltInts    = {};
-    const vec<double> FVVV::_DfltVals::dfltDoubles = {};
-    const vec<str>    FVVV::_DfltVals::dfltStrs    = {};
 }  // namespace FVV
