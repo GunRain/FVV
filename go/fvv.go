@@ -283,6 +283,7 @@ func (fvvv *FVVV) AddFromString(txt string) {
 						in_list, is_list = true, true
 						return false
 					} else if in_list && eqOr(idx_char, ',', ']', '\n') {
+						value_str := value.String()
 						if idx_char == ']' {
 							in_list = false
 							pos := 1
@@ -322,10 +323,10 @@ func (fvvv *FVVV) AddFromString(txt string) {
 							if txt[idx-pos] == ',' || txt[idx-pos] == '\n' {
 								return false
 							}
-						} else if value.String() == "" && (!is_str || !is_empty_str) {
+						} else if value_str == "" && (!is_str || !is_empty_str) {
 							return false
 						}
-						values = append(values, value.String())
+						values = append(values, value_str)
 						if is_empty_str {
 							is_empty_str = false
 						} else {
@@ -396,27 +397,19 @@ func (fvvv *FVVV) AddFromString(txt string) {
 											idx_key.Sub[key].Value = tmps
 										}
 									}
-								} else if is_str {
-									idx_key.Sub[key].Value = value.String()
-								} else if eqOr(value.String(), "true", "false") {
-									idx_key.Sub[key].Value = value.String() == "true"
-								} else if tmp, err := strconv.Atoi(value.String()); err == nil {
-									idx_key.Sub[key].Value = tmp
-								} else if tmp, err := strconv.ParseFloat(value.String(), 64); err == nil {
-									idx_key.Sub[key].Value = tmp
 								} else {
-									tmp_names := strings.Split(strings.TrimSpace(value.String()), ".")
-									tmp_key := idx_key
-									for _, key := range tmp_names {
-										if tmp_key.Sub[key] == nil {
-											tmp_key = nil
-											break
-										} else {
-											tmp_key = tmp_key.Sub[key]
-										}
-									}
-									if tmp_key != nil {
-										tmp_key = fvvv
+									value_str := value.String()
+									if is_str {
+										idx_key.Sub[key].Value = value_str
+									} else if eqOr(value_str, "true", "false") {
+										idx_key.Sub[key].Value = value_str == "true"
+									} else if tmp, err := strconv.Atoi(value_str); err == nil {
+										idx_key.Sub[key].Value = tmp
+									} else if tmp, err := strconv.ParseFloat(value_str, 64); err == nil {
+										idx_key.Sub[key].Value = tmp
+									} else {
+										tmp_names := strings.Split(strings.TrimSpace(value_str), ".")
+										tmp_key := idx_key
 										for _, key := range tmp_names {
 											if tmp_key.Sub[key] == nil {
 												tmp_key = nil
@@ -425,15 +418,26 @@ func (fvvv *FVVV) AddFromString(txt string) {
 												tmp_key = tmp_key.Sub[key]
 											}
 										}
-									}
-									if tmp_key != nil {
-										if tmp_key.Sub == nil {
-											idx_key.Sub[key].Value = tmp_key.Value
-										} else {
-											idx_key.Sub[key].Sub = tmp_key.Sub
+										if tmp_key != nil {
+											tmp_key = fvvv
+											for _, key := range tmp_names {
+												if tmp_key.Sub[key] == nil {
+													tmp_key = nil
+													break
+												} else {
+													tmp_key = tmp_key.Sub[key]
+												}
+											}
 										}
+										if tmp_key != nil {
+											if tmp_key.Sub == nil {
+												idx_key.Sub[key].Value = tmp_key.Value
+											} else {
+												idx_key.Sub[key].Sub = tmp_key.Sub
+											}
+										}
+										idx_key.Sub[key].Link = value_str
 									}
-									idx_key.Sub[key].Link = value.String()
 								}
 								idx_key.Sub[key].Desc = idx_desc
 								idx_desc, values, value_names, in_value, is_str, is_list = "", nil, nil, false, false, false

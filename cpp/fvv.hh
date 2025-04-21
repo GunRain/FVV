@@ -497,6 +497,7 @@ namespace FVV {
                                 in_list = is_list = true;
                                 return false;
                             } else if (in_list && _eqOr(idx_char, strv(","), strv("]"), strv("\n"))) {
+                                const str value_str = value.str();
                                 if (idx_char == "]") {
                                     in_list             = false;
                                     size_t pos          = 1;
@@ -526,9 +527,9 @@ namespace FVV {
                                         ++pos;
                                     }
                                     if (txt[idx - pos] == ',' || txt[idx - pos] == '\n') return false;
-                                } else if (value.str().empty() && (!is_str || !is_empty_str))
+                                } else if (value_str.empty() && (!is_str || !is_empty_str))
                                     return false;
-                                values.push_back(value.str());
+                                values.push_back(value_str);
                                 if (is_empty_str)
                                     is_empty_str = false;
                                 else {
@@ -576,39 +577,42 @@ namespace FVV {
                                                     (*idx_key)[key] = tmp;
                                                 }
                                             }
-                                        } else if (is_str)
-                                            (*idx_key)[key] = value.str();
-                                        else if (_eqOr(value.str(), str("true"), str("false")))
-                                            (*idx_key)[key] = value.str() == "true";
-                                        else if (_isInt(value.str()))
-                                            (*idx_key)[key] = stoi(value.str());
-                                        else if (_isDouble(value.str()))
-                                            (*idx_key)[key] = stod(value.str());
-                                        else {
-                                            vec<str> tmp_names = _split(value.str(), '.');
-                                            FVVV*    tmp_key   = idx_key;
-                                            for (const str& tmp_name : tmp_names)
-                                                if (!tmp_key->sub.hasKey(tmp_name)) {
-                                                    tmp_key = nullptr;
-                                                    break;
-                                                } else
-                                                    tmp_key = &(*tmp_key)[tmp_name];
-                                            if (!tmp_key) {
-                                                tmp_key = root_key;
+                                        } else {
+                                            const str value_str = value.str();
+                                            if (is_str)
+                                                (*idx_key)[key] = value_str;
+                                            else if (_eqOr(value_str, str("true"), str("false")))
+                                                (*idx_key)[key] = value_str == "true";
+                                            else if (_isInt(value_str))
+                                                (*idx_key)[key] = stoi(value_str);
+                                            else if (_isDouble(value_str))
+                                                (*idx_key)[key] = stod(value_str);
+                                            else {
+                                                vec<str> tmp_names = _split(value_str, '.');
+                                                FVVV*    tmp_key   = idx_key;
                                                 for (const str& tmp_name : tmp_names)
                                                     if (!tmp_key->sub.hasKey(tmp_name)) {
                                                         tmp_key = nullptr;
                                                         break;
                                                     } else
                                                         tmp_key = &(*tmp_key)[tmp_name];
+                                                if (!tmp_key) {
+                                                    tmp_key = root_key;
+                                                    for (const str& tmp_name : tmp_names)
+                                                        if (!tmp_key->sub.hasKey(tmp_name)) {
+                                                            tmp_key = nullptr;
+                                                            break;
+                                                        } else
+                                                            tmp_key = &(*tmp_key)[tmp_name];
+                                                }
+                                                if (tmp_key) {
+                                                    if (tmp_key->sub.empty())
+                                                        (*idx_key)[key] = FVVV(*tmp_key);
+                                                    else
+                                                        (*idx_key)[key].sub = tmp_key->sub;
+                                                }
+                                                (*idx_key)[key].link = value_str;
                                             }
-                                            if (tmp_key) {
-                                                if (tmp_key->sub.empty())
-                                                    (*idx_key)[key] = FVVV(*tmp_key);
-                                                else
-                                                    (*idx_key)[key].sub = tmp_key->sub;
-                                            }
-                                            (*idx_key)[key].link = value.str();
                                         }
                                         (*idx_key)[key].desc = idx_desc;
                                         value.str("");

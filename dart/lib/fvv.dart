@@ -394,26 +394,19 @@ class FVVV {
                         idxKey[key] = tmps;
                       }
                     }
-                  } else if (isStr) {
-                    idxKey[key] = value.toString();
-                  } else if (eqOr(<String>[value.toString(), 'true', 'false'])) {
-                    idxKey[key] = value.toString() == 'true';
-                  } else if (tryInt(value.toString()) != null) {
-                    idxKey[key] = tryInt(value.toString());
-                  } else if (tryDouble(value.toString()) != null) {
-                    idxKey[key] = tryDouble(value.toString());
                   } else {
-                    final List<String> tmpNames = value.toString().trim().split('.');
-                    FVVV tmpKey = idxKey;
-                    for (final String key in tmpNames) {
-                      if (tmpKey.sub.containsKey(key)) {
-                        tmpKey = tmpKey[key];
-                      } else {
-                        break;
-                      }
-                    }
-                    if (tmpKey.isEmpty || tmpKey.sub.isEmpty) {
-                      tmpKey = rootKey;
+                    final String valueStr = value.toString();
+                    if (isStr) {
+                      idxKey[key] = valueStr;
+                    } else if (eqOr(<String>[valueStr, 'true', 'false'])) {
+                      idxKey[key] = valueStr == 'true';
+                    } else if (tryInt(valueStr) != null) {
+                      idxKey[key] = tryInt(valueStr);
+                    } else if (tryDouble(valueStr) != null) {
+                      idxKey[key] = tryDouble(valueStr);
+                    } else {
+                      final List<String> tmpNames = valueStr.trim().split('.');
+                      FVVV tmpKey = idxKey;
                       for (final String key in tmpNames) {
                         if (tmpKey.sub.containsKey(key)) {
                           tmpKey = tmpKey[key];
@@ -421,15 +414,25 @@ class FVVV {
                           break;
                         }
                       }
-                    }
-                    if (tmpKey.value != null || tmpKey.sub.isNotEmpty) {
-                      if (tmpKey.sub.isEmpty) {
-                        idxKey[key] = tmpKey;
-                      } else {
-                        idxKey[key].sub = tmpKey.sub;
+                      if (tmpKey.isEmpty || tmpKey.sub.isEmpty) {
+                        tmpKey = rootKey;
+                        for (final String key in tmpNames) {
+                          if (tmpKey.sub.containsKey(key)) {
+                            tmpKey = tmpKey[key];
+                          } else {
+                            break;
+                          }
+                        }
                       }
+                      if (tmpKey.value != null || tmpKey.sub.isNotEmpty) {
+                        if (tmpKey.sub.isEmpty) {
+                          idxKey[key] = tmpKey;
+                        } else {
+                          idxKey[key].sub = tmpKey.sub;
+                        }
+                      }
+                      idxKey[key].link = valueStr;
                     }
-                    idxKey[key].link = value.toString();
                   }
                   idxKey[key].desc = idxDesc;
                   idxDesc = '';
