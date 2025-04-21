@@ -105,14 +105,16 @@ namespace FVV {
             return other.data() != _data;
         }
         FVV_INLINE _valTp& operator[](const _keyTp& key) {
-            for (auto iter = _data.begin(); iter < _data.end(); ++iter)
-                if (iter->key() == key) return iter->value();
+            const auto iter =
+                find_if(_data.begin(), _data.end(), [&key](const Pair& p) { return p.key() == key; });
+            if (iter != _data.end()) return iter->value();
             _data.emplace_back(key, _valTp());
             return _data.back().value();
         }
         FVV_INLINE _keyTp& operator()(const _valTp& value) {
-            for (auto iter = _data.begin(); iter < _data.end(); ++iter)
-                if (iter->value() == value) return iter->key();
+            const auto iter =
+                find_if(_data.begin(), _data.end(), [&value](const Pair& p) { return p.value() == value; });
+            if (iter != _data.end()) return iter->key();
             _data.emplace_back(_keyTp(), value);
             return _data.back().key();
         }
@@ -177,27 +179,24 @@ namespace FVV {
                 }
         }
         FVV_INLINE vec<_keyTp> keys(void) const {
-            vec<_keyTp> keysList{};
+            vec<_keyTp> keysList;
             keysList.reserve(_data.size());
-            for (auto iter = _data.begin(); iter < _data.end(); ++iter) keysList.emplace_back(iter->key());
+            transform(_data.begin(), _data.end(), back_inserter(keysList), [](const Pair& p) { return p.key(); });
             return keysList;
         }
         FVV_INLINE vec<_valTp> values(void) const {
-            vec<_valTp> valuesList{};
+            vec<_valTp> valuesList;
             valuesList.reserve(_data.size());
-            for (auto iter = _data.begin(); iter < _data.end(); ++iter) valuesList.emplace_back(iter->value());
+            transform(_data.begin(), _data.end(), back_inserter(valuesList),
+                      [](const Pair& p) { return p.value(); });
             return valuesList;
         }
         FVV_INLINE const vec<Pair>& data(void) const { return _data; }
         FVV_INLINE vec<Pair>&& data_rv(void) { return std::move(_data); }
         FVV_INLINE void        sort(function<bool(const Pair&, const Pair&)> compare_func = nullptr) {
-            static const auto default_comp = [](const Pair& a, const Pair& b) -> bool {
-                return a.key() < b.key();
-            };
-            if (compare_func)
-                sort(_data.begin(), _data.end(), compare_func);
-            else
-                sort(_data.begin(), _data.end(), default_comp);
+            sort(
+                _data.begin(), _data.end(),
+                compare_func ? compare_func : [](const Pair& a, const Pair& b) { return a.key() < b.key(); });
         }
         FVV_INLINE void   reverse(void) { reverse(_data.begin(), _data.end()); }
         FVV_INLINE void   clear(void) { _data.clear(); }

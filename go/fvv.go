@@ -70,7 +70,7 @@ func (fvvv *FVVV) Print(tp ...string) string {
 		if path == "" || (node.IsEmpty() && node.SubIsEmpty()) {
 			return
 		}
-		indent := strings.Repeat(" ", indent_lv*2)
+		indent := strings.Repeat("  ", indent_lv)
 		if node.SubIsNotEmpty() && node.Link == "" {
 			if is_min {
 				result.WriteString(path + "={")
@@ -97,7 +97,7 @@ func (fvvv *FVVV) Print(tp ...string) string {
 				case float64:
 					result.WriteString(strconv.FormatFloat(v, 'f', -1, 64))
 				case []string, []bool, []int, []float64:
-					vec_indent := strings.Repeat(" ", (indent_lv+1)*2)
+					vec_indent := strings.Repeat("  ", indent_lv+1)
 					result.WriteString("[")
 					if is_biglist {
 						result.WriteString("\n")
@@ -513,9 +513,9 @@ func (fvvv *FVVV) AddFromString(txt string) {
 	}
 }
 
-func NewFVVV(value any) *FVVV {
+func NewFVVV() *FVVV {
 	return &FVVV{
-		Value: value,
+		Value: nil,
 		Sub:   make(map[string]*FVVV),
 	}
 }
