@@ -39,168 +39,85 @@ namespace FVV {
     template <typename Tp>
     using vec = vector<Tp>;
 
-    // Lite Code from CU Utils (https://github.com/chenzyadb/CU-Utils/blob/main/PairList/CuPairList.h)
     template <typename _keyTp, typename _valTp>
-    class PairList {
-    public:
-        class Pair {
-        public:
-            FVV_INLINE       Pair(void) : _key(), _value() {}
-            FVV_INLINE       Pair(const _keyTp& key, const _valTp& value) : _key(key), _value(value) {}
-            FVV_INLINE       Pair(const Pair& other) : _key(other.key()), _value(other.value()) {}
-            FVV_INLINE       Pair(Pair&& other) noexcept : _key(other.key_rv()), _value(other.value_rv()) {}
-            FVV_INLINE Pair& operator=(const Pair& other) {
-                if (addressof(other) != this) {
-                    _key   = other.key();
-                    _value = other.value();
-                }
-                return *this;
-            }
-            FVV_INLINE Pair& operator=(Pair&& other) noexcept {
-                if (addressof(other) != this) {
-                    _key   = other.key();
-                    _value = other.value();
-                }
-                return *this;
-            }
-            FVV_INLINE bool operator==(const Pair& other) const {
-                return addressof(other) == this || (_key == other.key() && _value == other.value());
-            }
-            FVV_INLINE bool operator!=(const Pair& other) const {
-                return addressof(other) != this && (_key != other.key() || _value != other.value());
-            }
-            FVV_INLINE _keyTp&       key(void) { return _key; }
-            FVV_INLINE const _keyTp& key(void) const { return _key; }
-            FVV_INLINE _valTp&       value(void) { return _value; }
-            FVV_INLINE const _valTp& value(void) const { return _value; }
-            FVV_INLINE _keyTp&&      key_rv(void) { return std::move(_key); }
-            FVV_INLINE _valTp&&      value_rv(void) { return std::move(_value); }
-
-        private:
-            _keyTp _key;
-            _valTp _value;
-        };
-        typedef typename vec<Pair>::iterator       iterator;
-        typedef typename vec<Pair>::const_iterator const_iterator;
-        FVV_INLINE                                 PairList(void) : _data() {}
-        FVV_INLINE                                 PairList(const PairList& other) : _data(other.data()) {}
-        FVV_INLINE                                 PairList(PairList&& other) noexcept : _data(other.data_rv()) {}
-        FVV_INLINE ~PairList(void) {}
-        FVV_INLINE PairList& operator=(const PairList& other) {
-            if (addressof(other) != this) _data = other.data();
-            return *this;
-        }
-        FVV_INLINE PairList& operator=(PairList&& other) noexcept {
-            if (addressof(other) != this) _data = other.data_rv();
-            return *this;
-        }
-        FVV_INLINE bool operator==(const PairList& other) const {
-            return addressof(other) == this || other.data() == _data;
-        }
-        FVV_INLINE bool operator!=(const PairList& other) const {
-            return addressof(other) != this && other.data() != _data;
-        }
-        FVV_INLINE _valTp& operator[](const _keyTp& key) {
-            const auto iter =
-                find_if(_data.begin(), _data.end(), [&key](const Pair& p) { return p.key() == key; });
-            if (iter != _data.end()) return iter->value();
-            _data.emplace_back(key, _valTp());
-            return _data.back().value();
+    struct KVPair : public pair<_keyTp, _valTp> {
+        using pair<_keyTp, _valTp>::pair;
+        FVV_INLINE _keyTp&       key(void) { return this->first; }
+        FVV_INLINE const _keyTp& key(void) const { return this->first; }
+        FVV_INLINE _keyTp&&      key_rv(void) { return std::move(this->first); }
+        FVV_INLINE _valTp&       value(void) { return this->second; }
+        FVV_INLINE const _valTp& value(void) const { return this->second; }
+        FVV_INLINE _valTp&&      value_rv(void) { return std::move(this->second); }
+    };
+    template <typename _keyTp, typename _valTp>
+    struct PairList : public vec<KVPair<_keyTp, _valTp>> {
+        using iterator       = typename vec<KVPair<_keyTp, _valTp>>::iterator;
+        using const_iterator = typename vec<KVPair<_keyTp, _valTp>>::const_iterator;
+        FVV_INLINE vec<KVPair<_keyTp, _valTp>>&& data_rv(void) { return std::move(*this); }
+        FVV_INLINE _valTp&                       operator[](const _keyTp& key) {
+            if (auto it = find_if(this->begin(), this->end(),
+                                                        [&key](const KVPair<_keyTp, _valTp>& p) { return p.key() == key; });
+                it != this->end())
+                return it->value();
+            this->emplace_back(key, _valTp());
+            return this->back().value();
         }
         FVV_INLINE _keyTp& operator()(const _valTp& value) {
-            const auto iter =
-                find_if(_data.begin(), _data.end(), [&value](const Pair& p) { return p.value() == value; });
-            if (iter != _data.end()) return iter->key();
-            _data.emplace_back(_keyTp(), value);
-            return _data.back().key();
+            if (auto it = find_if(this->begin(), this->end(),
+                                  [&value](const KVPair<_keyTp, _valTp>& p) { return p.value() == value; });
+                it != this->end())
+                return it->key();
+            this->emplace_back(_keyTp(), value);
+            return this->back().key();
         }
         FVV_INLINE bool hasKey(const _keyTp& key) const {
-            for (auto iter = _data.begin(); iter < _data.end(); ++iter)
-                if (iter->key() == key) return true;
-            return false;
+            return any_of(this->begin(), this->end(),
+                          [&key](const KVPair<_keyTp, _valTp>& p) { return p.key() == key; });
         }
         FVV_INLINE bool hasValue(const _valTp& value) const {
-            for (auto iter = _data.begin(); iter < _data.end(); ++iter)
-                if (iter->value() == value) return true;
-            return false;
+            return any_of(this->begin(), this->end(),
+                          [&value](const KVPair<_keyTp, _valTp>& p) { return p.value() == value; });
         }
-        FVV_INLINE iterator       begin(void) { return _data.begin(); }
-        FVV_INLINE const_iterator begin(void) const { return _data.begin(); }
-        FVV_INLINE iterator       end(void) { return _data.end(); }
-        FVV_INLINE const_iterator end(void) const { return _data.end(); }
-        FVV_INLINE Pair&          front(void) { return _data.front(); }
-        FVV_INLINE const Pair&    front(void) const { return _data.front(); }
-        FVV_INLINE Pair&          back(void) { return _data.back(); }
-        FVV_INLINE const Pair&    back(void) const { return _data.back(); }
         FVV_INLINE const_iterator findKey(const _keyTp& key) const {
-            for (auto iter = _data.begin(); iter < _data.end(); ++iter)
-                if (iter->key() == key) return iter;
-            return _data.end();
+            return find_if(this->begin(), this->end(),
+                           [&key](const KVPair<_keyTp, _valTp>& p) { return p.key() == key; });
         }
         FVV_INLINE const_iterator findValue(const _valTp& value) const {
-            for (auto iter = _data.begin(); iter < _data.end(); ++iter)
-                if (iter->value() == value) return iter;
-            return _data.end();
+            return find_if(this->begin(), this->end(),
+                           [&value](const KVPair<_keyTp, _valTp>& p) { return p.value() == value; });
         }
-        FVV_INLINE void add(const _keyTp& key, const _valTp& value) {
-            for (auto& pair : _data)
-                if (pair.key() == key) {
-                    pair.value() = value;
-                    return;
-                }
-            _data.emplace_back(key, value);
+        FVV_INLINE void eraseKey(const _keyTp& key) {
+            this->erase(remove_if(this->begin(), this->end(),
+                                  [&key](const KVPair<_keyTp, _valTp>& p) { return p.key() == key; }),
+                        this->end());
         }
-        FVV_INLINE void add(const Pair& other) {
-            for (auto& pair : _data)
-                if (pair.key() == other.key()) {
-                    pair.value() = other.value();
-                    return;
-                }
-            _data.emplace_back(other);
-        }
-        FVV_INLINE void remove(const_iterator iter) { _data.erase(iter); }
-        FVV_INLINE void remove(iterator iter) { _data.erase(iter); }
-        FVV_INLINE void removeKey(const _keyTp& key) {
-            for (auto iter = _data.begin(); iter < _data.end(); ++iter)
-                if (iter->key() == key) {
-                    _data.erase(iter);
-                    break;
-                }
-        }
-        FVV_INLINE void removeValue(const _valTp& value) {
-            for (auto iter = _data.begin(); iter < _data.end(); ++iter)
-                if (iter->value() == value) {
-                    _data.erase(iter);
-                    break;
-                }
+        FVV_INLINE void eraseValue(const _valTp& value) {
+            this->erase(remove_if(this->begin(), this->end(),
+                                  [&value](const KVPair<_keyTp, _valTp>& p) { return p.value() == value; }),
+                        this->end());
         }
         FVV_INLINE vec<_keyTp> keys(void) const {
-            vec<_keyTp> keysList;
-            keysList.reserve(_data.size());
-            transform(_data.begin(), _data.end(), back_inserter(keysList), [](const Pair& p) { return p.key(); });
-            return keysList;
+            vec<_keyTp> keys;
+            keys.reserve(this->size());
+            transform(this->begin(), this->end(), back_inserter(keys),
+                      [](const KVPair<_keyTp, _valTp>& p) { return p.key(); });
+            return keys;
         }
         FVV_INLINE vec<_valTp> values(void) const {
-            vec<_valTp> valuesList;
-            valuesList.reserve(_data.size());
-            transform(_data.begin(), _data.end(), back_inserter(valuesList),
-                      [](const Pair& p) { return p.value(); });
-            return valuesList;
+            vec<_valTp> vals;
+            vals.reserve(this->size());
+            transform(this->begin(), this->end(), back_inserter(vals),
+                      [](const KVPair<_keyTp, _valTp>& p) { return p.second; });
+            return vals;
         }
-        FVV_INLINE const vec<Pair>& data(void) const { return _data; }
-        FVV_INLINE vec<Pair>&& data_rv(void) { return std::move(_data); }
-        FVV_INLINE void        sort(function<bool(const Pair&, const Pair&)> compare_func = nullptr) {
-            sort(
-                _data.begin(), _data.end(),
-                compare_func ? compare_func : [](const Pair& a, const Pair& b) { return a.key() < b.key(); });
+        FVV_INLINE void sort(
+            function<bool(const KVPair<_keyTp, _valTp>&, const KVPair<_keyTp, _valTp>&)> func = nullptr) {
+            std::sort(
+                this->begin(), this->end(),
+                func ? func : [](const KVPair<_keyTp, _valTp>& a, const KVPair<_keyTp, _valTp>& b) {
+                    return a.key() < b.key();
+                });
         }
-        FVV_INLINE void   reverse(void) { reverse(_data.begin(), _data.end()); }
-        FVV_INLINE void   clear(void) { _data.clear(); }
-        FVV_INLINE size_t size(void) const noexcept { return _data.size(); }
-        FVV_INLINE bool   empty(void) const noexcept { return _data.begin() == _data.end(); }
-
-    private:
-        vec<Pair> _data;
     };
     class FVVV {
     public:
@@ -398,8 +315,7 @@ namespace FVV {
                         result << ']';
                     }
                 } else
-                    for (const PairList<str, FVVV>::Pair& item : node->sub)
-                        print_func(item.key(), &item.value(), indent_lv + 1);
+                    for (const auto& [key, sub] : node->sub) print_func(key, &sub, indent_lv + 1);
                 if (!node->sub.empty() && node->link.empty()) {
                     if (!is_min) result << indent;
                     result << '}';
@@ -411,7 +327,7 @@ namespace FVV {
                 else
                     result << '\n';
             };
-            for (const PairList<str, FVVV>::Pair& item : sub) print_func(item.key(), &item.value(), 0);
+            for (const auto& [key, value] : sub) print_func(key, &value, 0);
             _removeLastChar(result);
             return result.str();
         }
