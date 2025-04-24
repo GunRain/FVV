@@ -421,13 +421,11 @@ func (_fvvv *FVVV) AddFromString(txt string) {
 					} else if !in_list && eqOr(idx_char, ';', '\n') {
 						idx_key = get_key(value_names, get_key(group_names, idx_key))
 						if is_list {
-							if is_all_str {
+							if len(values) == 0 {
+								idx_key.Value = nil
+							} else if is_all_str {
 								idx_key.Value = values
 							} else {
-								if len(values) == 0 {
-									idx_key.Value = nil
-									return false
-								}
 								tmp_str := values[0]
 								if eqOr(tmp_str, "true", "false") {
 									tmps := make([]bool, len(values))

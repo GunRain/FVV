@@ -571,13 +571,11 @@ namespace FVV {
                             } else if (!in_list && _eqOr(idx_char, strv(";"), strv("\n"))) {
                                 idx_key = _getKey(value_names, _getKey(group_names, idx_key));
                                 if (is_list) {
-                                    if (is_all_str)
+                                    if (values.empty())
+                                        *idx_key = FVVV();
+                                    else if (is_all_str)
                                         *idx_key = values;
                                     else {
-                                        if (values.empty()) {
-                                            *idx_key = FVVV();
-                                            return false;
-                                        }
                                         str tmp_str = values.front();
                                         if (_eqOr(tmp_str, str("true"), str("false"))) {
                                             vec<bool> tmp;

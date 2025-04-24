@@ -93,20 +93,18 @@ class FVVV {
     printFunc = (final String path, final FVVV node, final int indentLv) {
       if (path.isEmpty || (isEmpty && sub.isEmpty)) return;
       final String indent = ' ' * indentLv * 2;
-      if (node.sub.isNotEmpty && node.link.isEmpty) {
-        if (isMin)
-          result.write('$path={');
-        else
-          result.write('$indent$path = {\n');
-      }
+      if (node.sub.isNotEmpty && node.link.isEmpty) if (isMin)
+        result.write('$path={');
+      else
+        result.write('$indent$path = {\n');
       if (node.link.isNotEmpty || node.value != null) {
         if (isMin)
           result.write('$path=');
         else
           result.write('$indent$path = ');
-        if (node.link.isNotEmpty) {
+        if (node.link.isNotEmpty)
           result.write(node.link);
-        } else {
+        else {
           final String vecIndent = ' ' * (indentLv + 1) * 2;
           switch (node.value) {
             case final String v:
@@ -125,9 +123,9 @@ class FVVV {
                   for (final String value in v) {
                     if (isBiglist) result.write(vecIndent);
                     result.write('"${value.replaceAll('"', r'\"')}"');
-                    if (isBiglist) {
+                    if (isBiglist)
                       result.write('\n');
-                    } else {
+                    else {
                       result.write(',');
                       if (!isMin) result.write(' ');
                     }
@@ -136,9 +134,9 @@ class FVVV {
                   for (final bool value in v) {
                     if (isBiglist) result.write(vecIndent);
                     result.write(value.toString());
-                    if (isBiglist) {
+                    if (isBiglist)
                       result.write('\n');
-                    } else {
+                    else {
                       result.write(',');
                       if (!isMin) result.write(' ');
                     }
@@ -147,9 +145,9 @@ class FVVV {
                   for (final int value in v) {
                     if (isBiglist) result.write(vecIndent);
                     result.write(value.toString());
-                    if (isBiglist) {
+                    if (isBiglist)
                       result.write('\n');
-                    } else {
+                    else {
                       result.write(',');
                       if (!isMin) result.write(' ');
                     }
@@ -158,18 +156,18 @@ class FVVV {
                   for (final double value in v) {
                     if (isBiglist) result.write(vecIndent);
                     result.write(value.toString());
-                    if (isBiglist) {
+                    if (isBiglist)
                       result.write('\n');
-                    } else {
+                    else {
                       result.write(',');
                       if (!isMin) result.write(' ');
                     }
                   }
               }
-              if (isBiglist) {
+              if (isBiglist)
                 result.write(indent);
-                // ignore: always_specify_types
-              } else if ((node.value as List).isNotEmpty) {
+              // ignore: always_specify_types
+              else if ((node.value as List).isNotEmpty) {
                 result.removeLastChar();
                 if (!isMin) result.removeLastChar();
               }
@@ -278,9 +276,9 @@ class FVVV {
             return false;
           }
         } else {
-          if (!inStr && eqOr(<String>[idxChar, ' ', '\t'])) {
+          if (!inStr && eqOr(<String>[idxChar, ' ', '\t']))
             return false;
-          } else if (idxChar == '<') {
+          else if (idxChar == '<') {
             inDesc = true;
             return false;
           }
@@ -386,13 +384,11 @@ class FVVV {
             } else if (!inList && eqOr(<String>[idxChar, ';', '\n'])) {
               idxKey = getKey(valueNames, getKey(groupNames, rootKey));
               if (isList) {
-                if (isAllStr) {
+                if (values.isEmpty)
+                  idxKey.value = null;
+                else if (isAllStr)
                   idxKey.value = values.toList();
-                } else {
-                  if (values.isEmpty) {
-                    idxKey.value = null;
-                    return false;
-                  }
+                else {
                   final String tmpStr = values[0];
                   if (eqOr(<String>[tmpStr, 'true', 'false'])) {
                     final List<bool> tmps = <bool>[];
@@ -410,15 +406,15 @@ class FVVV {
                 }
               } else {
                 final String valueStr = value.toString();
-                if (isAllStr) {
+                if (isAllStr)
                   idxKey.value = valueStr;
-                } else if (eqOr(<String>[valueStr, 'true', 'false'])) {
+                else if (eqOr(<String>[valueStr, 'true', 'false']))
                   idxKey.value = valueStr == 'true';
-                } else if (tryInt(valueStr) != null) {
+                else if (tryInt(valueStr) != null)
                   idxKey.value = tryInt(valueStr);
-                } else if (tryDouble(valueStr) != null) {
+                else if (tryDouble(valueStr) != null)
                   idxKey.value = tryDouble(valueStr);
-                } else {
+                else {
                   final FVVV tmpKey = findKey(valueStr, idxKey, rootKey);
                   if (tmpKey.value != null || tmpKey.sub.isNotEmpty) {
                     if (tmpKey.sub.isEmpty)
@@ -463,14 +459,13 @@ class FVVV {
             );
             groupNum--;
             return false;
-          } else if (idxChar == '}') {
-            if (groupNum == 0) {
-              return true;
-            } else {
-              endGroup = true;
-              return false;
-            }
-          } else {
+          } else if (idxChar == '}') if (groupNum == 0)
+            return true;
+          else {
+            endGroup = true;
+            return false;
+          }
+          else {
             valueName.write(idxChar);
             return false;
           }
