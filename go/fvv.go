@@ -1,5 +1,5 @@
 //====================================================================================================
-// Copyright (c) 2023-present Anne Sakitin (Tianwan Ayana).                                          =
+// Copyright (C) 2023-present Anne Sakitin (Tianwan Ayana).                                          =
 //                                                                                                   =
 // Licensed under the F2DLPR License.                                                                =
 //                                                                                                   =
