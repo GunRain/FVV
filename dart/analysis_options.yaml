@@ -25,6 +25,5 @@ linter:
     prefer_mixin: true
     prefer_relative_imports: true
     public_member_api_docs: false
-    require_trailing_commas: false
     unnecessary_null_aware_operator_on_extension_on_nullable: true
     use_truncating_division: true
