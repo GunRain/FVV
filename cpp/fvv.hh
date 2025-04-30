@@ -580,30 +580,31 @@ namespace FVV {
         static constexpr const unsigned char _bom[] = {0xEF, 0xBB, 0xBF};
         template <typename Tp>
         FVV_INLINE static const Tp& _getDfltVal() {
-            static constexpr const bool   dfltBool    = false;
-            static constexpr const int    dfltInt     = 0;
-            static constexpr const double dfltDouble  = 0.0;
-            static const str              dfltStr     = "";
-            static const vec<bool>        dfltBools   = {};
-            static const vec<int>         dfltInts    = {};
-            static const vec<double>      dfltDoubles = {};
-            static const vec<str>         dfltStrs    = {};
-            if constexpr (is_same_v<Tp, bool>)
+            if constexpr (is_same_v<Tp, bool>) {
+                static constexpr const bool dfltBool = false;
                 return dfltBool;
-            else if constexpr (is_same_v<Tp, int>)
+            } else if constexpr (is_same_v<Tp, int>) {
+                static constexpr const int dfltInt = 0;
                 return dfltInt;
-            else if constexpr (is_same_v<Tp, double>)
+            } else if constexpr (is_same_v<Tp, double>) {
+                static constexpr const double dfltDouble = 0.0;
                 return dfltDouble;
-            else if constexpr (is_same_v<Tp, str>)
+            } else if constexpr (is_same_v<Tp, str>) {
+                static const str dfltStr = "";
                 return dfltStr;
-            else if constexpr (is_same_v<Tp, vec<bool>>)
+            } else if constexpr (is_same_v<Tp, vec<bool>>) {
+                static const vec<bool> dfltBools = {};
                 return dfltBools;
-            else if constexpr (is_same_v<Tp, vec<int>>)
+            } else if constexpr (is_same_v<Tp, vec<int>>) {
+                static const vec<int> dfltInts = {};
                 return dfltInts;
-            else if constexpr (is_same_v<Tp, vec<double>>)
+            } else if constexpr (is_same_v<Tp, vec<double>>) {
+                static const vec<double> dfltDoubles = {};
                 return dfltDoubles;
-            else if constexpr (is_same_v<Tp, vec<str>>)
+            } else if constexpr (is_same_v<Tp, vec<str>>) {
+                static const vec<str> dfltStrs = {};
                 return dfltStrs;
+            }
             static Tp dfltTp{};
             return dfltTp;
         }
