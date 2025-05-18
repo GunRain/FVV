@@ -1,1 +1,2 @@
-dart format .
+@echo off
+dart format lib
