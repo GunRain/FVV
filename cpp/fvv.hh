@@ -132,7 +132,7 @@ namespace FVV {
         str              link       = "";
         FVV_INLINE       FVVV(void) = default;
         FVV_INLINE       FVVV(const FVVVT& v) : value(v) {}
-        FVV_INLINE FVVV& operator[](const strv& key) { return sub[key.data()]; }
+        FVV_INLINE FVVV& operator[](strv key) { return sub[key.data()]; }
         FVV_INLINE FVVV& operator=(const FVVVT& val) {
             value = val;
             return *this;
@@ -219,7 +219,7 @@ namespace FVV {
         /// @param  为“min”时最小化输出
         /// @param  为“biglist”时会把值组内每个值换行输出
         /// @return FVV文本格式格式化后的值
-        FVV_INLINE str print(const strv& type = "common") const {
+        FVV_INLINE str print(strv type = "common") const {
             bool         is_min = type == "min", is_biglist = type == "biglist", is_nodesc = type == "nodesc";
             stringstream result;
             function<void(const str&, const FVVV*, size_t)> print_func;
@@ -355,7 +355,7 @@ namespace FVV {
             uint8_t last_char_size = 0;
             FVVV*   root_key       = this;
             _utf8ForEach(
-                txt, txt.size(), [&](const size_t& idx, const strv& idx_char, const uint8_t& char_size) -> bool {
+                txt, txt.size(), [&](const size_t& idx, strv idx_char, const uint8_t& char_size) -> bool {
                     FVVV* idx_key = root_key;
                     is_real_char =
                         idx >= 1 ? (last_char_size == 1 ? (txt[idx - 1] != '\\' ? true : false) : true) : true;
@@ -497,7 +497,7 @@ namespace FVV {
                                             vec<bool> tmp;
                                             tmp.reserve(values.size());
                                             transform(values.begin(), values.end(), back_inserter(tmp),
-                                                      [](const strv& s) { return s == "true"; });
+                                                      [](strv s) { return s == "true"; });
                                             *idx_key = tmp;
                                         } else if (_isInt(tmp_str)) {
                                             vec<int> tmp;
@@ -613,7 +613,7 @@ namespace FVV {
             for (const str& path : paths) tmp_key = &(*tmp_key)[path];
             return tmp_key;
         }
-        FVV_INLINE static FVVV* _findKey(const strv& path, FVVV* idx_key, FVVV* root_key) {
+        FVV_INLINE static FVVV* _findKey(strv path, FVVV* idx_key, FVVV* root_key) {
             vec<str> tmp_names = _split(path.data(), '.');
             FVVV*    tmp_key   = idx_key;
             for (const str& tmp_name : tmp_names)
@@ -652,18 +652,18 @@ namespace FVV {
             while (getline(ss, item, delimiter)) result.push_back(item);
             return result;
         }
-        FVV_INLINE static str _replace(str s, const strv& f, const strv& t) {
+        FVV_INLINE static str _replace(str s, strv f, strv t) {
             _replaceBase(s, f, t);
             return s;
         }
-        FVV_INLINE static void _replaceBase(str& s, const strv& f, const strv& t) {
+        FVV_INLINE static void _replaceBase(str& s, strv f, strv t) {
             size_t p = 0;
             while ((p = s.find(f, p)) != str::npos) {
                 s.replace(p, f.length(), t);
                 p += t.length();
             }
         }
-        FVV_INLINE static bool _isInt(const strv& s) {
+        FVV_INLINE static bool _isInt(strv s) {
             if (s.empty()) return false;
             size_t start = 0;
             if (s[0] == '-' || s[0] == '+') {
@@ -672,7 +672,7 @@ namespace FVV {
             }
             return all_of(s.begin() + start, s.end(), ::isdigit);
         }
-        FVV_INLINE static bool _isDouble(const strv& s) {
+        FVV_INLINE static bool _isDouble(strv s) {
             if (s.empty()) return false;
             size_t start    = 0;
             bool   hasDigit = false, hasDot = false;
@@ -723,7 +723,7 @@ namespace FVV {
             }
         }
         FVV_INLINE static void _utf8ForEach(const str& target, size_t size,
-                                            function<bool(const size_t&, const strv&, const uint8_t&)> handler) {
+                                            function<bool(const size_t&, strv, const uint8_t&)> handler) {
             size_t i = 0;
             while (i < size) {
                 unsigned char c         = target[i];
