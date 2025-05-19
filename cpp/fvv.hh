@@ -222,8 +222,8 @@ namespace FVV {
         FVV_INLINE str print(strv type = "common") const {
             bool         is_min = type == "min", is_biglist = type == "biglist", is_nodesc = type == "nodesc";
             stringstream result;
-            function<void(const str&, const FVVV*, size_t)> print_func;
-            print_func = [&](const str& path, const FVVV* node, size_t indent_lv) {
+            function<void(strv, const FVVV*, size_t)> print_func;
+            print_func = [&](strv path, const FVVV* node, size_t indent_lv) {
                 if (path.empty() || (node->isEmpty() && node->sub.empty())) return;
                 str indent(indent_lv * 2, ' ');
                 if (!node->sub.empty() && node->link.empty()) {
@@ -444,7 +444,7 @@ namespace FVV {
                                     _isInt(value_str) || _isDouble(value_str))
                                     values.push_back(value_str);
                                 else if (idx_key = _getKey({value_str}, _getKey(group_names, idx_key));
-                                         idx_key->isNotEmpty())
+                                         idx_key->isNotEmpty()) {
                                     if (idx_key->isType<str>())
                                         values.push_back(idx_key->as<str>());
                                     else if (idx_key->isType<bool>())
@@ -469,6 +469,7 @@ namespace FVV {
                                         transform(tmp.begin(), tmp.end(), back_inserter(values),
                                                   [](double v) { return to_string(v); });
                                     }
+                                }
                                 if (is_empty_str)
                                     is_empty_str = false;
                                 else {
@@ -722,7 +723,7 @@ namespace FVV {
                 ss << str;
             }
         }
-        FVV_INLINE static void _utf8ForEach(const str& target, size_t size,
+        FVV_INLINE static void _utf8ForEach(strv target, size_t size,
                                             function<bool(const size_t&, strv, const uint8_t&)> handler) {
             size_t i = 0;
             while (i < size) {
