@@ -1,0 +1,140 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"patterns": [
+		{
+			"include": "#value"
+		}
+	],
+	"repository": {
+		"value": {
+			"patterns": [
+				{
+					"include": "#comment"
+				},
+				{
+					"include": "#constant"
+				},
+				{
+					"include": "#assignment"
+				},
+				{
+					"include": "#string"
+				},
+				{
+					"include": "#number"
+				},
+				{
+					"include": "#object"
+				},
+				{
+					"include": "#array"
+				}
+			]
+		},
+		"object": {
+			"patterns": [
+				{
+					"name": "meta.structure.dictionary.fvv",
+					"begin": "\\{",
+					"beginCaptures": {
+						"0": {
+							"name": "punctuation.definition.dictionary.begin.fvv"
+						}
+					},
+					"end": "\\}",
+					"endCaptures": {
+						"0": {
+							"name": "punctuation.definition.dictionary.end.fvv"
+						}
+					},
+					"patterns": [
+						{
+							"include": "#value"
+						}
+					]
+				}
+			]
+		},
+		"array": {
+			"patterns": [
+				{
+					"name": "meta.structure.array.fvv",
+					"begin": "\\[",
+					"beginCaptures": {
+						"0": {
+							"name": "punctuation.definition.array.begin.fvv"
+						}
+					},
+					"end": "\\]",
+					"endCaptures": {
+						"0": {
+							"name": "punctuation.definition.array.end.fvv"
+						}
+					},
+					"patterns": [
+						{
+							"include": "#value"
+						},
+						{
+							"name": "punctuation.separator.array.fvv",
+							"match": ","
+						}
+					]
+				}
+			]
+		},
+		"comment": {
+			"patterns": [
+				{
+					"name": "comment.block.fvv",
+					"begin": "<",
+					"end": ">"
+				}
+			]
+		},
+		"constant": {
+			"patterns": [
+				{
+					"name": "constant.language.fvv",
+					"match": "\\b(?:true|false)\\b"
+				}
+			]
+		},
+		"assignment": {
+			"patterns": [
+				{
+					"name": "keyword.operator.assignment.fvv",
+					"match": "="
+				},
+				{
+					"name": "punctuation.terminator.statement.fvv",
+					"match": ";|(?=$)"
+				}
+			]
+		},
+		"string": {
+			"patterns": [
+				{
+					"name": "string.quoted.double.fvv",
+					"begin": "\"",
+					"end": "\"",
+					"patterns": [
+						{
+							"match": "\\\\.",
+							"name": "constant.character.escape.fvv"
+						}
+					]
+				}
+			]
+		},
+		"number": {
+			"patterns": [
+				{
+					"name": "constant.numeric.fvv",
+					"match": "\\b[+-]?\\d+(?:\\.\\d+)?\\b"
+				}
+			]
+		}
+	},
+	"scopeName": "source.fvv"
+}

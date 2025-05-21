@@ -1,0 +1,55 @@
+{
+  "name": "fvv",
+  "displayName": "FVV Language",
+  "description": "FVV Language for VS Code",
+  "version": "0.0.1",
+  "publisher": "天绾绮奈",
+  "license": "F2DLPRL",
+  "repository": {
+    "type": "git",
+    "url": "https://gitcode.com/OutOfMemories-WorkGroup/FVV.git"
+  },
+  "engines": {
+    "vscode": "^1.100.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "fvv",
+        "aliases": [
+          "FVV",
+          "fvv",
+          "FW",
+          "fw",
+          "RPP",
+          "rpp",
+          "R++",
+          "r++",
+          "RXX",
+          "rxx",
+          "RR",
+          "rr"
+        ],
+        "extensions": [
+          ".fvv",
+          ".fw",
+          ".rpp",
+          ".r++",
+          ".rxx",
+          ".rr"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "fvv",
+        "scopeName": "source.fvv",
+        "path": "./syntaxes/fvv.tmLanguage.json"
+      }
+    ]
+  }
+}
