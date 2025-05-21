@@ -10,7 +10,7 @@
     "url": "https://gitcode.com/OutOfMemories-WorkGroup/FVV.git"
   },
   "engines": {
-    "vscode": "^1.100.0"
+    "vscode": "^0.10.0"
   },
   "categories": [
     "Programming Languages"
