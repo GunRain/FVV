@@ -12,22 +12,22 @@
 					"include": "#comment"
 				},
 				{
-					"include": "#constant"
-				},
-				{
-					"include": "#assignment"
-				},
-				{
 					"include": "#string"
+				},
+				{
+					"include": "#constant"
 				},
 				{
 					"include": "#number"
 				},
 				{
-					"include": "#object"
+					"include": "#assignment"
 				},
 				{
 					"include": "#array"
+				},
+				{
+					"include": "#object"
 				}
 			]
 		},
@@ -103,8 +103,16 @@
 		"assignment": {
 			"patterns": [
 				{
-					"name": "keyword.operator.assignment.fvv",
-					"match": "="
+					"name": "meta.assignment.fvv",
+					"match": "([^=\\s]+)\\s*(=)",
+					"captures": {
+						"1": {
+							"name": "variable.other.member.fvv"
+						},
+						"2": {
+							"name": "keyword.operator.assignment.fvv"
+						}
+					}
 				},
 				{
 					"name": "punctuation.terminator.statement.fvv",
@@ -120,8 +128,8 @@
 					"end": "\"",
 					"patterns": [
 						{
-							"match": "\\\\.",
-							"name": "constant.character.escape.fvv"
+							"name": "constant.character.escape.fvv",
+							"match": "\\\\."
 						}
 					]
 				}
