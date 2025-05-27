@@ -1,6 +1,6 @@
 include: package:very_good_analysis/analysis_options.yaml
 formatter:
-  page_width: 114
+  page_width: 106
 linter:
   rules:
     always_use_package_imports: false
@@ -17,6 +17,7 @@ linter:
     matching_super_parameters: true
     no_literal_bool_comparisons: true
     omit_obvious_local_variable_types: true
+    omit_obvious_property_types: true
     parameter_assignments: false
     prefer_expression_function_bodies: true
     prefer_final_parameters: true
@@ -24,6 +25,9 @@ linter:
     prefer_mixin: true
     prefer_relative_imports: true
     public_member_api_docs: false
+    require_trailing_commas: true
+    specify_nonobvious_property_types: false
+    strict_top_level_inference: false
     type_annotate_public_apis: false
     unnecessary_null_aware_operator_on_extension_on_nullable: true
     use_truncating_division: true

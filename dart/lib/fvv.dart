@@ -178,7 +178,8 @@ class FVVV {
         if (!isMin) result.write(indent);
         result.write('}');
       }
-      if (node.desc.isNotEmpty && !isMin && !isNodesc) result.write(' <${node.desc.replaceAll('>', r'\>')}>');
+      if (node.desc.isNotEmpty && !isMin && !isNodesc)
+        result.write(' <${node.desc.replaceAll('>', r'\>')}>');
       if (isMin)
         result.write(';');
       else
@@ -450,7 +451,8 @@ class FVVV {
               getKey(groupNames, rootKey).desc = idxDesc;
               idxDesc = '';
             }
-            for (final _ in lastGroupNames.last) groupNames = groupNames.sublist(0, groupNames.length - 1);
+            for (final _ in lastGroupNames.last)
+              groupNames = groupNames.sublist(0, groupNames.length - 1);
             lastGroupNames = lastGroupNames.sublist(
               0,
               lastGroupNames.length - 1,
