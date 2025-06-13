@@ -359,7 +359,7 @@ namespace FVV {
                         if (idx_char == ">" && !is_real_char) _removeLastChar(tmp_desc);
                         if (in_value || group_num > 0) tmp_desc << idx_char;
                         return false;
-                    } else if (idx_char == ">") {
+                    } else {
                         idx_desc = tmp_desc.str();
                         tmp_desc.str("");
                         tmp_desc.clear();
@@ -369,7 +369,7 @@ namespace FVV {
                     }
                 } else {
                     if (!in_str && (idx_char == " " || idx_char == "\t")) return false;
-                    else if (idx_char == "<") {
+                    if (idx_char == "<") {
                         in_desc = true;
                         return false;
                     }
@@ -378,9 +378,8 @@ namespace FVV {
                     if (in_str) {
                         if (idx_char == "\"") {
                             if (is_real_char) {
-                                if (value.str().empty()) is_empty_str = true;
-                                else is_empty_str = false;
-                                in_str = false;
+                                is_empty_str = value.str().empty();
+                                in_str       = false;
                                 return false;
                             } else {
                                 _removeLastChar(value);
@@ -414,11 +413,9 @@ namespace FVV {
                                         case '>' : in_list_desc = true; return false;
                                         case ' ' :
                                         case '\t': return false;
-                                        case ',':
+                                        case ',' :
                                         case '\n':
-                                        default:
-                                            if (in_list_desc) return false;
-                                            return true;
+                                        default  : return !in_list_desc;
                                     }
                                 }())
                                     break;

@@ -284,7 +284,7 @@ func (_fvvv *FVVV) AddFromString(txt string) {
 						tmp_desc.WriteRune(idx_char)
 					}
 					return false
-				} else if idx_char == '>' && is_real_char {
+				} else {
 					idx_desc = tmp_desc.String()
 					tmp_desc.Reset()
 					in_desc = false
@@ -293,7 +293,8 @@ func (_fvvv *FVVV) AddFromString(txt string) {
 			} else {
 				if !in_str && eqOr(idx_char, ' ', '\t') {
 					return false
-				} else if idx_char == '<' {
+				}
+				if idx_char == '<' {
 					in_desc = true
 					return false
 				}
@@ -302,11 +303,7 @@ func (_fvvv *FVVV) AddFromString(txt string) {
 				if in_str {
 					if idx_char == '"' {
 						if is_real_char {
-							if value.String() == "" {
-								is_empty_str = true
-							} else {
-								is_empty_str = false
-							}
+							is_empty_str = value.String() == ""
 							in_str = false
 							return false
 						} else {
@@ -348,15 +345,9 @@ func (_fvvv *FVVV) AddFromString(txt string) {
 									case ' ', '\t':
 										return false
 									case ',', '\n':
-										if in_list_desc {
-											return false
-										}
-										return true
+										return !in_list_desc
 									default:
-										if in_list_desc {
-											return false
-										}
-										return true
+										return !in_list_desc
 									}
 								}() {
 									break

@@ -180,6 +180,10 @@ ValueName1="114514\"";ValueName2=true;ValueName3=114514;ValueName4=114.514000;Va
 
 不想写了，看[Pub文档](https://pub-web.flutter-io.cn/documentation/fvv/latest/fvv/)吧！
 
+## Kotlin
+
+与Dart基本一致
+
 ## 注意点
 
 - 注释和字符串赋值支持`转义`，但是`仅支持转义“>”、“"”，例如`<\>>`、`"\""`，解析时会自动去除里面的“\”，`直接使用“\”不需要重复两个“\”`，因为根本没做多复杂的转义检测逻辑

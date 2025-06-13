@@ -89,12 +89,14 @@ class FVVV {
     final result = StringBuffer();
     var printFunc = (final String path, final FVVV node, final int indentLv) {};
     printFunc = (final path, final node, final indentLv) {
-      if (path.isEmpty || (isEmpty && sub.isEmpty)) return;
+      if (path.isEmpty || (node.isEmpty && node.sub.isEmpty)) return;
       final indent = ' ' * indentLv * 2;
-      if (node.sub.isNotEmpty && node.link.isEmpty) if (isMin)
-        result.write('$path={');
-      else
-        result.write('$indent$path = {\n');
+      if (node.sub.isNotEmpty && node.link.isEmpty) {
+        if (isMin)
+          result.write('$path={');
+        else
+          result.write('$indent$path = {\n');
+      }
       if (node.link.isNotEmpty || node.value != null) {
         if (isMin)
           result.write('$path=');
@@ -269,15 +271,15 @@ class FVVV {
             if (idxChar == '>' && !isRealChar) tmpDesc.removeLastChar();
             if (inValue || groupNum > 0) tmpDesc.write(idxChar);
             return false;
-          } else if (idxChar == '>' && isRealChar) {
+          } else {
             idxDesc = tmpDesc.toString();
+            tmpDesc.clear();
             inDesc = false;
             return false;
           }
         } else {
-          if (!inStr && eqOr([idxChar, ' ', '\t']))
-            return false;
-          else if (idxChar == '<') {
+          if (!inStr && eqOr([idxChar, ' ', '\t'])) return false;
+          if (idxChar == '<') {
             inDesc = true;
             return false;
           }
@@ -286,10 +288,7 @@ class FVVV {
           if (inStr) {
             if (idxChar == '"') {
               if (isRealChar) {
-                if (value.isEmpty)
-                  isEmptyStr = true;
-                else
-                  isEmptyStr = false;
+                isEmptyStr = value.isEmpty;
                 inStr = false;
                 return false;
               } else {
@@ -330,8 +329,7 @@ class FVVV {
                       case ',':
                       case '\n':
                       default:
-                        if (inListDesc) return false;
-                        return true;
+                        return !inListDesc;
                     }
                   }()) break;
                   pos++;
@@ -417,7 +415,7 @@ class FVVV {
                   final tmpKey = findKey(valueStr, idxKey, rootKey);
                   if (tmpKey.value != null || tmpKey.sub.isNotEmpty) {
                     if (tmpKey.sub.isEmpty)
-                      idxKey = tmpKey;
+                      idxKey.value = tmpKey.value;
                     else
                       idxKey.sub = tmpKey.sub;
                     idxKey.link = valueStr;
