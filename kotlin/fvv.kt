@@ -263,7 +263,7 @@ class FVVV(
                                                     else -> !inListDesc
                                                 }
                                             ) break
-                                            pos++
+                                            ++pos
                                         }
                                         if (txt.getOrNull(idx - pos) in listOf(',', '\n')) return@let false
                                     } else if (value.isEmpty() && (!isAllStr || !isEmptyStr)) return@let false
@@ -291,7 +291,7 @@ class FVVV(
                                     groupNames.addAll(valueNames)
                                     lastGroupNames.add(valueNames.toList())
                                     valueNames.clear()
-                                    groupNum++
+                                    ++groupNum
                                     inValue = false
                                     return@let false
                                 }
@@ -361,7 +361,7 @@ class FVVV(
                             }
                             repeat(lastGroupNames.last().size) { groupNames.removeAt(groupNames.size - 1) }
                             lastGroupNames.removeAt(lastGroupNames.size - 1)
-                            groupNum--
+                            --groupNum
                             return@let false
                         } else if (idxChar == '}') if (groupNum == 0) return@let true
                         else {
@@ -374,7 +374,8 @@ class FVVV(
                         }
                     }
                 }) break
-            lastChar = runes[idx++]
+            lastChar = idxChar
+            ++idx
         }
     }
 }
