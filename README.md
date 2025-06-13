@@ -2,7 +2,7 @@
 
 This page is written in Chinese, please use the translation if you do not understand.
 
-闲余时间搓出来的文本格式，目前支持`C++`(最低支持C++`17`)、`Go`(最低支持Go`1.18`)以及`Dart`(最低支持Dart`3`)，以后可能会支持`Kotlin`等常用语言，反正目前是还没有写的。
+闲余时间搓出来的文本格式，目前支持`C++`(最低支持C++`17`)、`Go`(最低支持Go`1.18`)、`Dart`(最低支持Dart`3`)以及`Kotlin`，以后可能会支持更多常用语言，反正目前是还没有写的。
 
 不会支持的语言: `Python`、`Java`、`Rust`等
 
