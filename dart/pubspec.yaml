@@ -1,7 +1,7 @@
 name: fvv
 description: "Fresh View for Viewer (FVV/FW/废物/廢物). Lightweight text formatting."
-version: 1.0.0+10
-repository: https://gitcode.com/OutOfMemories-WorkGroup/FVV
+version: 1.0.0+11
+repository: https://github.com/OOM-WG/FVV
 environment:
   sdk: '>=3.0.0 <4.0.0'
 dev_dependencies:
