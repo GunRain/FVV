@@ -17,11 +17,14 @@ package in_.sakit.fvv
 import kotlin.reflect.KClass
 
 class FVVV(
-    var value: Any?, var sub: MutableMap<String, FVVV> = mutableMapOf(), var desc: String = "", var link: String = ""
+    var value: Any? = null,
+    var sub: MutableMap<String, FVVV> = mutableMapOf(),
+    var desc: String = "",
+    var link: String = "",
 ) {
-    operator fun get(key: String): FVVV = sub.getOrPut(key) { FVVV(null) }
+    operator fun get(key: String): FVVV = sub.getOrPut(key) { FVVV() }
     operator fun set(key: String, v: Any?) {
-        sub.getOrPut(key) { FVVV(null) }.value = v
+        sub.getOrPut(key) { FVVV() }.value = v
     }
 
     override fun equals(other: Any?): Boolean = when {
