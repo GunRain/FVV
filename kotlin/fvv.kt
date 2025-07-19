@@ -12,7 +12,7 @@
 
 @file:Suppress("unused")
 
-package in_.sakit.fvv
+package `in`.sakit.fvv
 
 import kotlin.reflect.KClass
 
