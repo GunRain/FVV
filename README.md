@@ -2,7 +2,7 @@
 
 This page is written in Chinese, please use the translation if you do not understand.
 
-闲余时间搓出来的文本格式，目前支持`C++`(最低支持C++`17`)、`Go`(最低支持Go`1.18`)、`Dart`(最低支持Dart`3`)以及`Kotlin`，以后可能会支持更多常用语言，反正目前是还没有写的。
+闲余时间搓出来的文本格式，目前支持`C++`(最低支持 C++`17`)、`Go`(最低支持 Go`1.18`)、`Dart`(最低支持 Dart`3`)以及`Kotlin`，以后可能会支持更多常用语言，反正目前是还没有写的。
 
 不会支持的语言: `Python`、`Java`、`Rust`等
 
@@ -14,7 +14,7 @@ TODO:
 
 名字显而易见，是个~~废物~~清新的文本格式，那么有多清新呢，请看示例:
 
-``` fvv
+```fvv
 ValueName1 = "114514\"" <字符串与转义\>>;
 ValueName2 = true       <布尔值>;
 ValueName3 = 114514     <整数>  ;
@@ -38,7 +38,7 @@ GroupName.SubGroupName.b = GroupName.SubGroupName.a <这个是同组赋值，只
 
 值的命名也是没有什么忌口的，请看示例:
 
-``` fvv
+```fvv
 114514 = 114514;
 一一四五一四 = 114514;
 ()()(((())))((((()))))()(((()))) = 114514;
@@ -52,7 +52,7 @@ GroupName.SubGroupName.b = GroupName.SubGroupName.a <这个是同组赋值，只
 
 注释是本文本格式的一个比较特色的功能，它可以放到任何地方，请看示例:
 
-``` fvv
+```fvv
 <注释>{<注释>a<注释>=<注释>1<注释>;<注释>}<注释>
 ```
 
@@ -64,7 +64,7 @@ GroupName.SubGroupName.b = GroupName.SubGroupName.a <这个是同组赋值，只
 
 以下是`C++`的代码示例:
 
-``` cpp
+```cpp
 #include <iostream>
 #include <string>
 #include <string_view>
@@ -129,7 +129,7 @@ int main(void) {
 
 代码执行后，将会输出:
 
-``` plaintext
+```plaintext
 FVV API: 1
 值 GroupName.SubGroupName.114514 不存在
 值 GroupName.SubGroupName.a (int): 114514
@@ -156,33 +156,33 @@ ValueName1="114514\"";ValueName2=true;ValueName3=114514;ValueName4=114.514000;Va
 
 接下来就详细解释一下代码吧:
 
-`FVV::FVVV`是一个`class`类型，使用它来定义一个FVVV以存储解析得到的值
+`FVV::FVVV`是一个`class`类型，使用它来定义一个 FVVV 以存储解析得到的值
 
-下面是FVVV class的用法:
+下面是 FVVV class 的用法:
 
 - `asBool()`、`asInt()`、`asDouble()`、`asString()`、`asBools()`、`asInts()`、`asDoubles()`、`asStrings()`: 分别会返回`bool`、`int`、`double`、`std::string`、`std::vector<bool>`、`std::vector<int>`、`std::vector<double>`、`std::vector<std::string>`类型的值，如果值不存在，会分别返回`false`、`0`、`0.0`、`""`、`{}`、`{}`、`{}`、`{}`
 - `as<typename>()`: 会返回对应类型的值
 - `isEmpty()`、`isNotEmpty()`: 用于判断值是否存在(或是否存在子项)，会返回一个`bool`类型的值
 - `isType<typename>()`: 用于判断值是否为指定类型，会返回一个`bool`类型的值(如果值不存在，会返回`false`)
-- `print()`或`print("min")`或`print("nodesc")`或`print("biglist")`: 会把当前class内所有值输出为FVV格式文本，传入“min”时会去除掉所有值的描述，并去除所有空格和换行，传入“nodesc”时会去除掉所有值的描述(两者均为在输出时去除，不会影响class内的值)，传入“biglist”时会为所有组值中的所有值添加缩进与换行(而不是让所有值都处于同一行)
-- `addFromString(str)`: 用于解析传入的FVV格式文本到当前class
+- `print()`或`print("min")`或`print("nodesc")`或`print("biglist")`: 会把当前 class 内所有值输出为 FVV 格式文本，传入“min”时会去除掉所有值的描述，并去除所有空格和换行，传入“nodesc”时会去除掉所有值的描述(两者均为在输出时去除，不会影响 class 内的值)，传入“biglist”时会为所有组值中的所有值添加缩进与换行(而不是让所有值都处于同一行)
+- `addFromString(str)`: 用于解析传入的 FVV 格式文本到当前 class
 
 ## Go
 
-下面是FVVV struct的用法:
+下面是 FVVV struct 的用法:
 
 - `IsEmpty()`、`IsNotEmpty()`: 用于判断值是否存在(或是否存在子项)，会返回一个`bool`类型的值
 - `SubIsEmpty()`、`SubIsNotEmpty()`: 用于判断是否存在子项，会返回一个`bool`类型的值
-- `Print()`或`Print("min")`或`Print("nodesc")`或`Print("biglist")`: 会把当前struct内所有值输出为FVV格式文本，传入“min”时会去除掉所有值的描述，并去除所有空格和换行，传入“nodesc”时会去除掉所有值的描述(两者均为在输出时去除，不会影响struct内的值)，传入“biglist”时会为所有组值中的所有值添加缩进与换行(而不是让所有值都处于同一行)
-- `AddFromString(str)`: 用于解析传入的FVV格式文本到当前struct
+- `Print()`或`Print("min")`或`Print("nodesc")`或`Print("biglist")`: 会把当前 struct 内所有值输出为 FVV 格式文本，传入“min”时会去除掉所有值的描述，并去除所有空格和换行，传入“nodesc”时会去除掉所有值的描述(两者均为在输出时去除，不会影响 struct 内的值)，传入“biglist”时会为所有组值中的所有值添加缩进与换行(而不是让所有值都处于同一行)
+- `AddFromString(str)`: 用于解析传入的 FVV 格式文本到当前 struct
 
 ## [Dart](https://pub-web.flutter-io.cn/packages/fvv)
 
-不想写了，看[Pub文档](https://pub-web.flutter-io.cn/documentation/fvv/latest/fvv/)吧！
+不想写了，看[Pub 文档](https://pub-web.flutter-io.cn/documentation/fvv/latest/fvv/)吧！
 
 ## Kotlin
 
-与Dart基本一致
+与 Dart 基本一致
 
 ## 注意点
 
