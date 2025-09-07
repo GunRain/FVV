@@ -22,6 +22,16 @@ ValueName4 = 114.514    <浮点数>;
 
 ValueName5 = ["1", "1", "4", "5", "1", "4"] <字符串组>;
 ValueName6 = [1, 1, 4, 5, 1, 4, ] <整数组(这个“,”是故意多打的)>;
+ValueName7 = [
+  {
+    ValueName8 = "114514"
+    ValueName9 = [
+      {
+        ValueName10 = "114514"
+      } <114514>
+    ]
+  }
+] <FVVV 组>
 
 GroupName = {
   SubGroupName = {
@@ -82,6 +92,16 @@ const string fvv_txt = R"(
 
         ValueName5 = ["1", "1", "4", "5", "1", "4"] <字符串组>;
         ValueName6 = [1, 1, 4, 5, 1, 4, ] <整数组(这个“,”是故意多打的)>;
+        ValueName7 = [
+            {
+                ValueName8 = "114514"
+                ValueName9 = [
+                    {
+                        ValueName10 = "114514"
+                    } <114514>
+                ]
+            }
+        ] <FVVV 组>
 
         GroupName = {
             SubGroupName = {
@@ -104,8 +124,6 @@ int main(void) {
     // “FVVV”指的是FVV的Value，非常简单的命名
 
     fvv.addFromString(fvv_txt); // 从字符串解析
-
-    cout << "FVV API: " << FVV_API << endl; // 输出FVV的API版本
 
     if (fvv["GroupName"]["SubGroupName"]["114514"].isEmpty()) // 判断值是否存在
         cout << "值 GroupName.SubGroupName.114514 不存在" << endl;
@@ -130,7 +148,6 @@ int main(void) {
 代码执行后，将会输出:
 
 ```plaintext
-FVV API: 1
 值 GroupName.SubGroupName.114514 不存在
 值 GroupName.SubGroupName.a (int): 114514
 ValueName1 = "114514\"" <字符串与转义\>>
@@ -139,6 +156,16 @@ ValueName3 = 114514 <整数>
 ValueName4 = 114.514000 <浮点数>
 ValueName5 = ["1", "1", "4", "5", "1", "4"] <字符串组>
 ValueName6 = [1, 1, 4, 5, 1, 4] <整数组(这个“,”是故意多打的)>
+ValueName7 = [
+  {
+    ValueName8 = "666"
+    ValueName9 = [
+      {
+        ValueName10 = "999"
+      } <999>
+    ]
+  }
+] <FVVV List>
 GroupName = {
   SubGroupName = {
     a = ValueName3 <支持赋值操作(这个是跨组赋值)>
@@ -149,7 +176,7 @@ GroupName = {
 114514 = 114514
 一一四五一四 = 114514
 ()()(((())))((((()))))()(((()))) = 114514
-ValueName1="114514\"";ValueName2=true;ValueName3=114514;ValueName4=114.514000;ValueName5=["1","1","4","5","1","4"];ValueName6=[1,1,4,5,1,4];GroupName={SubGroupName={a=ValueName3;b=GroupName.SubGroupName.a;};c=SubGroupName.a;};114514=114514;一一四五一四=114514;()()(((())))((((()))))()(((())))=114514
+ValueName1="114514\"";ValueName2=true;ValueName3=114514;ValueName4=114.514000;ValueName5=["1","1","4","5","1","4"];ValueName6=[1,1,4,5,1,4,1,1,4,5,1,4];ValueName7=[{ValueName8="666";ValueName9=[{ValueName10="999";}<999>];}];GroupName={SubGroupName={a=ValueName3;b=GroupName.SubGroupName.a;};};114514=114514;一一四五一四=114514;()()(((())))((((()))))()(((())))=114514
 值 GroupName.SubGroupName.a (描述): 支持赋值操作(这个是跨组赋值)
 值 GroupName.SubGroupName.a (描述): 114514
 ```
