@@ -2,3 +2,5 @@ jdk:
   - openjdk24
 before_install:
   - cd kotlin
+  - sdk install nodejs
+  - npm install -g yarn
