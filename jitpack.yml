@@ -1,4 +1,4 @@
 jdk:
-    - openjdk24
+    - openjdk25
 before_install:
     - cd kotlin
