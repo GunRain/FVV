@@ -1,4 +1,4 @@
-# [Fresh View for Viewer (FVV/FW/废物/廢物)](https://app.niggergo.work/docs/fw)
+# [Fresh View for Viewer (FVV/FW/废物/廢物)](https://app.niggergo.work/fw)
 
 ## [LICENSE](LICENSE.txt)
 
