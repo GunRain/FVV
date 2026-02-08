@@ -1,4 +1,0 @@
-jdk:
-  - openjdk25
-before_install:
-  - cd kotlin
