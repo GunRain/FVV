@@ -1,0 +1,12 @@
+{
+	"pages": [
+		"---[Album]速览---",
+		"index",
+		"---[BookOpenText]文档---",
+		"...(core)",
+		"---[ScrollText]版本---",
+		"...(versions)",
+		"---[RectangleEllipsis]更多---",
+		"...(more)"
+	]
+}

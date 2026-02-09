@@ -1,0 +1,15 @@
+@import 'tailwindcss';
+@import 'fumadocs-ui/css/solar.css';
+@import 'fumadocs-ui/css/vitepress.css';
+@import 'fumadocs-ui/css/preset.css';
+
+@layer base {
+	html {
+		text-autospace: normal;
+		text-spacing-trim: trim-start;
+		font-feature-settings: 'palt' 1;
+	}
+	footer a {
+		@apply text-fd-primary underline underline-offset-4 decoration-1 decoration-fd-primary/44 hover:decoration-fd-primary transition-colors;
+	}
+}

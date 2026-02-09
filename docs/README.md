@@ -9,3 +9,7 @@
 - [Go](https://github.com/FVV-Lang/FVV.go)
 - [JavaScript(TypeScript)](https://github.com/FVV-Lang/FVV.js)
 - [Kotlin](https://github.com/FVV-Lang/FVV.kt)
+
+---
+
+- [编辑器拓展](https://github.com/FVV-Lang/FVV.ext)

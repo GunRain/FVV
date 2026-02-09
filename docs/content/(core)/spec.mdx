@@ -1,0 +1,471 @@
+---
+title: FVV
+description: FVV 的基本用法
+---
+
+对于 FVV 的用法示例，请看如下内容
+
+<include lang='plaintext' meta='title="示例"'>eg.fvv</include>
+
+显而易见，支持 `字符串`、`浮点数`、`整数`、`布尔值` 以及它们的 `列表` 的定义，还有 `组` 本身的 `列表`
+
+<Callout>
+
+**命名定义**
+
+```
+组 = {
+  文本 = ""
+  文本列表 = [""]
+  组列表 = [{}]
+}
+```
+
+- `组` 为 _组名称_，`文本`/`文本列表`/`组列表` 为 _值名称_
+- `""`/`[""]`/`[{}]` 为值，`{}` 称为组
+
+故基本类型名称为 `字符串`/`文本`、`浮点数`、`整数`、`布尔值`，`组` 为特殊类型
+
+列表类型即为 `字符串列表`/`文本列表`、`浮点数列表`、`整数列表`、`布尔值列表` 以及 `组列表`
+
+</Callout>
+
+值的命名也是没有什么忌口的，但需要注意的是，
+如果一个值被命名为**纯数字**（仅 `整数`，因为 `浮点数` 会被分割为双层组），
+那么这个值将**无法用于赋值**，因为没法判断到底给的是值还是值的名称
+
+同样的，还需要注意正常命名不要带 `.` 啊喂，会被认为是多层组的定义的
+
+值的定义使用 `;` 或 `换行` 进行，
+所有的值都可以置于根路径的 `{}` 里面（放不放都没区别，只不过加一个 `{}` 看起来类 _JSON_ 一点？），
+块注释使用 `<>`，没有行注释
+
+<Callout type='idea'>
+`换行` 可以省略掉以下字符:
+
+- `;`: 当定义值时有 `换行` 则无需在行尾添加 `;`
+- `,`: 当定义组时有 `换行` 则无需在两个值之间添加 `,`
+
+`}` 也可省略分隔符
+
+</Callout>
+
+注释是 FVV 一个比较特色的功能，它可以放到任何地方，请看示例:
+
+```
+<注释>{<注释>a<注释>=<注释>1<注释>;<注释>}<注释>
+```
+
+可以非常直接地看出来，注释完全是想怎么写就怎么写，但是它的作用不止于此
+
+介于 `=` 与 `;`（或 `换行`）之间的**最后一个**注释，将会被认定为是该值的 `描述`，在解析时将会被留存为该值的附属值
+
+<Callout type='warn'>
+	因为 `换行` 可以替代 `;`，`描述` 又是和定义一样通过 `换行`/`;` 来解析的， 所以 `描述`
+	不可以写到定义的**下一行**！
+</Callout>
+
+<Callout>为了让 **FWW** 有更好的开发体验，`组列表` 及其子值的 `描述` 是放在前面的</Callout>
+
+<Callout type='idea'>
+`描述` 是支持**赋值**的，也就是说任意字符串都有可能赋值到 `描述` 上，只要 `描述` 与该字符串的值名称相同
+
+所以在实践中，建议在编写 `描述` 时，在开头加一个 `- `，从而实现类似于 `<- 这是注释>` 的效果，
+如果字体支持，`<-` 会变成一个好看的箭头，这样既不会与赋值机制有冲突，还可以提升观感
+
+</Callout>
+
+## 代码层使用方法
+
+<Callout>仅支持 `UTF-8` 文本（或 `UTF-8 with BOM`），`\r`/`\n`/`\r\n` 文本均可正常解析</Callout>
+
+### 引入依赖
+
+<Tabs groupId='code-lang' items={['C++', 'Dart', 'Go', 'Kotlin']}>
+<Tab>
+在项目中添加文件后，直接 `#include` 即可:
+
+```cpp
+#include "fvv.hh"
+```
+
+</Tab>
+<Tab>
+
+> [Pub 发布页面](https://pub-web.flutter-io.cn/packages/fvv)
+>
+> [Dart API 文档](https://pub-web.flutter-io.cn/documentation/fvv/latest/fvv/)
+
+先添加依赖:
+
+<Tabs groupId='dart-type' items={['Dart', 'Flutter']}>
+<Tab>
+
+```shell
+dart pub add fvv
+```
+
+</Tab>
+<Tab>
+
+```shell
+flutter pub add fvv
+```
+
+</Tab>
+</Tabs>
+
+然后直接 `import` 即可:
+
+```dart
+import 'package:fvv/fvv.dart';
+```
+
+</Tab>
+<Tab>
+先添加依赖
+
+<Tabs groupId='go-mod-type' items={['本地依赖', '远程依赖']}>
+<Tab>
+在 `go.mod` 中通过 `replace` 指向本地路径，并通过 `require` 添加依赖
+
+```plaintext title='示例'
+replace fvvlang.sbs/fvv => path/fvv/go
+
+require fvvlang.sbs/fvv v0.0.0
+```
+
+</Tab>
+<Tab>
+
+通过命令行添加依赖:
+
+```shell
+go get -u fvvlang.sbs/fvv@latest
+```
+
+</Tab>
+</Tabs>
+
+然后 `import` 即可:
+
+```go
+import "fvvlang.sbs/fvv"
+```
+
+</Tab>
+<Tab>
+先依赖源中有 [PkgPub](https://app.niggergo.work/purejoy/pkgpub/use/) 的依赖源
+
+然后添加依赖:
+
+```groovy
+dependencies {
+    implementation("ren.shiror.fvv:core:2.+")
+}
+```
+
+再直接 `import` 即可:
+
+```kotlin
+import ren.shiror.fvv.FVVV
+```
+
+</Tab>
+</Tabs>
+
+### 基本功能
+
+<Callout type='warn'>示例代码都是瞎写的，不要依此为参照</Callout>
+
+<Callout>
+	对于开发体验着重在 `C++` 与 `Go` 上以及 `Dart` 与 `Kotlin` 上，在一起的语言开发体验较为相似
+</Callout>
+
+#### 解析
+
+<Callout type='idea'>
+	由于 `Go` 的语言特性，其函数名称不得不大写
+	<></>
+	由于 `Dart` 与 `Go` 不支持函数重载，为了保证长期维护的可能性，额外添加了 `String` 后缀
+</Callout>
+
+<Tabs groupId='code-lang' items={['C++', 'Dart', 'Go', 'Kotlin']}>
+<Tab>
+
+```cpp
+FVV::FVVV fvv;
+fvv.parse(txt);
+```
+
+</Tab>
+<Tab>
+
+```dart
+final fvv = FVVV()..parseString(txt);
+```
+
+</Tab>
+<Tab>
+
+```go
+fvv := NewFVVV()
+fvv.ParseString(txt)
+```
+
+</Tab>
+<Tab>
+
+```kotlin
+val fvv = FVVV().apply { parse(txt) }
+```
+
+</Tab>
+</Tabs>
+
+#### 格式化
+
+当传入以下内容时，会有不同的格式化效果:
+
+- `Common`: 默认
+- `UseWrapper`: 最外面包裹一层 _花括号_
+- `Minify`: 最小化，移除所有 _缩进_、_空格_、_换行_
+- `UseCRLF`: 使用 `\r\n` 换行，默认 `\n`
+- `UseCR`: 使用 `\r` 换行，默认同上
+- `UseSpace2`: 使用 `2` 个 **空格** 作为 **缩进** ，默认是 `\t`
+- `UseSpace4`: 使用 `4` 个 **空格** 作为 **缩进**
+- `IntBinary`: 输出整数为 _二进制_ 格式，默认是 _十进制_
+- `IntOctal`: 输出整数为 _八进制_ 格式，默认同上
+- `IntHex`: 输出整数为 _十六进制_ 格式，默认同上
+- `DigitSep3`: 输出 _十进制整数_ 或 _浮点数的整数部分_ 时每 `3` 个数字插入一个分隔符
+- `DigitSep4`: 同上，每 `4` 个数字插入一个分隔符
+- `UseColon`: 使用 _冒号_ 而非默认的 _等号_ 作为定义符
+- `FullWidth`: 将部分符号改为 **全角**
+- `KeepListSingle`: 强制 _列表_ 保持为一行（默认长度达到 `16` 的内容达到 `6` 则一行一个）
+- `ForceUseSeparator`: 强制添加 _分隔符_（最小化时无效）
+- `RawMultilineString`: 当 _字符串_ 有多行时改为 _原始多行缩进字符串_（最小化时无效）
+- `NoDescs`: 移除所有 `描述`（在 _FWW 风格_ 下对 `组列表` 与 `组` 无效）
+- `NoLinks`: 移除所有 `链接`
+- `FlattenPaths`: 递归展平只有 `1` 个值的 `组`
+- `FWWStyle`: FWW 风格，前置 `组` 的 `描述`
+
+<Callout>
+各个语言的格式化选项位置如下:
+
+- `C++`: `FVV::FormatOpt`
+- `Dart`: `FormatOpt`
+- `Go`: 以 `FmtOpt` 开头的值
+- `Kotlin`: `FVVV.FormatOpt`
+
+不同的语言在命名上略有不同，但实际行为一致
+
+</Callout>
+
+传入均支持通过 `|`/`or` 传入为一个参数或通过 `,` 传入为多个参数
+
+<Callout>当使用 `Dart`/`Kotlin` 默认的 `toString` 时（`"$fvv"`），将使用默认的格式化效果</Callout>
+
+<Callout type='idea'>
+	一切去除 `描述`/`链接` 的行为均仅为在输出的字符串中去除，不会影响到代码中的实际内容
+</Callout>
+
+<Tabs groupId='code-lang' items={['C++', 'Dart', 'Go', 'Kotlin']}>
+<Tab>
+
+```cpp
+fvv.to_string(opts...);
+```
+
+</Tab>
+<Tab>
+
+```dart
+fvv.toString(opts...);
+```
+
+</Tab>
+<Tab>
+
+```go
+fvv.ToString(opts...)
+```
+
+</Tab>
+<Tab>
+
+```kotlin
+fvv.toString(opts...)
+```
+
+</Tab>
+</Tabs>
+
+#### 使用值
+
+<Callout type='error'>
+由于 `JVM` 机制，在 `Kotlin` 上
+_判断_/_获取_ 列表时请使用对应的 `isList<T>()`/`list<T>()` 方法，否则会类型出错
+</Callout>
+
+首先是对值的基本判断
+
+<Callout type='tip'>
+	由于 `Go` 的语法可用性太低了，便又封装了 `IsNodesEmpty` 和 `IsNodesNotEmpty` 来判断子项是否为空，
+	但使用前最好还是先判断一下值本身是否为 `nil`
+</Callout>
+
+<Tabs groupId='code-lang' items={['C++', 'Dart', 'Go', 'Kotlin']}>
+<Tab>
+
+```cpp
+bool is_empty = fvv.empty(); // 判断值是否为空
+bool is_type = fvv.is<T>(); // 判断类型
+is_type = fvv.is_list<T>(); // 判断列表类型（相当于 fvv.is<vector<T>>()）
+```
+
+</Tab>
+<Tab>
+
+```dart
+final isEmpty = fvv.isEmpty && !fvv.isNotEmpty; // 判断值是否为空
+var isType = fvv.isType<T>(); // 判断类型
+isType = fvv.isList<T>(); // 判断列表类型（相当于 fvv.isType<List<T>>()）
+```
+
+</Tab>
+<Tab>
+
+```go
+is_empty := fvv.IsEmpty() && !fvv.IsNotEmpty() // 判断值是否为空
+is_empty = fvv.IsNodesEmpty() && !fvv.IsNodesNotEmpty() // 判断子值是否为空
+is_type := fvv.IsBool() // 判断类型（也可使用 fvv.Is[T](fwv)，此处的 fvv 是 fvv 包）
+is_type = fvv.IsBoolList() // 判断列表类型（也可使用 fvv.IsList[T](fwv)，此处的 fvv 是 fvv 包）
+// 其他依此类推，不再示范...
+```
+
+</Tab>
+<Tab>
+
+```kotlin
+val isEmpty = fvv.isEmpty() && !fvv.isNotEmpty() // 判断值是否为空
+var isType = fvv.`is`<T>() || fvv.isType<T>() // 判断类型（不适用于列表）
+isType = fvv.isList<T>() // 判断列表类型
+```
+
+</Tab>
+</Tabs>
+
+<Callout type='warn'>
+由于 FVV 2 统一采用 `int64` 为整数类型，对于各语言的兼容性如下:
+
+- `C++`: 使用 `long long`/`vector<long long>` 类型，
+  存储时有兼容其他整数类型，但判断时需要使用 `long long`/`vector<long long>`
+- `Dart`: 由于没有细分类型，无变化
+- `Go`: 由于 `Go` 没有重载，在判断中对 `int`/`[]int` 做了兼容，使用时尽量用 `int64`/`[]int64`
+- `Kotlin`: 在存储与判断时均有 `Int`/`List<Int>` 转 `Long`/`List<Long>` 与
+  `Float`/`List<Float>` 转 `Double`/`List<Double>`
+
+</Callout>
+
+---
+
+然后是读取值
+
+<Callout>
+	由于 `Dart` 机制，常规获取 `List` 类型得到的是引用，拷贝请再调用 `toList()`
+	<></>
+	<></>在 `Kotlin` 获取 `List` 类型时由于 `JVM` 机制无法确认类型，总会创建一个新的固定类型的
+	`List`，不会获取到引用
+</Callout>
+
+<Tabs groupId='code-lang' items={['C++', 'Dart', 'Go', 'Kotlin']}>
+<Tab>
+
+```cpp
+T value = fvv.value<T>(/*默认值*/); // 指定类型获取值
+vector<T> list = fvv.list<T>(/*默认值*/); // 指定类型获取列表
+```
+
+</Tab>
+<Tab>
+
+```dart
+final value = fvv.as<T>(/*默认值*/) ?: fvv.asType<T>(/*默认值*/) ?: fvv.get<T>(); // 指定类型获取值
+//（当不确定类型时，使用 as/asType，返回 T?，确定时则可使用 get，返回 T）
+final list = fvv.list<T>(/*默认值*/); // 指定类型获取列表
+final boolValue = fvv.boolean; // 获取布尔值
+final boolList = fvv.bools; // 获取布尔值列表
+// 其他依此类推，不再示范...
+```
+
+</Tab>
+<Tab>
+
+```go
+value := fvv.Value[T](fwv); // 指定类型获取值（此处的 fvv 是 fvv 包）
+list := fvv.List[T](); // 指定类型获取列表（此处的 fvv 是 fvv 包）
+bool_value := fvv.Bool(/*默认值*/); // 获取布尔值
+bool_list := fvv.BoolList(/*默认值*/); // 获取布尔值列表
+// 其他依此类推，不再示范...
+```
+
+</Tab>
+<Tab>
+
+```kotlin
+val value = fvv.`as`<T>(/*默认值*/) ?: fvv.asType<T>(/*默认值*/) ?: fvv.get<T>(); // 指定类型获取值
+//（当不确定类型时，使用 as/asType，返回 T?，确定时则可使用 get，返回 T）
+val list = fvv.list<T>(/*默认值*/); // 指定类型获取列表
+val boolValue = fvv.bool; // 获取布尔值
+val boolList = fvv.bools; // 获取布尔值列表
+// 其他依此类推，不再示范...
+```
+
+</Tab>
+</Tabs>
+
+<Callout type='warn'>
+由于 `Dart` 的基本类型名称会冲突，但为了尽可能与 `Kotlin` 一致，目前的 getter 如下:
+
+- `bool`(`Kotlin`)、`boolean`(`Dart`&`Kotlin`)
+- `int`(`Kotlin`)、`integer`(`Dart`&`Kotlin`)
+- `double`(`Kotlin`)、`float`(`Dart`&`Kotlin`)
+- `string`、`bools`、`ints`、`doubles`、`strings`、`fvvvs`(`Dart`&`Kotlin`)
+
+</Callout>
+
+赋值只需要在有重写运算符功能的语言上直接赋值即可，没有则需要手动调用内部的值进行赋值
+
+### 序列化/反序列化
+
+<Callout>_序列化_ 时会去除所有链接</Callout>
+
+_序列化_/_反序列化_ 在各语言上均可使用，但差异较大
+
+<Tabs groupId='code-lang' items={['C++', 'Dart', 'Go', 'Kotlin']}>
+	<Tab>
+		`C++` 可以直接通过 `to`/`from` 传入值引用，或在类中定义 `fvv_values` 函数以绑定名称与引用
+		<></>
+		`parse` 支持传入第二个参数以相当于执行 `parse`+`to
+	</Tab>
+	<Tab>
+		`Dart` 需要定义继承 `FVVStruct` 的类，在 `fvvValues` 函数中绑定名称并设置 `getter`/`setter`，
+		当需要处理嵌套的 `FVVStruct` 列表时，需要传入 `factory` 以创建该 `FVVStruct`
+		<></>
+		调用只需要通过 `to`/`from` 传入即可
+		<></>
+		`parseString` 支持传入第二个参数以相当于执行 `parseString`+`to`
+	</Tab>
+	<Tab>
+		`Go` 可在 `struct` 使用 ``` `fvv:"值名称"` ```，支持 `omitempty`
+		<></>
+		调用只需要通过 `Unmarshal`/`Marshal` 传入即可
+		<></>
+		`ParseString` 支持传入多个参数以相当于执行 `parseString`+`Unmarshal`
+	</Tab>
+	<Tab>
+		`Kotlin` 基于 `serialization` 实现
+		<></>
+		`parse` 支持传入类型以相当于执行 `parse`+`Unmarshal`
+	</Tab>
+</Tabs>

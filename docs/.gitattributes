@@ -1,0 +1,5 @@
+*.config.*js linguist-vendored
+*.config.*ts linguist-vendored
+source.ts* linguist-vendored
+
+src/** linguist-documentation=false

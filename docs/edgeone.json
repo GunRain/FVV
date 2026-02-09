@@ -1,0 +1,21 @@
+{
+	"headers": [
+		{
+			"source": "/*",
+			"headers": [
+				{
+					"key": "Access-Control-Allow-Origin",
+					"value": "https://fvvlang.sbs"
+				},
+				{
+					"key": "Access-Control-Allow-Methods",
+					"value": "GET, HEAD"
+				},
+				{
+					"key": "Access-Control-Allow-Headers",
+					"value": "Content-Type"
+				}
+			]
+		}
+	]
+}
