@@ -7,7 +7,16 @@
 	html {
 		text-autospace: normal;
 		text-spacing-trim: trim-start;
-		font-feature-settings: 'palt' 1;
+		font-feature-settings: 'palt';
+		font-variant-ligatures: common-ligatures;
+		font-optical-sizing: auto;
+		/* stylelint-disable-next-line property-no-unknown */
+		font-smooth: always;
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+		hyphens: auto;
+		scroll-behavior: smooth;
+		scrollbar-gutter: stable;
 	}
 	footer a {
 		@apply text-fd-primary underline underline-offset-4 decoration-1 decoration-fd-primary/44 hover:decoration-fd-primary transition-colors;
