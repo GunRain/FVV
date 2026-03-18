@@ -7,14 +7,15 @@ import {docsConfig, docsOptions, source} from '@/lib/source'
 import SearchDialog from '@/widgets/ui/search'
 
 import './global.css'
-import Clarity from '@/widgets/clarity'
 
 const ubuntu = Ubuntu({weight: ['300', '400', '500', '700'] as const})
 
 export default ({children}: LayoutProps<'/'>) => (
 	<html lang='zh-Hans' className={ubuntu.className} suppressHydrationWarning>
 		<head>
-			<Clarity />
+			{process.env.NODE_ENV === 'production' && (
+				<script defer src='https://☁️.ja7.top/🍥.js?ms=vekou24a6v' />
+			)}
 		</head>
 		<body className='flex flex-col min-h-screen'>
 			<RootProvider

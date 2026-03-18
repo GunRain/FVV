@@ -31,7 +31,7 @@ export const getMDXWidgets = (components?: MDXComponents) =>
 		...FilesComponents,
 		...GithubInfoComponents,
 		...ImageZoomComponents,
-		img: props => <ImageZoom {...props} />,
+		img: props => <ImageZoom {...(props as any)} />,
 		// ...InlineTOCComponents,
 		Link,
 		...StepsComponents,
