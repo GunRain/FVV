@@ -1,9 +1,4 @@
-import {
-	type ButtonItemType,
-	type IconItemType,
-	type MainItemType,
-	type MenuItemType
-} from 'fumadocs-ui/layouts/shared'
+import {type ButtonItemType, type IconItemType, type MainItemType, type MenuItemType} from 'fumadocs-ui/layouts/shared'
 import {NextResponse} from 'next/server'
 
 import {docsConfig, docsOptions, source} from '@/lib/source'
@@ -19,12 +14,8 @@ export const GET = () => {
 				typeof link.text === 'string' &&
 				(link.url ||
 					(link.type === ('menu' as const) &&
-						link.items.filter(
-							item =>
-								item.type === ('main' as const) &&
-								typeof item.text === 'string' &&
-								item.url
-						).length > 0))
+						link.items.filter(item => item.type === ('main' as const) && typeof item.text === 'string' && item.url)
+							.length > 0))
 		) as (MainItemType | IconItemType | ButtonItemType | MenuItemType)[])
 
 	return new NextResponse(
@@ -37,10 +28,7 @@ export const GET = () => {
 								link.type === ('menu' as const) &&
 								link.items &&
 								(link.items.filter(
-									item =>
-										item.type === ('main' as const) &&
-										typeof item.text === 'string' &&
-										item.url
+									item => item.type === ('main' as const) && typeof item.text === 'string' && item.url
 								) as MainItemType[])
 							return `- ${link.url ? `[**${link.text}**](${link.url.startsWith('/') ? `${docsConfig.baseUrl}${link.url}` : link.url})` : `**${link.text}**`}${link.type == ('main' as const) && link.description ? `: ${link.description}` : ''}${items && items.length > 0 ? `\n${items.map(item => `  - [${item.text}](${item.url.startsWith('/') ? `${docsConfig.baseUrl}${item.url}` : item.url})${item.description ? `: ${item.description}` : ''}`).join('\n')}` : ''}`
 						})

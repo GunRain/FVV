@@ -5,7 +5,9 @@ description: FVV 的基本用法
 
 对于 FVV 的用法示例，请看如下内容
 
-<include lang='plaintext' meta='title="示例"'>eg.fvv</include>
+<include lang='plaintext' meta='title="示例"'>
+	eg.fvv
+</include>
 
 显而易见，支持 `字符串`、`浮点数`、`整数`、`布尔值` 以及它们的 `列表` 的定义，还有 `组` 本身的 `列表`
 
@@ -61,8 +63,7 @@ description: FVV 的基本用法
 介于 `=` 与 `;`（或 `换行`）之间的**最后一个**注释，将会被认定为是该值的 `描述`，在解析时将会被留存为该值的附属值
 
 <Callout type='warn'>
-	因为 `换行` 可以替代 `;`，`描述` 又是和定义一样通过 `换行`/`;` 来解析的， 所以 `描述`
-	不可以写到定义的**下一行**！
+	因为 `换行` 可以替代 `;`，`描述` 又是和定义一样通过 `换行`/`;` 来解析的， 所以 `描述` 不可以写到定义的**下一行**！
 </Callout>
 
 <Callout>为了让 **FWW** 有更好的开发体验，`组列表` 及其子值的 `描述` 是放在前面的</Callout>
@@ -178,9 +179,7 @@ import ren.shiror.fvv.FVVV
 
 <Callout type='warn'>示例代码都是瞎写的，不要依此为参照</Callout>
 
-<Callout>
-	对于开发体验着重在 `C++` 与 `Go` 上以及 `Dart` 与 `Kotlin` 上，在一起的语言开发体验较为相似
-</Callout>
+<Callout>对于开发体验着重在 `C++` 与 `Go` 上以及 `Dart` 与 `Kotlin` 上，在一起的语言开发体验较为相似</Callout>
 
 #### 解析
 
@@ -265,9 +264,7 @@ val fvv = FVVV().apply { parse(txt) }
 
 <Callout>当使用 `Dart`/`Kotlin` 默认的 `toString` 时（`"$fvv"`），将使用默认的格式化效果</Callout>
 
-<Callout type='idea'>
-	一切去除 `描述`/`链接` 的行为均仅为在输出的字符串中去除，不会影响到代码中的实际内容
-</Callout>
+<Callout type='idea'>一切去除 `描述`/`链接` 的行为均仅为在输出的字符串中去除，不会影响到代码中的实际内容</Callout>
 
 <Tabs groupId='code-lang' items={['C++', 'Dart', 'Go', 'Kotlin']}>
 <Tab>
@@ -374,8 +371,7 @@ isType = fvv.isList<T>() // 判断列表类型
 <Callout>
 	由于 `Dart` 机制，常规获取 `List` 类型得到的是引用，拷贝请再调用 `toList()`
 	<></>
-	<></>在 `Kotlin` 获取 `List` 类型时由于 `JVM` 机制无法确认类型，总会创建一个新的固定类型的
-	`List`，不会获取到引用
+	<></>在 `Kotlin` 获取 `List` 类型时由于 `JVM` 机制无法确认类型，总会创建一个新的固定类型的 `List`，不会获取到引用
 </Callout>
 
 <Tabs groupId='code-lang' items={['C++', 'Dart', 'Go', 'Kotlin']}>
@@ -449,8 +445,8 @@ _序列化_/_反序列化_ 在各语言上均可使用，但差异较大
 		`parse` 支持传入第二个参数以相当于执行 `parse`+`to
 	</Tab>
 	<Tab>
-		`Dart` 需要定义继承 `FVVStruct` 的类，在 `fvvValues` 函数中绑定名称并设置 `getter`/`setter`，
-		当需要处理嵌套的 `FVVStruct` 列表时，需要传入 `factory` 以创建该 `FVVStruct`
+		`Dart` 需要定义继承 `FVVStruct` 的类，在 `fvvValues` 函数中绑定名称并设置 `getter`/`setter`， 当需要处理嵌套的 `FVVStruct`
+		列表时，需要传入 `factory` 以创建该 `FVVStruct`
 		<></>
 		调用只需要通过 `to`/`from` 传入即可
 		<></>
