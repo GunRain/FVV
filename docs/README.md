@@ -9,6 +9,7 @@
 - [Go](https://github.com/FVV-Lang/FVV.go)
 - [JavaScript(TypeScript)](https://github.com/FVV-Lang/FVV.js)
 - [Kotlin](https://github.com/FVV-Lang/FVV.kt)
+- [Rust](https://github.com/FVV-Lang/FVV.rs)
 
 ---
 
