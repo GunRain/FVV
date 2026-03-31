@@ -1,8 +1,8 @@
 {
 	"compilerOptions": {
-		"baseUrl": ".",
 		"target": "ESNext",
 		"lib": ["dom", "dom.iterable", "esnext"],
+		"types": ["@types/mdx", "node", "react", "react-dom"],
 		"module": "esnext",
 		"moduleResolution": "bundler",
 		"allowJs": true,
@@ -18,7 +18,7 @@
 		"plugins": [{"name": "next"}],
 		"paths": {
 			"@/*": ["./src/*"],
-			"fumadocs-mdx:collections/*": [".source/*"]
+			"fumadocs-mdx:collections/*": ["./.source/*"]
 		},
 		"verbatimModuleSyntax": true,
 		"useDefineForClassFields": true,
