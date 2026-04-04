@@ -8,7 +8,7 @@ import SearchDialog from '@/widgets/ui/search'
 
 import './global.css'
 
-const ubuntu = Ubuntu({weight: ['300', '400', '500', '700'] as const})
+const ubuntu = Ubuntu({weight: ['300', '400', '500', '700']})
 
 export default ({children}: LayoutProps<'/'>) => (
 	<html lang='zh-Hans' className={ubuntu.className} suppressHydrationWarning>
@@ -49,14 +49,14 @@ export const metadata = {
 			default: docsConfig.title
 		},
 		siteName: docsConfig.title,
-		type: 'website' as const
+		type: 'website'
 	},
 	twitter: {
 		title: {
 			template: `%s | ${docsConfig.title}`,
 			default: docsConfig.title
 		},
-		card: 'summary_large_image' as const
+		card: 'summary_large_image'
 	},
 	robots: {
 		index: true,

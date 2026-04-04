@@ -22,7 +22,7 @@ const initOrama = (_loc?: string) =>
 		schema: {_: 'string'},
 		components: {
 			tokenizer: createTokenizer({
-				language: 'mandarin' as const,
+				language: 'mandarin',
 				stopWords: [...mandarinStopwords, ...englishStopwords],
 				stemmer: word => word.toLowerCase()
 			})
@@ -31,7 +31,7 @@ const initOrama = (_loc?: string) =>
 
 export default (props: SharedProps) => {
 	const {search, setSearch, query} = useDocsSearch({
-		type: 'static' as const,
+		type: 'static',
 		initOrama,
 		from: '/._search.json'
 	})
@@ -44,7 +44,7 @@ export default (props: SharedProps) => {
 					<SearchDialogInput />
 					<SearchDialogClose />
 				</SearchDialogHeader>
-				<SearchDialogList items={query.data !== ('empty' as const) ? query.data : null} />
+				<SearchDialogList items={query.data !== 'empty' ? query.data : null} />
 			</SearchDialogContent>
 		</SearchDialog>
 	)

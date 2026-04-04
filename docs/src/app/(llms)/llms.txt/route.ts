@@ -10,12 +10,12 @@ export const GET = () => {
 		docsOptions.links &&
 		(docsOptions.links.filter(
 			link =>
-				link.type !== ('custom' as const) &&
+				link.type !== 'custom' &&
 				typeof link.text === 'string' &&
 				(link.url ||
-					(link.type === ('menu' as const) &&
-						link.items.filter(item => item.type === ('main' as const) && typeof item.text === 'string' && item.url)
-							.length > 0))
+					(link.type === 'menu' &&
+						link.items.filter(item => item.type === 'main' && typeof item.text === 'string' && item.url).length >
+							0))
 		) as (MainItemType | IconItemType | ButtonItemType | MenuItemType)[])
 
 	return new NextResponse(
@@ -25,12 +25,12 @@ export const GET = () => {
 					links!
 						.map(link => {
 							const items =
-								link.type === ('menu' as const) &&
+								link.type === 'menu' &&
 								link.items &&
 								(link.items.filter(
-									item => item.type === ('main' as const) && typeof item.text === 'string' && item.url
+									item => item.type === 'main' && typeof item.text === 'string' && item.url
 								) as MainItemType[])
-							return `- ${link.url ? `[**${link.text}**](${link.url.startsWith('/') ? `${docsConfig.baseUrl}${link.url}` : link.url})` : `**${link.text}**`}${link.type == ('main' as const) && link.description ? `: ${link.description}` : ''}${items && items.length > 0 ? `\n${items.map(item => `  - [${item.text}](${item.url.startsWith('/') ? `${docsConfig.baseUrl}${item.url}` : item.url})${item.description ? `: ${item.description}` : ''}`).join('\n')}` : ''}`
+							return `- ${link.url ? `[**${link.text}**](${link.url.startsWith('/') ? `${docsConfig.baseUrl}${link.url}` : link.url})` : `**${link.text}**`}${link.type == 'main' && link.description ? `: ${link.description}` : ''}${items && items.length > 0 ? `\n${items.map(item => `  - [${item.text}](${item.url.startsWith('/') ? `${docsConfig.baseUrl}${item.url}` : item.url})${item.description ? `: ${item.description}` : ''}`).join('\n')}` : ''}`
 						})
 						.join('\n')
 				: '') +

@@ -121,12 +121,12 @@ export const docsOptions = {
 	},
 	links: [
 		{
-			type: 'custom' as const,
+			type: 'custom',
 			children: <GithubInfo owner={docsConfig.git.user} repo={docsConfig.git.repo} />
 		}
 	],
 	githubUrl: `https://github.com/${docsConfig.git.user}/${docsConfig.git.repo}`,
-	themeSwitch: {mode: 'light-dark-system' as const}
+	themeSwitch: {mode: 'light-dark-system'}
 } satisfies BaseLayoutProps as BaseLayoutProps
 
 export const source = loader({

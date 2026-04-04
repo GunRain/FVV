@@ -1,5 +1,9 @@
-*.config.*js linguist-vendored
-*.config.*ts linguist-vendored
-source.ts* linguist-vendored
+*.config.js linguist-vendored
+*.config.[cm]js linguist-vendored
+*.config.ts linguist-vendored
+*.config.[cm]ts linguist-vendored
+
+source.ts linguist-vendored
+source.tsx linguist-vendored
 
 src/** linguist-documentation=false

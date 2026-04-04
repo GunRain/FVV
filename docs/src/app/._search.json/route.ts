@@ -10,7 +10,7 @@ export const revalidate = false
 export const {staticGET: GET} = createFromSource(source, {
 	components: {
 		tokenizer: createTokenizer({
-			language: 'mandarin' as const,
+			language: 'mandarin',
 			stopWords: [...mandarinStopwords, ...englishStopwords]
 		})
 	}
