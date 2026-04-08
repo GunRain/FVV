@@ -1,6 +1,6 @@
-import {NextResponse} from 'next/server'
+import { NextResponse } from 'next/server'
 
-import {docsConfig} from '@/lib/source'
+import { docsConfig } from '@/lib/source'
 
 export const revalidate = false
 

@@ -4,16 +4,16 @@ import * as FilesWidgets from 'fumadocs-ui/components/files'
 import * as StepsWidgets from 'fumadocs-ui/components/steps'
 import * as TabsWidgets from 'fumadocs-ui/components/tabs'
 // import {Banner} from 'fumadocs-ui/components/banner'
-import {CodeBlock, Pre} from 'fumadocs-ui/components/codeblock'
+import { CodeBlock, Pre } from 'fumadocs-ui/components/codeblock'
 // import {DynamicCodeBlock} from 'fumadocs-ui/components/dynamic-codeblock'
-import {GithubInfo} from 'fumadocs-ui/components/github-info'
+import { GithubInfo } from 'fumadocs-ui/components/github-info'
 // import {InlineTOC} from 'fumadocs-ui/components/inline-toc'
-import {TypeTable} from 'fumadocs-ui/components/type-table'
+import { TypeTable } from 'fumadocs-ui/components/type-table'
 import defaultMdxComponents from 'fumadocs-ui/mdx'
-import type {MDXComponents} from 'mdx/types'
+import type { MDXComponents } from 'mdx/types'
 import Image from 'next/image'
 import Link from 'next/link'
-import {type ComponentPropsWithoutRef} from 'react'
+import { type ComponentPropsWithoutRef } from 'react'
 
 import ImageZoom from '@/widgets/ui/image-zoom'
 
@@ -23,7 +23,7 @@ export const getMDXWidgets = (components?: MDXComponents) =>
 		...AccordionWidgets,
 		// Banner,
 		...CodeBlockWidgets,
-		pre: ({children, ...props}: ComponentPropsWithoutRef<'pre'>) => (
+		pre: ({ children, ...props }: ComponentPropsWithoutRef<'pre'>) => (
 			<CodeBlock {...props}>
 				<Pre>{children}</Pre>
 			</CodeBlock>
@@ -39,5 +39,5 @@ export const getMDXWidgets = (components?: MDXComponents) =>
 		...StepsWidgets,
 		...TabsWidgets,
 		TypeTable,
-		...components
+		...components,
 	}) satisfies MDXComponents

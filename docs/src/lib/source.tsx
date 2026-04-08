@@ -1,27 +1,27 @@
-import {loader} from 'fumadocs-core/source'
-import {lucideIconsPlugin} from 'fumadocs-core/source/lucide-icons'
-import {docs} from 'fumadocs-mdx:collections/server'
-import {GithubInfo} from 'fumadocs-ui/components/github-info'
-import type {BaseLayoutProps} from 'fumadocs-ui/layouts/shared'
-import type {Author} from 'next/dist/lib/metadata/types/metadata-types'
+import { loader } from 'fumadocs-core/source'
+import { lucideIconsPlugin } from 'fumadocs-core/source/lucide-icons'
+import { docs } from 'fumadocs-mdx:collections/server'
+import { GithubInfo } from 'fumadocs-ui/components/github-info'
+import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared'
+import type { Author } from 'next/dist/lib/metadata/types/metadata-types'
 import Image from 'next/image'
 import Link from 'next/link'
-import {type ReactNode} from 'react'
+import { type ReactNode } from 'react'
 
 export const docsConfig = {
 	title: 'FVV 语言',
 	baseUrl: 'https://fvvlang.sbs',
 	authors: [
-		{name: 'ShIroRRen', url: 'https://shiror.ren/#shiro'},
-		{name: 'FengYing', url: 'https://www.fengying.xin/#ying'},
-		{name: 'Linso', url: 'https://linso.top/'}
+		{ name: 'ShIroRRen', url: 'https://shiror.ren/#shiro' },
+		{ name: 'FengYing', url: 'https://www.fengying.xin/#ying' },
+		{ name: 'Linso', url: 'https://linso.top/' },
 	] satisfies Author[],
 	icon: {
 		url: new URL('../assets/logo.svg', import.meta.url),
-		size: 1314
+		size: 1314,
 	} satisfies {
 		url: URL
-		size: number | {width: number; height: number}
+		size: number | { width: number; height: number }
 	},
 	footer: {
 		links: [
@@ -30,39 +30,39 @@ export const docsConfig = {
 				items: [
 					{
 						label: 'FVV',
-						href: '/spec'
+						href: '/spec',
 					},
 					{
 						label: 'FWW',
-						href: '/widgets'
+						href: '/widgets',
 					},
 					{
 						label: 'FWS',
-						href: '/script'
-					}
-				]
+						href: '/script',
+					},
+				],
 			},
 			{
 				title: '友链',
 				items: [
 					{
 						label: '广告',
-						href: 'https://ja7.top/ad'
+						href: 'https://ja7.top/ad',
 					},
 					{
 						label: 'NGA 开发文档',
-						href: 'https://app.niggergo.work'
+						href: 'https://app.niggergo.work',
 					},
 					{
 						label: 'Latest File',
-						href: 'https://latestfile.zip'
+						href: 'https://latestfile.zip',
 					},
 					{
 						label: '世界之外工作组',
-						href: 'https://oom-wg.dev'
-					}
-				]
-			}
+						href: 'https://oom-wg.dev',
+					},
+				],
+			},
 		],
 		copyright: (
 			<span>
@@ -81,7 +81,7 @@ export const docsConfig = {
 				</Link>
 				，版权所有，保留一切权利。
 			</span>
-		)
+		),
 	} satisfies {
 		links: {
 			title: string
@@ -96,7 +96,7 @@ export const docsConfig = {
 		user: 'FVV-Lang',
 		repo: 'FVV',
 		branch: 'fw',
-		dir: 'docs'
+		dir: 'docs',
 	} satisfies {
 		user: string
 		repo: string
@@ -107,7 +107,7 @@ export const docsConfig = {
 		repo: string
 		branch: string
 		dir?: string
-	}
+	},
 }
 
 export const docsOptions = {
@@ -117,20 +117,20 @@ export const docsOptions = {
 				<Image alt='Logo' src='/icon' width={32} height={32} className='rounded-md' priority unoptimized />
 				<span className='font-semibold'>{docsConfig.title}</span>
 			</div>
-		)
+		),
 	},
 	links: [
 		{
 			type: 'custom',
-			children: <GithubInfo owner={docsConfig.git.user} repo={docsConfig.git.repo} />
-		}
+			children: <GithubInfo owner={docsConfig.git.user} repo={docsConfig.git.repo} />,
+		},
 	],
 	githubUrl: `https://github.com/${docsConfig.git.user}/${docsConfig.git.repo}`,
-	themeSwitch: {mode: 'light-dark-system'}
+	themeSwitch: { mode: 'light-dark-system' },
 } satisfies BaseLayoutProps as BaseLayoutProps
 
 export const source = loader({
 	baseUrl: '/',
 	source: docs.toFumadocsSource(),
-	plugins: [lucideIconsPlugin()]
+	plugins: [lucideIconsPlugin()],
 })

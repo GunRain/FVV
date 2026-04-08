@@ -6,7 +6,7 @@ description: FVV 的基本用法
 对于 FVV 的用法示例，请看如下内容
 
 <include lang='plaintext' meta='title="示例"'>
-	eg.fvv
+  eg.fvv
 </include>
 
 显而易见，支持 `字符串`、`浮点数`、`整数`、`布尔值` 以及它们的 `列表` 的定义，还有 `组` 本身的 `列表`
@@ -63,7 +63,7 @@ description: FVV 的基本用法
 介于 `=` 与 `;`（或 `换行`）之间的**最后一个**注释，将会被认定为是该值的 `描述`，在解析时将会被留存为该值的附属值
 
 <Callout type='warn'>
-	因为 `换行` 可以替代 `;`，`描述` 又是和定义一样通过 `换行`/`;` 来解析的， 所以 `描述` 不可以写到定义的**下一行**！
+  因为 `换行` 可以替代 `;`，`描述` 又是和定义一样通过 `换行`/`;` 来解析的， 所以 `描述` 不可以写到定义的**下一行**！
 </Callout>
 
 <Callout>为了让 **FWW** 有更好的开发体验，`组列表` 及其子值的 `描述` 是放在前面的</Callout>
@@ -184,9 +184,9 @@ import ren.shiror.fvv.FVVV
 #### 解析
 
 <Callout type='idea'>
-	由于 `Go` 的语言特性，其函数名称不得不大写
-	<></>
-	由于 `Dart` 与 `Go` 不支持函数重载，为了保证长期维护的可能性，额外添加了 `String` 后缀
+  由于 `Go` 的语言特性，其函数名称不得不大写
+  <></>
+  由于 `Dart` 与 `Go` 不支持函数重载，为了保证长期维护的可能性，额外添加了 `String` 后缀
 </Callout>
 
 <Tabs groupId='code-lang' items={['C++', 'Dart', 'Go', 'Kotlin']}>
@@ -307,8 +307,8 @@ _判断_/_获取_ 列表时请使用对应的 `isList<T>()`/`list<T>()` 方法�
 首先是对值的基本判断
 
 <Callout type='tip'>
-	由于 `Go` 的语法可用性太低了，便又封装了 `IsNodesEmpty` 和 `IsNodesNotEmpty` 来判断子项是否为空，
-	但使用前最好还是先判断一下值本身是否为 `nil`
+  由于 `Go` 的语法可用性太低了，便又封装了 `IsNodesEmpty` 和 `IsNodesNotEmpty` 来判断子项是否为空，
+  但使用前最好还是先判断一下值本身是否为 `nil`
 </Callout>
 
 <Tabs groupId='code-lang' items={['C++', 'Dart', 'Go', 'Kotlin']}>
@@ -369,9 +369,9 @@ isType = fvv.isList<T>() // 判断列表类型
 然后是读取值
 
 <Callout>
-	由于 `Dart` 机制，常规获取 `List` 类型得到的是引用，拷贝请再调用 `toList()`
-	<></>
-	<></>在 `Kotlin` 获取 `List` 类型时由于 `JVM` 机制无法确认类型，总会创建一个新的固定类型的 `List`，不会获取到引用
+  由于 `Dart` 机制，常规获取 `List` 类型得到的是引用，拷贝请再调用 `toList()`
+  <></>
+  <></>在 `Kotlin` 获取 `List` 类型时由于 `JVM` 机制无法确认类型，总会创建一个新的固定类型的 `List`，不会获取到引用
 </Callout>
 
 <Tabs groupId='code-lang' items={['C++', 'Dart', 'Go', 'Kotlin']}>
@@ -439,29 +439,29 @@ val boolList = fvv.bools; // 获取布尔值列表
 _序列化_/_反序列化_ 在各语言上均可使用，但差异较大
 
 <Tabs groupId='code-lang' items={['C++', 'Dart', 'Go', 'Kotlin']}>
-	<Tab>
-		`C++` 可以直接通过 `to`/`from` 传入值引用，或在类中定义 `fvv_values` 函数以绑定名称与引用
-		<></>
-		`parse` 支持传入第二个参数以相当于执行 `parse`+`to
-	</Tab>
-	<Tab>
-		`Dart` 需要定义继承 `FVVStruct` 的类，在 `fvvValues` 函数中绑定名称并设置 `getter`/`setter`， 当需要处理嵌套的 `FVVStruct`
-		列表时，需要传入 `factory` 以创建该 `FVVStruct`
-		<></>
-		调用只需要通过 `to`/`from` 传入即可
-		<></>
-		`parseString` 支持传入第二个参数以相当于执行 `parseString`+`to`
-	</Tab>
-	<Tab>
-		`Go` 可在 `struct` 使用 ``` `fvv:"值名称"` ```，支持 `omitempty`
-		<></>
-		调用只需要通过 `Unmarshal`/`Marshal` 传入即可
-		<></>
-		`ParseString` 支持传入多个参数以相当于执行 `parseString`+`Unmarshal`
-	</Tab>
-	<Tab>
-		`Kotlin` 基于 `serialization` 实现
-		<></>
-		`parse` 支持传入类型以相当于执行 `parse`+`Unmarshal`
-	</Tab>
+  <Tab>
+    `C++` 可以直接通过 `to`/`from` 传入值引用，或在类中定义 `fvv_values` 函数以绑定名称与引用
+    <></>
+    `parse` 支持传入第二个参数以相当于执行 `parse`+`to
+  </Tab>
+  <Tab>
+    `Dart` 需要定义继承 `FVVStruct` 的类，在 `fvvValues` 函数中绑定名称并设置 `getter`/`setter`， 当需要处理嵌套的 `FVVStruct`
+    列表时，需要传入 `factory` 以创建该 `FVVStruct`
+    <></>
+    调用只需要通过 `to`/`from` 传入即可
+    <></>
+    `parseString` 支持传入第二个参数以相当于执行 `parseString`+`to`
+  </Tab>
+  <Tab>
+    `Go` 可在 `struct` 使用 ``` `fvv:"值名称"` ```，支持 `omitempty`
+    <></>
+    调用只需要通过 `Unmarshal`/`Marshal` 传入即可
+    <></>
+    `ParseString` 支持传入多个参数以相当于执行 `parseString`+`Unmarshal`
+  </Tab>
+  <Tab>
+    `Kotlin` 基于 `serialization` 实现
+    <></>
+    `parse` 支持传入类型以相当于执行 `parse`+`Unmarshal`
+  </Tab>
 </Tabs>

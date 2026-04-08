@@ -1,20 +1,20 @@
-import {DocsBody, DocsDescription, DocsPage, DocsTitle, PageLastUpdate} from 'fumadocs-ui/layouts/docs/page'
-import {createRelativeLink} from 'fumadocs-ui/mdx'
-import {Bot, ExternalLink} from 'lucide-react'
-import type {Metadata} from 'next'
+import { DocsBody, DocsDescription, DocsPage, DocsTitle, PageLastUpdate } from 'fumadocs-ui/layouts/docs/page'
+import { createRelativeLink } from 'fumadocs-ui/mdx'
+import { Bot, ExternalLink } from 'lucide-react'
+import type { Metadata } from 'next'
 import Link from 'next/link'
-import {notFound} from 'next/navigation'
+import { notFound } from 'next/navigation'
 
-import {getMDXWidgets} from '@/lib/mdx'
-import {docsConfig, source} from '@/lib/source'
-import {getPageImage} from '@/utils/img'
-import {LLMCopyButton, ViewOptions} from '@/widgets/ui/ai-buttons'
+import { getMDXWidgets } from '@/lib/mdx'
+import { docsConfig, source } from '@/lib/source'
+import { getPageImage } from '@/utils/img'
+import { LLMCopyButton, ViewOptions } from '@/widgets/ui/ai-buttons'
 
 const BUILD_TIME = new Date().toLocaleString('zh-Hant', {
 	timeZone: 'Asia/Shanghai',
 	year: 'numeric',
 	month: '2-digit',
-	day: '2-digit'
+	day: '2-digit',
 })
 
 export default async (props: PageProps<'/[[...slug]]'>) => {
@@ -42,14 +42,14 @@ export default async (props: PageProps<'/[[...slug]]'>) => {
 									items: [
 										{
 											label: 'llms.txt',
-											href: '/llms.txt'
+											href: '/llms.txt',
 										},
 										{
 											label: 'llms-full.txt',
-											href: '/llms-full.txt'
-										}
-									]
-								}
+											href: '/llms-full.txt',
+										},
+									],
+								},
 							].map(group => (
 								<div key={group.title} className='flex-1 min-w-37.5 flex flex-col gap-3'>
 									<h4 className='font-semibold text-fd-foreground'>{group.title}</h4>
@@ -90,7 +90,7 @@ export default async (props: PageProps<'/[[...slug]]'>) => {
 							</p>
 						</div>
 					</footer>
-				)
+				),
 			}}>
 			<DocsTitle>{page.data.title}</DocsTitle>
 			<DocsDescription className='mb-0'>{page.data.description}</DocsDescription>
@@ -104,13 +104,13 @@ export default async (props: PageProps<'/[[...slug]]'>) => {
 				</div>
 			)}
 			<DocsBody>
-				<page.data.body components={getMDXWidgets({a: createRelativeLink(source, page)})} />
+				<page.data.body components={getMDXWidgets({ a: createRelativeLink(source, page) })} />
 			</DocsBody>
 		</DocsPage>
 	)
 }
 
-export const generateStaticParams = async () => source.generateParams()
+export const generateStaticParams = () => source.generateParams()
 
 export const generateMetadata = async (props: PageProps<'/[[...slug]]'>) => {
 	const page = source.getPage((await props.params).slug) ?? notFound()
@@ -118,10 +118,10 @@ export const generateMetadata = async (props: PageProps<'/[[...slug]]'>) => {
 	const isGoPkg = page.data['go-import'] || page.data['go-source']
 	const isIndex = page.url === '/'
 
-	const titleConfig = isIndex ? {absolute: docsConfig.title} : isGoPkg ? {absolute: page.data.title} : page.data.title
+	const titleConfig = isIndex ? { absolute: docsConfig.title } : isGoPkg ? { absolute: page.data.title } : page.data.title
 
 	return {
-		alternates: {canonical: page.url || '/'},
+		alternates: { canonical: page.url || '/' },
 		title: titleConfig,
 		description: page.data.description,
 		keywords: page.data.keywords,
@@ -129,16 +129,16 @@ export const generateMetadata = async (props: PageProps<'/[[...slug]]'>) => {
 			title: titleConfig,
 			description: page.data.description,
 			url: `${docsConfig.baseUrl}${page.url}`,
-			images: getPageImage(page).url
+			images: getPageImage(page).url,
 		},
 		twitter: {
 			title: titleConfig,
 			description: page.data.description,
-			images: getPageImage(page).url
+			images: getPageImage(page).url,
 		},
 		other: {
-			...(page.data['go-import'] && {'go-import': page.data['go-import']}),
-			...(page.data['go-source'] && {'go-source': page.data['go-source']})
+			...(page.data['go-import'] && { 'go-import': page.data['go-import'] }),
+			...(page.data['go-source'] && { 'go-source': page.data['go-source'] }),
 		},
 		...(isGoPkg && {
 			robots: {
@@ -146,9 +146,9 @@ export const generateMetadata = async (props: PageProps<'/[[...slug]]'>) => {
 				follow: false,
 				googleBot: {
 					index: false,
-					follow: false
-				}
-			}
-		})
+					follow: false,
+				},
+			},
+		}),
 	} satisfies Metadata
 }
