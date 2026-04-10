@@ -18,7 +18,7 @@ export const GET = async (_req: NextRequest, { params }: RouteContext<'/llms.md/
 	return new NextResponse(
 		(await getLLMText(page)) +
 			`\n---\n\n> [**Page Index**] ${'<'}${docsConfig.baseUrl}/llms.txt> | [**Full Content**] ${'<'}${docsConfig.baseUrl}/llms-full.txt>`,
-		{ headers: { 'Content-Type': 'text/markdown; charset=utf-8' } },
+		{ headers: { 'Content-Type': 'text/markdown; charset=utf-8' } }
 	)
 }
 
@@ -27,6 +27,6 @@ export const generateStaticParams = () =>
 		slug: [
 			...(page.slugs.length === 0
 				? ['index.md']
-				: [...page.slugs.slice(0, -1), `${page.slugs[page.slugs.length - 1]}.md`]),
-		],
+				: [...page.slugs.slice(0, -1), `${page.slugs[page.slugs.length - 1]}.md`])
+		]
 	}))

@@ -39,5 +39,5 @@ export const getMDXWidgets = (components?: MDXComponents) =>
 		...StepsWidgets,
 		...TabsWidgets,
 		TypeTable,
-		...components,
+		...components
 	}) satisfies MDXComponents

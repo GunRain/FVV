@@ -9,7 +9,7 @@ import {
 	SearchDialogInput,
 	SearchDialogList,
 	SearchDialogOverlay,
-	type SharedProps,
+	type SharedProps
 } from 'fumadocs-ui/components/dialog/search'
 
 import { create } from '@orama/orama'
@@ -24,16 +24,16 @@ const initOrama = (_loc?: string) =>
 			tokenizer: createTokenizer({
 				language: 'mandarin',
 				stopWords: [...mandarinStopwords, ...englishStopwords],
-				stemmer: word => word.toLowerCase(),
-			}),
-		},
+				stemmer: word => word.toLowerCase()
+			})
+		}
 	})
 
 export default (props: SharedProps) => {
 	const { search, setSearch, query } = useDocsSearch({
 		type: 'static',
 		initOrama,
-		from: '/._search.json',
+		from: '/._search.json'
 	})
 	return (
 		<SearchDialog search={search} onSearchChange={setSearch} isLoading={query.isLoading} {...props}>

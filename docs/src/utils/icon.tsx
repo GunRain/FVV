@@ -11,7 +11,7 @@ export const getIconImage = async (img: URL, size: { width: number; height: numb
 				height: '100%',
 				display: 'flex',
 				alignItems: 'center',
-				justifyContent: 'center',
+				justifyContent: 'center'
 			}}>
 			<img
 				src={new Uint8Array(await sharp(readFileSync(img)).png().toBuffer()).buffer as any}
@@ -20,5 +20,5 @@ export const getIconImage = async (img: URL, size: { width: number; height: numb
 				style={{ borderRadius: '4px' }}
 			/>
 		</div>,
-		{ ...size },
+		{ ...size }
 	)

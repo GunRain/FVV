@@ -8,7 +8,7 @@ export default function ImageZoom(props: any) {
 	const mounted = useSyncExternalStore(
 		() => () => void null,
 		() => true,
-		() => false,
+		() => false
 	)
 	return mounted ? <OrigImageZoom {...props} /> : <Image {...props} />
 }

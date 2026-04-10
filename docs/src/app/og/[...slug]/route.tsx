@@ -12,11 +12,11 @@ export const GET = async (_req: NextRequest, { params }: RouteContext<'/og/[...s
 	(page =>
 		new ImageResponse(
 			<DefaultImage title={page.data.title} description={page.data.description} site={docsConfig.title} />,
-			{ width: 1200, height: 630 },
+			{ width: 1200, height: 630 }
 		))(source.getPage((await params).slug.slice(0, -1)) ?? notFound())
 
 export const generateStaticParams = () =>
 	source.getPages().map(page => ({
 		lang: page.locale,
-		slug: getPageImage(page).segments,
+		slug: getPageImage(page).segments
 	}))

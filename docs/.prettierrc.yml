@@ -1,10 +1,11 @@
 semi: false
 singleQuote: true
 jsxSingleQuote: true
+trailingComma: none
 bracketSameLine: true
 arrowParens: avoid
 
-importOrder: ['<THIRD_PARTY_MODULES>', '^@(.*)/(.*)$', '^@/(.*)$', '^~/(.*)$', '^[./]']
+importOrder: ['<THIRD_PARTY_MODULES>', '^@(?!@|/)', '^#', '^@@/', '^~~/', '^@/', '^~/', '^[./]']
 importOrderSeparation: true
 importOrderSortSpecifiers: true
 importOrderGroupNamespaceSpecifiers: true

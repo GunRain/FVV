@@ -12,8 +12,8 @@ export const GET = async () =>
 				source
 					.getPages()
 					.filter(page => !page.data['go-import'] && !page.data['go-source'])
-					.map(getLLMText),
+					.map(getLLMText)
 			)
 		).join('\n\n'),
-		{ headers: { 'Content-Type': 'text/markdown; charset=utf-8' } },
+		{ headers: { 'Content-Type': 'text/markdown; charset=utf-8' } }
 	)

@@ -8,18 +8,18 @@ export const docs = defineDocs({
 		schema: frontmatterSchema.extend({
 			keywords: z.array(z.string()).optional(),
 			'go-import': z.string().optional(),
-			'go-source': z.string().optional(),
+			'go-source': z.string().optional()
 		}),
 		postprocess: {
-			includeProcessedMarkdown: true,
-		},
+			includeProcessedMarkdown: true
+		}
 	},
 	meta: {
-		schema: metaSchema,
-	},
+		schema: metaSchema
+	}
 })
 
 export default defineConfig({
 	plugins: [lastModified()],
-	mdxOptions: {},
+	mdxOptions: {}
 })

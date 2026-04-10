@@ -14,6 +14,6 @@ export default () =>
 					url: `${docsConfig.baseUrl}${page.url}`,
 					lastModified: page.data.lastModified ?? new Date(),
 					changeFrequency: 'always',
-					priority: page.url === '/' ? 1 : 0.88,
-				}) satisfies MetadataRoute.Sitemap[number],
+					priority: page.url === '/' ? 1 : 0.88
+				}) satisfies MetadataRoute.Sitemap[number]
 		) satisfies MetadataRoute.Sitemap

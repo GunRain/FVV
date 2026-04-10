@@ -8,8 +8,8 @@ export default () =>
 	({
 		rules: {
 			userAgent: '*',
-			allow: '/',
+			allow: '/'
 		},
 		host: docsConfig.baseUrl,
-		sitemap: `${docsConfig.baseUrl}/sitemap.xml`,
+		sitemap: `${docsConfig.baseUrl}/sitemap.xml`
 	}) satisfies MetadataRoute.Robots

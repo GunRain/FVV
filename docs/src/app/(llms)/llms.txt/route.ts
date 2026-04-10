@@ -15,7 +15,7 @@ export const GET = () => {
 				(link.url ??
 					(link.type === 'menu' &&
 						link.items.filter(item => item.type === 'main' && typeof item.text === 'string' && item.url).length >
-							0)),
+							0))
 		) as (MainItemType | IconItemType | ButtonItemType | MenuItemType)[])
 
 	return new NextResponse(
@@ -28,7 +28,7 @@ export const GET = () => {
 								link.type === 'menu' &&
 								link.items &&
 								(link.items.filter(
-									item => item.type === 'main' && typeof item.text === 'string' && item.url,
+									item => item.type === 'main' && typeof item.text === 'string' && item.url
 								) as MainItemType[])
 							return `- ${link.url ? `[**${link.text}**](${link.url.startsWith('/') ? `${docsConfig.baseUrl}${link.url}` : link.url})` : `**${link.text}**`}${link.type == 'main' && link.description ? `: ${link.description}` : ''}${items && items.length > 0 ? `\n${items.map(item => `  - [${item.text}](${item.url.startsWith('/') ? `${docsConfig.baseUrl}${item.url}` : item.url})${item.description ? `: ${item.description}` : ''}`).join('\n')}` : ''}`
 						})
@@ -40,7 +40,7 @@ export const GET = () => {
 				.filter(page => !page.data['go-import'] && !page.data['go-source'])
 				.map(
 					page =>
-						`- [**${page.data.title}**](${docsConfig.baseUrl}${page.url === '/' ? '/index' : page.url}.md)${page.data.description ? `: ${page.data.description}` : ''}`,
+						`- [**${page.data.title}**](${docsConfig.baseUrl}${page.url === '/' ? '/index' : page.url}.md)${page.data.description ? `: ${page.data.description}` : ''}`
 				)
 				.join('\n') +
 			(docsConfig.footer.links.length > 0
@@ -49,11 +49,11 @@ export const GET = () => {
 						.map(
 							group =>
 								`- **${group.title}**\n` +
-								group.items.map(item => `  - [${item.label}](${item.href})`).join('\n'),
+								group.items.map(item => `  - [${item.label}](${item.href})`).join('\n')
 						)
 						.join('\n')
 				: '') +
 			`\n\n---\n\n> [**Full Content**](${docsConfig.baseUrl}/llms-full.txt): All pages in single file`,
-		{ headers: { 'Content-Type': 'text/markdown; charset=utf-8' } },
+		{ headers: { 'Content-Type': 'text/markdown; charset=utf-8' } }
 	)
 }
