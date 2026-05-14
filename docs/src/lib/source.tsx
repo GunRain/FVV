@@ -60,6 +60,10 @@ export const docsConfig = {
 					{
 						label: '世界之外工作组',
 						href: 'https://oom-wg.dev'
+					},
+					{
+						label: '200OK Working',
+						href: 'https://200ok.work'
 					}
 				]
 			}
