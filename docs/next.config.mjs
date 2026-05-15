@@ -5,7 +5,7 @@ export default createMDX()({
 	output: process.env.NODE_ENV === 'production' ? 'export' : undefined,
 	trailingSlash: true,
 	reactStrictMode: true,
-	rewrites: () => [
+	rewrites: async () => [
 		{
 			source: '/:slug*.md',
 			destination: '/llms.md/:slug*.md'
