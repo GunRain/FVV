@@ -161,7 +161,7 @@ export const ViewOptions = ({ markdownUrl, githubUrl }: { markdownUrl: string; g
 				)}>
 				<Ellipsis />
 				更多
-				<ChevronDown className='size-3.5 text-fd-muted-foreground' />
+				<ChevronDown className='text-fd-muted-foreground size-3.5' />
 			</PopoverTrigger>
 			<PopoverContent className='flex flex-col'>
 				{items.map(item => (
@@ -170,10 +170,10 @@ export const ViewOptions = ({ markdownUrl, githubUrl }: { markdownUrl: string; g
 						href={item.href}
 						rel='noreferrer noopener'
 						target='_blank'
-						className='text-sm p-2 rounded-lg inline-flex items-center gap-2 hover:text-fd-accent-foreground hover:bg-fd-accent [&_svg]:size-4'>
+						className='hover:text-fd-accent-foreground hover:bg-fd-accent inline-flex items-center gap-2 rounded-lg p-2 text-sm [&_svg]:size-4'>
 						{item.icon}
 						{item.title}
-						<ExternalLinkIcon className='text-fd-muted-foreground size-3.5 ms-auto' />
+						<ExternalLinkIcon className='text-fd-muted-foreground ms-auto size-3.5' />
 					</a>
 				))}
 			</PopoverContent>

@@ -1,5 +1,6 @@
-import { ImageResponse } from 'next/og'
 import { readFileSync } from 'node:fs'
+
+import { ImageResponse } from 'next/og'
 import sharp from 'sharp'
 
 export const getIconImage = async (img: URL, size: { width: number; height: number }) =>

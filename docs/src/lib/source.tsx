@@ -14,7 +14,7 @@ export const docsConfig = {
 	authors: [
 		{ name: 'ShIroRRen', url: 'https://shiror.ren/#shiro' },
 		{ name: 'FengYing', url: 'https://www.fengying.xin/#ying' },
-		{ name: 'Linso', url: 'https://linso.top/' }
+		{ name: 'Linso', url: 'https://linso.pro/' }
 	] satisfies Author[],
 	icon: {
 		url: new URL('../assets/logo.svg', import.meta.url),
@@ -70,7 +70,7 @@ export const docsConfig = {
 		],
 		copyright: (
 			<span>
-				<Link href='https://linso.top/' target='_blank'>
+				<Link href='https://linso.pro/' target='_blank'>
 					Linso
 				</Link>{' '}
 				牛逼

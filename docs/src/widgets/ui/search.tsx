@@ -1,4 +1,8 @@
 'use client'
+import { create } from '@orama/orama'
+import { stopwords as englishStopwords } from '@orama/stopwords/english'
+import { stopwords as mandarinStopwords } from '@orama/stopwords/mandarin'
+import { createTokenizer } from '@orama/tokenizers/mandarin'
 import { useDocsSearch } from 'fumadocs-core/search/client'
 import {
 	SearchDialog,
@@ -11,11 +15,6 @@ import {
 	SearchDialogOverlay,
 	type SharedProps
 } from 'fumadocs-ui/components/dialog/search'
-
-import { create } from '@orama/orama'
-import { stopwords as englishStopwords } from '@orama/stopwords/english'
-import { stopwords as mandarinStopwords } from '@orama/stopwords/mandarin'
-import { createTokenizer } from '@orama/tokenizers/mandarin'
 
 const initOrama = (_loc?: string) =>
 	create({

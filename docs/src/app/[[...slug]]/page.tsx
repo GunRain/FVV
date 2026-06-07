@@ -27,10 +27,10 @@ export default async (props: PageProps<'/[[...slug]]'>) => {
 			footer={{
 				enabled: true,
 				component: (
-					<footer className='mt-16 text-fd-muted-foreground'>
+					<footer className='text-fd-muted-foreground mt-16'>
 						<hr />
 						{page.data.lastModified && (
-							<div className='px-6 pt-8 text-xs italic border-b-0'>
+							<div className='border-b-0 px-6 pt-8 text-xs italic'>
 								<PageLastUpdate date={page.data.lastModified} />
 							</div>
 						)}
@@ -51,8 +51,8 @@ export default async (props: PageProps<'/[[...slug]]'>) => {
 									]
 								}
 							].map(group => (
-								<div key={group.title} className='flex-1 min-w-37.5 flex flex-col gap-3'>
-									<h4 className='font-semibold text-fd-foreground'>{group.title}</h4>
+								<div key={group.title} className='flex min-w-37.5 flex-1 flex-col gap-3'>
+									<h4 className='text-fd-foreground font-semibold'>{group.title}</h4>
 									<ul className='space-y-2'>
 										{group.items.map(item => {
 											const llmsLink = /^\/llms(-full)?\.txt$/.test(item.href)
@@ -63,10 +63,10 @@ export default async (props: PageProps<'/[[...slug]]'>) => {
 														href={item.href}
 														target={extLink || llmsLink ? '_blank' : undefined}
 														prefetch={llmsLink ? false : 'auto'}
-														className='group wrap-break-word text-sm leading-snug hover:text-fd-primary transition-colors'>
+														className='group hover:text-fd-primary text-sm leading-snug wrap-break-word transition-colors'>
 														{item.label}
 														{(extLink || llmsLink) && (
-															<span className='inline-block ml-1 opacity-66 group-hover:opacity-100 transition-opacity'>
+															<span className='ml-1 inline-block opacity-66 transition-opacity group-hover:opacity-100'>
 																{extLink ? (
 																	<ExternalLink className='size-3.5 align-text-bottom' />
 																) : (
@@ -83,7 +83,7 @@ export default async (props: PageProps<'/[[...slug]]'>) => {
 							))}
 						</div>
 						<hr />
-						<div className='px-6 py-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs'>
+						<div className='flex flex-col items-center justify-between gap-4 px-6 py-8 text-xs md:flex-row'>
 							<p>{docsConfig.footer.copyright}</p>
 							<p className='opacity-70'>
 								Build Time: <span className='font-mono'>{BUILD_TIME}</span>
@@ -95,7 +95,7 @@ export default async (props: PageProps<'/[[...slug]]'>) => {
 			<DocsTitle>{page.data.title}</DocsTitle>
 			<DocsDescription className='mb-0'>{page.data.description}</DocsDescription>
 			{!page.data['go-import'] && !page.data['go-source'] && (
-				<div className='flex flex-row gap-2 items-center border-b pb-6'>
+				<div className='flex flex-row items-center gap-2 border-b pb-6'>
 					<LLMCopyButton markdownUrl={`${page.url === '/' ? '/index' : page.url}.md`} />
 					<ViewOptions
 						markdownUrl={`${page.url === '/' ? '/index' : page.url}.md`}

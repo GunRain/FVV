@@ -14,8 +14,7 @@ export const GET = () => {
 				typeof link.text === 'string' &&
 				(link.url ??
 					(link.type === 'menu' &&
-						link.items.filter(item => item.type === 'main' && typeof item.text === 'string' && item.url).length >
-							0))
+						link.items.filter(item => item.type === 'main' && typeof item.text === 'string' && item.url).length > 0))
 		) as (MainItemType | IconItemType | ButtonItemType | MenuItemType)[])
 
 	return new NextResponse(
@@ -46,11 +45,7 @@ export const GET = () => {
 			(docsConfig.footer.links.length > 0
 				? `\n\n## Links\n\n` +
 					docsConfig.footer.links
-						.map(
-							group =>
-								`- **${group.title}**\n` +
-								group.items.map(item => `  - [${item.label}](${item.href})`).join('\n')
-						)
+						.map(group => `- **${group.title}**\n` + group.items.map(item => `  - [${item.label}](${item.href})`).join('\n'))
 						.join('\n')
 				: '') +
 			`\n\n---\n\n> [**Full Content**](${docsConfig.baseUrl}/llms-full.txt): All pages in single file`,
