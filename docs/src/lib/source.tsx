@@ -77,7 +77,7 @@ export const docsConfig = {
 				<br />
 				根据{' '}
 				<Link href='https://license.fileto.download/' target='_blank'>
-					F2DLPR License
+					File to Downloader 许可证
 				</Link>{' '}
 				授权许可。©️ 2016-{new Date().getFullYear()}{' '}
 				<Link href='https://shiror.ren/' target='_blank'>

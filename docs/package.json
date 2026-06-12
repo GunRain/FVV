@@ -2,7 +2,7 @@
 	"name": "fyl-lang",
 	"private": true,
 	"description": "FYL Language",
-	"license": "F2DLPRL",
+	"license": "File-to-Downloader",
 	"author": "ShIroRRen",
 	"type": "module",
 	"scripts": {
