@@ -1,15 +1,13 @@
 plugins:
   - stylelint-plugin-logical-css
   - stylelint-plugin-defensive-css
-  - stylelint-prettier
 extends:
   - stylelint-config-standard
   - stylelint-config-tailwindcss
+  - stylelint-plugin-logical-css/configs/recommended
   - stylelint-plugin-defensive-css/configs/recommended
 rules:
-  plugin/use-logical-properties-and-values: true
-  plugin/use-logical-units: true
-  prettier/prettier: true
+  defensive-css/require-pure-selectors: null
   comment-empty-line-before: null
   custom-property-empty-line-before: null
   font-family-no-missing-generic-family-keyword: null
