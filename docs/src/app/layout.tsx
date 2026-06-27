@@ -1,14 +1,14 @@
 import { DocsLayout } from 'fumadocs-ui/layouts/docs'
 import { RootProvider } from 'fumadocs-ui/provider/next'
 import { type Metadata } from 'next'
-import { Ubuntu } from 'next/font/google'
+import { Ubuntu_Sans } from 'next/font/google'
 
 import { docsConfig, docsOptions, source } from '@/lib/source'
 import SearchDialog from '@/widgets/ui/search'
 
 import './global.css'
 
-const ubuntu = Ubuntu({ weight: ['300', '400', '500', '700'] })
+const ubuntu = Ubuntu_Sans({ weight: ['300', '400', '500', '700'] })
 
 export default ({ children }: LayoutProps<'/'>) => (
 	<html lang='zh-Hans' className={ubuntu.className} suppressHydrationWarning>

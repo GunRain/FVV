@@ -27,7 +27,7 @@ export default async (props: PageProps<'/[[...slug]]'>) => {
 			footer={{
 				enabled: true,
 				component: (
-					<footer className='text-fd-muted-foreground mt-16'>
+					<footer className='text-fd-muted-foreground mt-16' data-nosnippet>
 						<hr />
 						{page.data.lastModified && (
 							<div className='border-b-0 px-6 pt-8 text-xs italic'>
@@ -95,7 +95,7 @@ export default async (props: PageProps<'/[[...slug]]'>) => {
 			<DocsTitle>{page.data.title}</DocsTitle>
 			<DocsDescription className='mb-0'>{page.data.description}</DocsDescription>
 			{!page.data['go-import'] && !page.data['go-source'] && (
-				<div className='flex flex-row items-center gap-2 border-b pb-6'>
+				<div className='flex flex-row items-center gap-2 border-b pb-6' data-nosnippet>
 					<LLMCopyButton markdownUrl={`${page.url === '/' ? '/index' : page.url}.md`} />
 					<ViewOptions
 						markdownUrl={`${page.url === '/' ? '/index' : page.url}.md`}
