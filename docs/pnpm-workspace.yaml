@@ -2,5 +2,5 @@ allowBuilds:
   esbuild: true
   sharp: true
 overrides:
-  sharp: 0.35.2
+  sharp: latest
   style-to-js: 1.1.21
