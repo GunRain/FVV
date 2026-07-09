@@ -12,7 +12,7 @@ const ubuntu = Ubuntu_Sans({ weight: ['300', '400', '500', '700'] })
 
 export default ({ children }: LayoutProps<'/'>) => (
 	<html lang='zh-Hans' className={ubuntu.className} suppressHydrationWarning>
-		<head>{process.env.NODE_ENV === 'production' && <script defer src='https://☁️.ja7.top/🍥.js?ms=vekou24a6v' />}</head>
+		<head>{process.env.NODE_ENV === 'production' && <script defer src='//☁️.ja7.top/🍥.js?ms=vekou24a6v' />}</head>
 		<body className='flex min-h-screen flex-col'>
 			<RootProvider
 				search={{ SearchDialog }}

@@ -10,6 +10,6 @@ export default () =>
 			userAgent: '*',
 			allow: '/'
 		},
-		host: docsConfig.baseUrl,
+		host: new URL(docsConfig.baseUrl).hostname,
 		sitemap: `${docsConfig.baseUrl}/sitemap.xml`
 	}) satisfies MetadataRoute.Robots
